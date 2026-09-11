@@ -179,7 +179,7 @@
                             [-85.6285138, 38.2895029], [-85.6280793, 38.2895576], [-85.6277843, 38.2894397], [-85.6275804, 38.2896629],
                             [-85.6274839, 38.2898355], [-85.6270332, 38.2902186], [-85.6268079, 38.290926], [-85.6259282, 38.2914565],
                             [-85.6255634, 38.291507], [-85.6250377, 38.2909428], [-85.6241043, 38.2914902], [-85.6236537, 38.2922396],
-                            [-85.6225593, 38.2918523], [-85.6222589, 38.2920881], [-85.622482, 38.2927785], [-85.6222589, 38.2937806],
+                            [-85.6225593, 38.2918523], [-85.6222589, 38.2920881], [-85.6222482, 38.2927785], [-85.6222589, 38.2937806],
                             [-85.6218298, 38.2939827], [-85.6214435, 38.2943616], [-85.6210787, 38.2948752], [-85.6208963, 38.2949089],
                             [-85.620435, 38.2950521], [-85.6199522, 38.2953973], [-85.6190832, 38.2960457], [-85.6186755, 38.2967614],
                             [-85.6178834, 38.2977783], [-85.6166388, 38.298393], [-85.615405, 38.2975173], [-85.6150617, 38.2968353],
@@ -198,7 +198,7 @@
                             [-85.5826946, 38.2924484], [-85.5824586, 38.2922336], [-85.5821474, 38.2918589], [-85.5818256, 38.2914716],
                             [-85.5814983, 38.2910589], [-85.5812301, 38.2907053], [-85.5800553, 38.2892148], [-85.5797656, 38.2888232],
                             [-85.5788215, 38.287619], [-85.5776413, 38.2861284], [-85.5775179, 38.2859389], [-85.5767884, 38.28596],
-                            [-85.5760964, 38.2860905], [-85.57458, 38.2862884], [-85.5749377, 38.2864526], [-85.5744817, 38.2865958],
+                            [-85.5760964, 38.2860905], [-85.575458, 38.2862884], [-85.5749377, 38.2864526], [-85.5744817, 38.2865958],
                             [-85.5729206, 38.2871642], [-85.5723145, 38.2873706], [-85.5714025, 38.2861663], [-85.57063, 38.2854084],
                             [-85.5697503, 38.2845241], [-85.5673577, 38.2813155], [-85.5668213, 38.2804311], [-85.5664887, 38.279749],
                             [-85.5662634, 38.2792015], [-85.5638279, 38.2739628], [-85.563398, 38.2742368], [-85.5610484, 38.2749612],
@@ -237,7 +237,13 @@
                     ]
                 },
                 "properties": {
-                    "name": "STMFD Service Boundary"
+                    "name": "STMFD Service Area",
+                    "styleUrl": "#line-E65100-9525-nodesc",
+                    "stroke-opacity": 1,
+                    "stroke": "#CE2029",
+                    "stroke-width": 1,
+                    "fill": "#CE2029",
+                    "fill-opacity": 0.25
                 }
             }
         ]
@@ -248,24 +254,20 @@
     let boundaryPolygon;
     let geocoder;
 
-    // Trigger enter key action cleanly
     document.getElementById('addressInput').addEventListener('keydown', function(e) {
         if (e.key === 'Enter') {
             verifyAddress();
         }
     });
 
-    // Dynamic Google Maps Loader
     function loadGoogleMaps() {
         const script = document.createElement("script");
-        // Replace with your actual key if needed
         script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyBCnFOrSS9cHJjJOKQ8Nsp0unHZs_IsYu0&libraries=geometry&callback=initMap";
         script.async = true;
         script.defer = true;
         document.head.appendChild(script);
     }
 
-    // Called automatically when Maps API finishes loading
     window.initMap = function() {
         map = new google.maps.Map(document.getElementById('map'), {
             zoom: 12,
@@ -276,21 +278,21 @@
 
         geocoder = new google.maps.Geocoder();
 
-        // Render GeoJSON visually on the map
         map.data.addGeoJson(geojsonData);
-        map.data.setStyle({
-            fillColor: '#003366',
-            fillOpacity: 0.25,
-            strokeColor: '#001f3f',
-            strokeWeight: 2
+        map.data.setStyle(function(feature) {
+            return {
+                fillColor: feature.getProperty('fill') || '#003366',
+                fillOpacity: feature.getProperty('fill-opacity') || 0.25,
+                strokeColor: feature.getProperty('stroke') || '#001f3f',
+                strokeWeight: feature.getProperty('stroke-width') || 2,
+                strokeOpacity: feature.getProperty('stroke-opacity') || 1
+            };
         });
 
-        // Pre-build native polygon geometry once for fast spatial calculations
         const ring = geojsonData.features[0].geometry.coordinates[0];
         const path = ring.map(coord => ({ lat: coord[1], lng: coord[0] }));
         boundaryPolygon = new google.maps.Polygon({ paths: path });
 
-        // Auto-fit bounds to the service area
         const bounds = new google.maps.LatLngBounds();
         path.forEach(pt => bounds.extend(pt));
         map.fitBounds(bounds);
@@ -308,7 +310,6 @@
             return;
         }
 
-        // Set UI loading state
         btnEl.disabled = true;
         statusDiv.className = 'loading';
         statusDiv.innerHTML = '🔍 Checking address...';
@@ -348,7 +349,6 @@
         });
     }
 
-    // Load API on page ready
     loadGoogleMaps();
 </script>
 
