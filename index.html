@@ -22,7 +22,7 @@
             border-radius: 10px; 
             box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
             width: 100%; 
-            max-width: 700px; 
+            max-width: 750px; 
         }
         .tab-nav {
             display: flex;
@@ -34,7 +34,7 @@
             padding: 10px 12px;
             background: none;
             border: none;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             color: #718096;
             cursor: pointer;
@@ -164,16 +164,16 @@
             display: flex;
             align-items: center;
         }
-        input[type="text"] { 
+        input[type="text"], select { 
             width: 100%; 
-            padding: 12px 35px 12px 15px; 
+            padding: 12px 15px; 
             font-size: 15px; 
             border: 1px solid #cbd5e0; 
             border-radius: 6px; 
             outline: none; 
             background-color: #fff;
         }
-        input[type="text"]:focus { 
+        input[type="text"]:focus, select:focus { 
             border-color: #3182ce; 
             box-shadow: 0 0 0 3px rgba(49,130,206,0.2); 
         }
@@ -253,6 +253,62 @@
         .badge.in-district { background-color: #c6f6d5; color: #22543d; }
         .badge.out-district { background-color: #fed7d7; color: #742a2a; }
         .badge.not-found { background-color: #e2e8f0; color: #4a5568; }
+
+        /* Guideline Wizard Custom Styling */
+        .selector-box {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .selector-group {
+            margin-bottom: 12px;
+        }
+        .selector-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            color: #4a5568;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        .result-panel {
+            display: none;
+            border-radius: 8px;
+            padding: 15px;
+            background-color: #edf2f7;
+            border: 1px solid #cbd5e0;
+        }
+        .result-panel.active {
+            display: block;
+        }
+        .protocol-note {
+            font-size: 12px;
+            color: #4a5568;
+            background-color: #fffaf0;
+            border-left: 4px solid #dd6b20;
+            padding: 8px 12px;
+            margin-top: 10px;
+            border-radius: 0 4px 4px 0;
+        }
+        .hosp-list {
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .hosp-tag {
+            background: #003366;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 20px;
+        }
+        .hosp-tag.ped {
+            background: #d53f8c;
+        }
     </style>
 </head>
 <body>
@@ -260,6 +316,7 @@
 <div class="card">
     <div class="tab-nav">
         <button class="tab-btn active" onclick="switchTab('verifier')">District Verifier</button>
+        <button class="tab-btn" onclick="switchTab('guidelines')">Destination Wizard</button>
         <button class="tab-btn" onclick="switchTab('routing')">Hospital Navigation</button>
         <button class="tab-btn" onclick="switchTab('home')">Take Me Home</button>
     </div>
@@ -279,7 +336,39 @@
         <div id="status"></div>
     </div>
 
-    <!-- TAB 2: Hospital Navigation Buttons -->
+    <!-- TAB 2: Destination Guidelines Wizard (NEW) -->
+    <div id="guidelinesTab" class="tab-content">
+        <h2>Triage Destination Guidelines</h2>
+        <p>Select patient demographic and condition criteria to evaluate capable facilities.</p>
+
+        <div class="selector-box">
+            <div class="selector-group">
+                <label>1. Patient Category</label>
+                <select id="patientCategory" onchange="updateEmergencyOptions()">
+                    <option value="adult">Adult Patient</option>
+                    <option value="pediatric">Pediatric Patient (&lt; 18 years)</option>
+                </select>
+            </div>
+
+            <div class="selector-group">
+                <label>2. Presenting Condition / Clinical Criteria</label>
+                <select id="conditionSelect" onchange="evaluateDestination()"></select>
+            </div>
+        </div>
+
+        <div id="guidelineResult" class="result-panel">
+            <div style="font-size: 12px; font-weight: 700; color: #718096; text-transform: uppercase;" id="resultCategory">Category</div>
+            <div style="font-size: 18px; font-weight: 700; color: #1a202c; margin-top: 2px;" id="resultTitle">Condition Title</div>
+            <div style="font-size: 13px; color: #4a5568; margin-top: 6px;" id="resultDef">Definition description</div>
+            
+            <div id="protocolNote" class="protocol-note" style="display:none;"></div>
+
+            <div class="section-header" style="margin-top: 15px;">Capable Facilities</div>
+            <div id="capableHospitals" class="hosp-list"></div>
+        </div>
+    </div>
+
+    <!-- TAB 3: Hospital Navigation Buttons -->
     <div id="routingTab" class="tab-content">
         <h2>Hospital Transport Destinations</h2>
         <p>Tap any hospital below to launch direct navigation to the ER ambulance entrance.</p>
@@ -314,7 +403,7 @@
         </div>
     </div>
 
-    <!-- TAB 3: Take Me Home (St. Matthews Fire & EMS Stations) -->
+    <!-- TAB 4: Take Me Home (St. Matthews Fire & EMS Stations) -->
     <div id="homeTab" class="tab-content">
         <h2>St. Matthews Fire & EMS Stations</h2>
         <p>Tap a station to launch direct navigation back to quarters.</p>
@@ -422,7 +511,7 @@
                             [-85.6285138, 38.2895029], [-85.6280793, 38.2895576], [-85.6277843, 38.2894397], [-85.6275804, 38.2896629],
                             [-85.6274839, 38.2898355], [-85.6270332, 38.2902186], [-85.6268079, 38.290926], [-85.6259282, 38.2914565],
                             [-85.6255634, 38.291507], [-85.6250377, 38.2909428], [-85.6241043, 38.2914902], [-85.6236537, 38.2922396],
-                            [-85.6225593, 38.2918523], [-85.6222589, 38.2920881], [-85.622482, 38.2927785], [-85.6222589, 38.2937806],
+                            [-85.6225593, 38.2918523], [-85.6222589, 38.2920881], [-85.6222482, 38.2927785], [-85.6222589, 38.2937806],
                             [-85.6218298, 38.2939827], [-85.6214435, 38.2943616], [-85.6210787, 38.2948752], [-85.6208963, 38.2949089],
                             [-85.620435, 38.2950521], [-85.6199522, 38.2953973], [-85.6190832, 38.2960457], [-85.6186755, 38.2967614],
                             [-85.6178834, 38.2977783], [-85.6166388, 38.298393], [-85.615405, 38.2975173], [-85.6150617, 38.2968353],
@@ -492,6 +581,131 @@
         ]
     };
 
+    // Adult Emergency Conditions Data
+    const adultConditions = [
+        {
+            id: "med1",
+            title: "Medical 1",
+            def: "Capable of accepting medical patients who do not fit the Acute Medical requiring admission category.",
+            hospitals: ["Baptist Louisville", "Baptist LaGrange", "UofL MC East", "UofL MC South", "UofL MC Southwest", "UofL Mary & Elizabeth", "Norton Audubon", "Norton Women & Children's", "Norton Hospital", "Norton Brownsboro", "UofL Hospital", "Clark Memorial", "Floyd Memorial"]
+        },
+        {
+            id: "med2",
+            title: "Acute Medical 2 (Requiring Admission)",
+            def: "Capable of accepting patients in the ED whose medical condition would most likely require admission including: acute stroke with deficits, elderly with SOA and underlying medical conditions/abnormal vital signs, dialysis emergency, or acute coronary syndrome.",
+            hospitals: ["Baptist Louisville", "Baptist LaGrange", "UofL MC East", "UofL Mary & Elizabeth", "Norton Audubon", "Norton Women & Children's", "Norton Hospital", "Norton Brownsboro", "UofL Hospital", "Clark Memorial", "Floyd Memorial"]
+        },
+        {
+            id: "stemi",
+            title: "STEMI 3",
+            def: "Capable of performing Percutaneous Coronary Intervention (PCI).",
+            hospitals: ["Baptist Louisville", "Baptist LaGrange", "UofL Mary & Elizabeth", "Norton Audubon", "Norton Hospital", "Norton Brownsboro", "UofL Hospital", "Floyd Memorial"]
+        },
+        {
+            id: "stroke",
+            title: "Stroke 4",
+            def: "Any patient meeting stroke criteria who is NOT positive on a severity scale for ELVO (aka LVO), shall be transported to an accredited stroke center.",
+            hospitals: ["Baptist Louisville", "Baptist LaGrange", "UofL MC East", "UofL Mary & Elizabeth", "Norton Audubon", "Norton Women & Children's", "Norton Hospital", "Norton Brownsboro", "UofL Hospital", "Clark Memorial", "Floyd Memorial"]
+        },
+        {
+            id: "elvo",
+            title: "ELVO (aka LVO) Stroke 4a",
+            def: "All patients who screen positive on a stroke severity scale should be transported to an accredited ELVO capable facility.",
+            hospitals: ["Baptist Louisville", "Norton Hospital", "Norton Brownsboro", "UofL Hospital"]
+        },
+        {
+            id: "burn_center",
+            title: "Burn Center 6",
+            def: "Patients with major burns as defined by LMEMS protocol.",
+            note: "Protocol Triaging: Patients < 18 yo go to Kosair/Norton Children's Hospital (KCH). All adult burn patients not triaged to KCH go to UofL Hospital.",
+            hospitals: ["Norton Children's Hospital (Pediatric)", "UofL Hospital (Adult)"]
+        },
+        {
+            id: "burns",
+            title: "Burns 6 (Non-Burn Center)",
+            def: "Capable of managing burns not triaged to a designated Burn Center.",
+            hospitals: ["Baptist Louisville", "Baptist LaGrange", "UofL MC East", "UofL MC South", "UofL MC Southwest", "UofL Mary & Elizabeth", "Norton Audubon", "Norton Women & Children's", "Norton Hospital", "Norton Brownsboro", "UofL Hospital", "Clark Memorial", "Floyd Memorial"]
+        },
+        {
+            id: "hazmat_daily",
+            title: "HazMat Decon Non-Mass Casualty 7",
+            def: "Capable of technical decontamination for chemical, radiological or biological substance exposure with daily capability.",
+            hospitals: ["UofL Hospital"]
+        },
+        {
+            id: "hazmat_mass",
+            title: "HazMat Decon Mass Casualty 7",
+            def: "Capable of technical decontamination in a mass casualty situation (facilities with decon trailers/tents).",
+            hospitals: ["Baptist Louisville", "Baptist LaGrange", "UofL MC East", "UofL Mary & Elizabeth", "Norton Audubon", "Norton Women & Children's", "Norton Hospital", "Norton Brownsboro", "UofL Hospital", "Clark Memorial", "Floyd Memorial"]
+        },
+        {
+            id: "poison",
+            title: "Poison & Drug Overdose",
+            def: "Facilities capable of managing acute toxicological and overdose presentations.",
+            hospitals: ["Baptist Louisville", "Baptist LaGrange", "UofL MC East", "UofL Mary & Elizabeth", "Norton Audubon", "Norton Women & Children's", "Norton Hospital", "Norton Brownsboro", "UofL Hospital", "Clark Memorial", "Floyd Memorial"]
+        },
+        {
+            id: "level1_trauma",
+            title: "Level 1 Trauma 8",
+            def: "Major acute trauma requiring Level 1 capability as defined by LMEMS protocol.",
+            note: "Triage Criteria: Patients ≥ 13 years of age with penetrating trauma AND ≥ 15 years of age with blunt trauma will be triaged to UofL Hospital. All Level 1 trauma patients not triaged to UofL will be taken to KCH/Norton Children's.",
+            hospitals: ["UofL Hospital (Adult)", "Norton Children's Hospital (Pediatric)"]
+        },
+        {
+            id: "gyn",
+            title: "Gynecological 9",
+            def: "Capable of treating patients whose gynecological condition may require rapid/emergent surgical intervention or admission (including severe vaginal bleeding in patients of childbearing age).",
+            hospitals: ["Baptist Louisville", "Baptist LaGrange", "Norton Audubon", "Norton Women & Children's", "Norton Hospital", "Norton Brownsboro", "UofL Hospital", "Floyd Memorial"]
+        },
+        {
+            id: "ob",
+            title: "Obstetrical 10",
+            def: "Capable of providing complete care for mother and fetus, including emergent C-section.",
+            hospitals: ["Baptist Louisville", "Norton Women & Children's", "Norton Hospital", "UofL Hospital", "Clark Memorial", "Floyd Memorial"]
+        },
+        {
+            id: "newborn",
+            title: "Newborn 11",
+            def: "Capable of caring for infants less than 30 days old.",
+            hospitals: ["Baptist Louisville", "Norton Women & Children's", "Norton Hospital", "UofL Hospital", "Clark Memorial", "Floyd Memorial"]
+        }
+    ];
+
+    // Pediatric Emergency Conditions Data
+    const pedConditions = [
+        {
+            id: "ped_newborn",
+            title: "Newborn 1",
+            def: "Capable of caring for infants less than 30 days old.",
+            hospitals: ["Norton Children's Hospital", "Norton Women & Children's", "UofL Hospital", "Clark Memorial", "Floyd Memorial"]
+        },
+        {
+            id: "ped_icu",
+            title: "Pediatric ICU 2",
+            def: "Capable of providing comprehensive critical care services to patients < 18 years of age.",
+            hospitals: ["Norton Children's Hospital"]
+        },
+        {
+            id: "ped_adm",
+            title: "Pediatric Admission 3",
+            def: "Capable of treating all pediatric patients which may require emergent surgical intervention and/or admission to the hospital but are not triaged to Pediatric ICU.",
+            hospitals: ["Norton Children's Hospital", "Norton Women & Children's", "Clark Memorial", "Floyd Memorial"]
+        },
+        {
+            id: "ped_18",
+            title: "Pediatric < 18 yo 4",
+            def: "Capable of complete care in the Emergency Department for all patients less than 18 years of age.",
+            hospitals: ["Norton Children's Hospital", "Norton Children's MC Brownsboro", "Baptist Louisville", "Baptist LaGrange", "UofL MC East", "UofL MC South", "UofL MC Southwest", "UofL Mary & Elizabeth", "Norton Audubon", "Norton Women & Children's", "UofL Hospital", "Clark Memorial", "Floyd Memorial"]
+        },
+        {
+            id: "ped_trauma",
+            title: "Pediatric Trauma 5",
+            def: "Level 1 Pediatric Trauma criteria.",
+            note: "Triage Criteria: Pediatric patients < 13 years of age with penetrating trauma AND < 15 years of age with blunt trauma will be triaged to NCH (Norton Children's Hospital). All Level 1 trauma patients not triaged to NCH will be taken to UofL Hospital.",
+            hospitals: ["Norton Children's Hospital (Primary)", "UofL Hospital (Secondary)"]
+        }
+    ];
+
     let map;
     let marker;
     let boundaryPolygon;
@@ -514,6 +728,57 @@
 
     inputEl.addEventListener('keydown', e => { if (e.key === 'Enter') verifyAddress(); });
 
+    function updateEmergencyOptions() {
+        const cat = document.getElementById('patientCategory').value;
+        const select = document.getElementById('conditionSelect');
+        select.innerHTML = '';
+
+        const list = cat === 'adult' ? adultConditions : pedConditions;
+        list.forEach(item => {
+            const opt = document.createElement('option');
+            opt.value = item.id;
+            opt.innerText = item.title;
+            select.appendChild(opt);
+        });
+
+        evaluateDestination();
+    }
+
+    function evaluateDestination() {
+        const cat = document.getElementById('patientCategory').value;
+        const condId = document.getElementById('conditionSelect').value;
+        const list = cat === 'adult' ? adultConditions : pedConditions;
+        const selected = list.find(x => x.id === condId);
+
+        const resultPanel = document.getElementById('guidelineResult');
+        if (!selected) {
+            resultPanel.classList.remove('active');
+            return;
+        }
+
+        resultPanel.classList.add('active');
+        document.getElementById('resultCategory').innerText = cat === 'adult' ? 'Adult Emergency Category' : 'Pediatric Emergency Category';
+        document.getElementById('resultTitle').innerText = selected.title;
+        document.getElementById('resultDef').innerText = selected.def;
+
+        const noteEl = document.getElementById('protocolNote');
+        if (selected.note) {
+            noteEl.style.display = 'block';
+            noteEl.innerText = selected.note;
+        } else {
+            noteEl.style.display = 'none';
+        }
+
+        const hospContainer = document.getElementById('capableHospitals');
+        hospContainer.innerHTML = '';
+        selected.hospitals.forEach(hosp => {
+            const tag = document.createElement('span');
+            tag.className = `hosp-tag ${cat === 'pediatric' ? 'ped' : ''}`;
+            tag.innerText = hosp;
+            hospContainer.appendChild(tag);
+        });
+    }
+
     function switchTab(tab) {
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
@@ -524,15 +789,23 @@
             mapWrapper.style.display = 'block';
             historyContainer.style.display = searchHistory.length > 0 ? 'block' : 'none';
             if (map && boundaryBounds) map.fitBounds(boundaryBounds);
-        } else if (tab === 'routing') {
+        } else if (tab === 'guidelines') {
             document.querySelectorAll('.tab-btn')[1].classList.add('active');
+            document.getElementById('guidelinesTab').classList.add('active');
+            mapWrapper.style.display = 'none';
+            historyContainer.style.display = 'none';
+            statusDiv.style.display = 'none';
+            if (marker) marker.setMap(null);
+            updateEmergencyOptions();
+        } else if (tab === 'routing') {
+            document.querySelectorAll('.tab-btn')[2].classList.add('active');
             document.getElementById('routingTab').classList.add('active');
             mapWrapper.style.display = 'none';
             historyContainer.style.display = 'none';
             statusDiv.style.display = 'none';
             if (marker) marker.setMap(null);
         } else if (tab === 'home') {
-            document.querySelectorAll('.tab-btn')[2].classList.add('active');
+            document.querySelectorAll('.tab-btn')[3].classList.add('active');
             document.getElementById('homeTab').classList.add('active');
             mapWrapper.style.display = 'none';
             historyContainer.style.display = 'none';
