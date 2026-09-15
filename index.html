@@ -31,15 +31,16 @@
         }
         .tab-btn {
             flex: 1;
-            padding: 10px 15px;
+            padding: 10px 12px;
             background: none;
             border: none;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 600;
             color: #718096;
             cursor: pointer;
             border-bottom: 3px solid transparent;
             transition: all 0.2s;
+            text-align: center;
         }
         .tab-btn.active {
             color: #003366;
@@ -97,6 +98,50 @@
             color: white;
             border-color: #003366;
         }
+        /* Fire Station Buttons */
+        .er-btn.station-btn {
+            background-color: #fffaf0;
+            border: 1px solid #feebc8;
+            border-left: 4px solid #dd6b20;
+            padding: 14px 12px;
+        }
+        .er-btn.station-btn:hover {
+            background-color: #c05621;
+            color: white;
+            border-color: #c05621;
+        }
+        .station-btn-content {
+            display: flex;
+            flex-direction: column;
+        }
+        .station-subtitle {
+            font-size: 11px;
+            font-weight: 400;
+            opacity: 0.8;
+            margin-top: 2px;
+        }
+        /* Audio Controls Header Bar */
+        .home-header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .home-header-bar h2 { margin: 0; }
+        .audio-btn {
+            background: #edf2f7;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #2d3748;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .audio-btn:hover { background: #e2e8f0; }
         /* Pink Pediatric Buttons */
         .er-btn.peds {
             background-color: #fff5f7;
@@ -238,6 +283,7 @@
     <div class="tab-nav">
         <button class="tab-btn active" onclick="switchTab('verifier')">District Verifier</button>
         <button class="tab-btn" onclick="switchTab('routing')">Hospital Navigation</button>
+        <button class="tab-btn" onclick="switchTab('home')">Take Me Home</button>
     </div>
 
     <!-- TAB 1: District Verifier -->
@@ -260,7 +306,7 @@
         <h2>Hospital Transport Destinations</h2>
         <p>Tap any hospital below to launch direct navigation to the ER ambulance entrance.</p>
 
-        <!-- Jefferson County ER (Sorted by Proximity to 240 Sears Ave) -->
+        <!-- Jefferson County ER -->
         <div class="section-header">Jefferson County, KY ER</div>
         <div class="er-grid">
             <button class="er-btn" onclick="openNav(38.23885368709200, -85.63917771315160)">Baptist Health Louisville</button>
@@ -287,6 +333,43 @@
             <button class="er-btn" onclick="openNav(38.28185133304160, -85.74788493093270)">Norton Clark Hospital (IN)</button>
             <button class="er-btn" onclick="openNav(38.30038280115690, -85.83484296507200)">Baptist Health Floyd (IN)</button>
             <button class="er-btn" onclick="openNav(38.06108454853360, -85.69721919213730)">UofL Health - MC South (Brooks)</button>
+        </div>
+    </div>
+
+    <!-- TAB 3: Take Me Home (St. Matthews Fire & EMS Stations) -->
+    <div id="homeTab" class="tab-content">
+        <div class="home-header-bar">
+            <h2>St. Matthews Fire & EMS Stations</h2>
+            <button id="toggleAudioBtn" class="audio-btn" onclick="toggleCountryRoadsAudio()">🔊 Mute Audio</button>
+        </div>
+        <p>Tap a station to launch direct navigation back to quarters.</p>
+
+        <div class="section-header">Fire & EMS Quarters</div>
+        <div class="er-grid">
+            <button class="er-btn station-btn" onclick="openNavAddress('240 Sears Ave, Louisville, KY 40207')">
+                <div class="station-btn-content">
+                    <span>Station 46 (HQ)</span>
+                    <span class="station-subtitle">240 Sears Ave</span>
+                </div>
+            </button>
+            <button class="er-btn station-btn" onclick="openNavAddress('4113 Shelbyville Rd, Louisville, KY 40207')">
+                <div class="station-btn-content">
+                    <span>Station 47</span>
+                    <span class="station-subtitle">4113 Shelbyville Rd</span>
+                </div>
+            </button>
+            <button class="er-btn station-btn" onclick="openNavAddress('8400 Westport Rd, Louisville, KY 40242')">
+                <div class="station-btn-content">
+                    <span>Station 48</span>
+                    <span class="station-subtitle">8400 Westport Rd</span>
+                </div>
+            </button>
+            <button class="er-btn station-btn" onclick="openNavAddress('4324 Brownsboro Rd, Louisville, KY 40207')">
+                <div class="station-btn-content">
+                    <span>Station 49</span>
+                    <span class="station-subtitle">4324 Brownsboro Rd</span>
+                </div>
+            </button>
         </div>
     </div>
 
@@ -389,7 +472,7 @@
                             [-85.5662634, 38.2792015], [-85.5638279, 38.2739628], [-85.563398, 38.2742368], [-85.5610484, 38.2749612],
                             [-85.5606192, 38.274818], [-85.5605334, 38.2745063], [-85.5600291, 38.2734956], [-85.559557, 38.2723501],
                             [-85.5589455, 38.2709687], [-85.5589509, 38.2708045], [-85.5598199, 38.2708297], [-85.561794, 38.2708634],
-                            [-85.5668151, 38.270775], [-85.56441, 38.2656852], [-85.5638199, 38.2643037], [-85.5635302, 38.2636298],
+                            [-85.5668151, 38.270775], [-85.56441, 38.2656852], [-85.5638199, 38.2643037], [-85.563398, 38.2636298],
                             [-85.5638199, 38.2633349], [-85.5643456, 38.2630317], [-85.5651395, 38.2628042], [-85.5657081, 38.2625094],
                             [-85.5664162, 38.2621977], [-85.5672209, 38.2617933], [-85.5677895, 38.2614816], [-85.5686371, 38.2614732],
                             [-85.5689161, 38.2615237], [-85.5693559, 38.2617596], [-85.5696134, 38.2619281], [-85.5701928, 38.2621808],
@@ -442,6 +525,11 @@
     let autoClearTimer;
     let searchHistory = [];
 
+    // Synthesized MIDI Web Audio setup for "Take Me Home, Country Roads"
+    let audioCtx = null;
+    let audioPlaying = false;
+    let audioTimeouts = [];
+
     const inputEl = document.getElementById('addressInput');
     const clearBtn = document.getElementById('clearBtn');
     const verifyBtn = document.getElementById('verifyBtn');
@@ -461,18 +549,122 @@
         document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
         if (tab === 'verifier') {
+            stopCountryRoads();
             document.querySelectorAll('.tab-btn')[0].classList.add('active');
             document.getElementById('verifierTab').classList.add('active');
             mapWrapper.style.display = 'block';
             historyContainer.style.display = searchHistory.length > 0 ? 'block' : 'none';
             if (map && boundaryBounds) map.fitBounds(boundaryBounds);
-        } else {
+        } else if (tab === 'routing') {
+            stopCountryRoads();
             document.querySelectorAll('.tab-btn')[1].classList.add('active');
             document.getElementById('routingTab').classList.add('active');
             mapWrapper.style.display = 'none';
             historyContainer.style.display = 'none';
             statusDiv.style.display = 'none';
             if (marker) marker.setMap(null);
+        } else if (tab === 'home') {
+            document.querySelectorAll('.tab-btn')[2].classList.add('active');
+            document.getElementById('homeTab').classList.add('active');
+            mapWrapper.style.display = 'none';
+            historyContainer.style.display = 'none';
+            statusDiv.style.display = 'none';
+            if (marker) marker.setMap(null);
+            playCountryRoads();
+        }
+    }
+
+    function playCountryRoads() {
+        stopCountryRoads();
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+
+        audioPlaying = true;
+        document.getElementById('toggleAudioBtn').innerText = "🔊 Mute Audio";
+
+        // Chorus melody notes and durations (Key of A)
+        // "Country roads, take me home, to the place I belong..."
+        const melody = [
+            { note: 370.00, duration: 0.6 }, // Coun- (F#4)
+            { note: 440.00, duration: 0.6 }, // try (A4)
+            { note: 440.00, duration: 1.0 }, // roads, (A4)
+            { note: 370.00, duration: 0.4 }, // take (F#4)
+            { note: 440.00, duration: 0.4 }, // me (A4)
+            { note: 493.88, duration: 1.2 }, // home (B4)
+            
+            { note: 440.00, duration: 0.4 }, // to (A4)
+            { note: 493.88, duration: 0.4 }, // the (B4)
+            { note: 554.37, duration: 0.8 }, // place (C#5)
+            { note: 493.88, duration: 0.4 }, // I (B4)
+            { note: 440.00, duration: 1.4 }, // belong... (A4)
+
+            { note: 440.00, duration: 0.6 }, // West (A4)
+            { note: 554.37, duration: 0.6 }, // Vir- (C#5)
+            { note: 587.33, duration: 0.8 }, // gin- (D5)
+            { note: 554.37, duration: 0.6 }, // ia, (C#5)
+            
+            { note: 493.88, duration: 0.6 }, // moun- (B4)
+            { note: 440.00, duration: 0.6 }, // tain (A4)
+            { note: 370.00, duration: 0.6 }, // ma- (F#4)
+            { note: 329.63, duration: 1.0 }, // ma, (E4)
+
+            { note: 370.00, duration: 0.6 }, // Take (F#4)
+            { note: 440.00, duration: 0.6 }, // me (A4)
+            { note: 493.88, duration: 1.0 }, // home, (B4)
+            { note: 440.00, duration: 0.6 }, // coun- (A4)
+            { note: 370.00, duration: 0.6 }, // try (F#4)
+            { note: 440.00, duration: 1.8 }  // roads... (A4)
+        ];
+
+        let currentTime = audioCtx.currentTime + 0.1;
+        melody.forEach(item => {
+            let osc = audioCtx.createOscillator();
+            let gain = audioCtx.createGain();
+            
+            osc.type = 'triangle';
+            osc.frequency.value = item.note;
+            
+            gain.gain.setValueAtTime(0.15, currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, currentTime + item.duration - 0.05);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start(currentTime);
+            osc.stop(currentTime + item.duration);
+
+            currentTime += item.duration;
+        });
+
+        const totalDuration = (currentTime - audioCtx.currentTime) * 1000;
+        let t = setTimeout(() => {
+            if (audioPlaying && document.getElementById('homeTab').classList.contains('active')) {
+                playCountryRoads(); // Loop melody while on tab
+            }
+        }, totalDuration);
+        audioTimeouts.push(t);
+    }
+
+    function stopCountryRoads() {
+        audioPlaying = false;
+        audioTimeouts.forEach(t => clearTimeout(t));
+        audioTimeouts = [];
+        if (audioCtx && audioCtx.state === 'running') {
+            audioCtx.suspend();
+        }
+        const btn = document.getElementById('toggleAudioBtn');
+        if (btn) btn.innerText = "🔈 Play Audio";
+    }
+
+    function toggleCountryRoadsAudio() {
+        if (audioPlaying) {
+            stopCountryRoads();
+        } else {
+            playCountryRoads();
         }
     }
 
@@ -526,6 +718,21 @@
             navUrl = `maps://maps.apple.com/?daddr=${lat},${lng}&dirflg=d`;
         } else {
             navUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=driving`;
+        }
+
+        window.open(navUrl, '_blank');
+    }
+
+    function openNavAddress(address) {
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+        const encodedAddress = encodeURIComponent(address);
+        let navUrl;
+        if (isIOS) {
+            navUrl = `maps://maps.apple.com/?daddr=${encodedAddress}&dirflg=d`;
+        } else {
+            navUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodedAddress}&travelmode=driving`;
         }
 
         window.open(navUrl, '_blank');
