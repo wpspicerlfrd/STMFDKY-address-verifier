@@ -348,26 +348,26 @@
         <div class="er-grid">
             <button class="er-btn station-btn" onclick="openNavAddress('240 Sears Ave, Louisville, KY 40207')">
                 <div class="station-btn-content">
-                    <span>Station 46 (HQ)</span>
+                    <span>Station 46</span>
                     <span class="station-subtitle">240 Sears Ave</span>
                 </div>
             </button>
-            <button class="er-btn station-btn" onclick="openNavAddress('4113 Shelbyville Rd, Louisville, KY 40207')">
+            <button class="er-btn station-btn" onclick="openNavAddress('4400 Brownsboro Rd, Louisville, KY 40207')">
                 <div class="station-btn-content">
                     <span>Station 47</span>
-                    <span class="station-subtitle">4113 Shelbyville Rd</span>
+                    <span class="station-subtitle">4400 Brownsboro Rd</span>
                 </div>
             </button>
-            <button class="er-btn station-btn" onclick="openNavAddress('8400 Westport Rd, Louisville, KY 40242')">
+            <button class="er-btn station-btn" onclick="openNavAddress('8126 New LaGrange Rd, Louisville, KY 40222')">
                 <div class="station-btn-content">
                     <span>Station 48</span>
-                    <span class="station-subtitle">8400 Westport Rd</span>
+                    <span class="station-subtitle">8126 New LaGrange Rd</span>
                 </div>
             </button>
-            <button class="er-btn station-btn" onclick="openNavAddress('4324 Brownsboro Rd, Louisville, KY 40207')">
+            <button class="er-btn station-btn" onclick="openNavAddress('8414 Westport Rd, Louisville, KY 40242')">
                 <div class="station-btn-content">
                     <span>Station 49</span>
-                    <span class="station-subtitle">4324 Brownsboro Rd</span>
+                    <span class="station-subtitle">8414 Westport Rd</span>
                 </div>
             </button>
         </div>
@@ -472,7 +472,7 @@
                             [-85.5662634, 38.2792015], [-85.5638279, 38.2739628], [-85.563398, 38.2742368], [-85.5610484, 38.2749612],
                             [-85.5606192, 38.274818], [-85.5605334, 38.2745063], [-85.5600291, 38.2734956], [-85.559557, 38.2723501],
                             [-85.5589455, 38.2709687], [-85.5589509, 38.2708045], [-85.5598199, 38.2708297], [-85.561794, 38.2708634],
-                            [-85.5668151, 38.270775], [-85.56441, 38.2656852], [-85.5638199, 38.2643037], [-85.563398, 38.2636298],
+                            [-85.5668151, 38.270775], [-85.56441, 38.2656852], [-85.5638199, 38.2643037], [-85.5635302, 38.2636298],
                             [-85.5638199, 38.2633349], [-85.5643456, 38.2630317], [-85.5651395, 38.2628042], [-85.5657081, 38.2625094],
                             [-85.5664162, 38.2621977], [-85.5672209, 38.2617933], [-85.5677895, 38.2614816], [-85.5686371, 38.2614732],
                             [-85.5689161, 38.2615237], [-85.5693559, 38.2617596], [-85.5696134, 38.2619281], [-85.5701928, 38.2621808],
@@ -525,7 +525,7 @@
     let autoClearTimer;
     let searchHistory = [];
 
-    // Synthesized MIDI Web Audio setup for "Take Me Home, Country Roads"
+    // Synthesized Polyphonic Audio Setup for "Take Me Home, Country Roads" Instrumental Chorus
     let audioCtx = null;
     let audioPlaying = false;
     let audioTimeouts = [];
@@ -574,6 +574,23 @@
         }
     }
 
+    function playNote(freq, type, startTime, duration, vol = 0.1) {
+        if (!audioCtx || !audioPlaying) return;
+        let osc = audioCtx.createOscillator();
+        let gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, startTime);
+
+        gain.gain.setValueAtTime(vol, startTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration - 0.03);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start(startTime);
+        osc.stop(startTime + duration);
+    }
+
     function playCountryRoads() {
         stopCountryRoads();
         if (!audioCtx) {
@@ -586,64 +603,74 @@
         audioPlaying = true;
         document.getElementById('toggleAudioBtn').innerText = "🔊 Mute Audio";
 
-        // Chorus melody notes and durations (Key of A)
-        // "Country roads, take me home, to the place I belong..."
-        const melody = [
-            { note: 370.00, duration: 0.6 }, // Coun- (F#4)
-            { note: 440.00, duration: 0.6 }, // try (A4)
-            { note: 440.00, duration: 1.0 }, // roads, (A4)
-            { note: 370.00, duration: 0.4 }, // take (F#4)
-            { note: 440.00, duration: 0.4 }, // me (A4)
-            { note: 493.88, duration: 1.2 }, // home (B4)
-            
-            { note: 440.00, duration: 0.4 }, // to (A4)
-            { note: 493.88, duration: 0.4 }, // the (B4)
-            { note: 554.37, duration: 0.8 }, // place (C#5)
-            { note: 493.88, duration: 0.4 }, // I (B4)
-            { note: 440.00, duration: 1.4 }, // belong... (A4)
+        const startT = audioCtx.currentTime + 0.1;
 
-            { note: 440.00, duration: 0.6 }, // West (A4)
-            { note: 554.37, duration: 0.6 }, // Vir- (C#5)
-            { note: 587.33, duration: 0.8 }, // gin- (D5)
-            { note: 554.37, duration: 0.6 }, // ia, (C#5)
-            
-            { note: 493.88, duration: 0.6 }, // moun- (B4)
-            { note: 440.00, duration: 0.6 }, // tain (A4)
-            { note: 370.00, duration: 0.6 }, // ma- (F#4)
-            { note: 329.63, duration: 1.0 }, // ma, (E4)
+        // Frequencies (Key of A Major)
+        const N = {
+            E3: 164.81, Fs3: 185.00, A3: 220.00, B3: 246.94, Cs4: 277.18, D4: 293.66, E4: 329.63,
+            Fs4: 369.99, Gs4: 415.30, A4: 440.00, B4: 493.88, Cs5: 554.37, D5: 587.33, E5: 659.25
+        };
 
-            { note: 370.00, duration: 0.6 }, // Take (F#4)
-            { note: 440.00, duration: 0.6 }, // me (A4)
-            { note: 493.88, duration: 1.0 }, // home, (B4)
-            { note: 440.00, duration: 0.6 }, // coun- (A4)
-            { note: 370.00, duration: 0.6 }, // try (F#4)
-            { note: 440.00, duration: 1.8 }  // roads... (A4)
+        // Lead Vocal Melody Line
+        const leadNotes = [
+            // "Country roads, take me home..."
+            { f: N.Fs4, d: 0.5 }, { f: N.A4, d: 0.5 }, { f: N.A4, d: 0.9 },
+            { f: N.Fs4, d: 0.4 }, { f: N.A4, d: 0.4 }, { f: N.B4, d: 1.1 },
+            // "...to the place I belong..."
+            { f: N.A4, d: 0.4 }, { f: N.B4, d: 0.4 }, { f: N.Cs5, d: 0.7 }, { f: N.B4, d: 0.4 }, { f: N.A4, d: 1.3 },
+            // "West Virginia, mountain mama..."
+            { f: N.A4, d: 0.5 }, { f: N.Cs5, d: 0.5 }, { f: N.D5, d: 0.7 }, { f: N.Cs5, d: 0.5 },
+            { f: N.B4, d: 0.5 }, { f: N.A4, d: 0.5 }, { f: N.Fs4, d: 0.5 }, { f: N.E4, d: 0.9 },
+            // "Take me home, country roads."
+            { f: N.Fs4, d: 0.5 }, { f: N.A4, d: 0.5 }, { f: N.B4, d: 0.9 },
+            { f: N.A4, d: 0.5 }, { f: N.Fs4, d: 0.5 }, { f: N.A4, d: 1.6 }
         ];
 
-        let currentTime = audioCtx.currentTime + 0.1;
-        melody.forEach(item => {
-            let osc = audioCtx.createOscillator();
-            let gain = audioCtx.createGain();
-            
-            osc.type = 'triangle';
-            osc.frequency.value = item.note;
-            
-            gain.gain.setValueAtTime(0.15, currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, currentTime + item.duration - 0.05);
+        // Bassline Accompaniment (A - E - F#m - D progression)
+        const bassNotes = [
+            { f: N.A3, d: 2.3 }, { f: N.E3, d: 1.9 }, { f: N.Fs3, d: 2.2 }, { f: N.D4/2, d: 2.2 },
+            { f: N.A3, d: 2.2 }, { f: N.E3, d: 2.4 }, { f: N.Fs3, d: 1.9 }, { f: N.D4/2, d: 2.7 }
+        ];
 
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
+        // Harmony Pads / Chords
+        const chordPads = [
+            { chord: [N.Cs4, N.E4], d: 2.3 },  // A Major
+            { chord: [N.B3, N.Gs4], d: 1.9 },  // E Major
+            { chord: [N.Cs4, N.Fs4], d: 2.2 }, // F# minor
+            { chord: [N.D4, N.Fs4], d: 2.2 },  // D Major
+            { chord: [N.Cs4, N.E4], d: 2.2 },  // A Major
+            { chord: [N.B3, N.Gs4], d: 2.4 },  // E Major
+            { chord: [N.Cs4, N.Fs4], d: 1.9 }, // F# minor
+            { chord: [N.D4, N.Fs4], d: 2.7 }   // D Major
+        ];
 
-            osc.start(currentTime);
-            osc.stop(currentTime + item.duration);
-
-            currentTime += item.duration;
+        // Schedule Lead Melody (Triangle wave lead)
+        let leadTime = startT;
+        leadNotes.forEach(n => {
+            playNote(n.f, 'triangle', leadTime, n.d, 0.18);
+            leadTime += n.d;
         });
 
-        const totalDuration = (currentTime - audioCtx.currentTime) * 1000;
+        // Schedule Bassline (Sine wave sub bass)
+        let bassTime = startT;
+        bassNotes.forEach(b => {
+            playNote(b.f, 'sine', bassTime, b.d, 0.22);
+            bassTime += b.d;
+        });
+
+        // Schedule Harmony Chords (Soft sine wave pad)
+        let chordTime = startT;
+        chordPads.forEach(c => {
+            c.chord.forEach(freq => {
+                playNote(freq, 'sine', chordTime, c.d, 0.06);
+            });
+            chordTime += c.d;
+        });
+
+        const totalDuration = (leadTime - audioCtx.currentTime) * 1000;
         let t = setTimeout(() => {
             if (audioPlaying && document.getElementById('homeTab').classList.contains('active')) {
-                playCountryRoads(); // Loop melody while on tab
+                playCountryRoads(); // Continuous instrumental loop
             }
         }, totalDuration);
         audioTimeouts.push(t);
