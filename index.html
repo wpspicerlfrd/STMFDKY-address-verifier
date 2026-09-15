@@ -227,89 +227,6 @@
             background-color: #9b2c2c;
         }
 
-        /* Food Decision Wheel Styles */
-        .food-card {
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .spin-btn {
-            background-color: #dd6b20;
-            color: white;
-            border: none;
-            padding: 14px 24px;
-            font-size: 16px;
-            font-weight: 700;
-            border-radius: 6px;
-            cursor: pointer;
-            width: 100%;
-            transition: background 0.2s;
-            box-shadow: 0 2px 4px rgba(221, 107, 32, 0.3);
-        }
-        .spin-btn:hover {
-            background-color: #c05621;
-        }
-        .food-result {
-            display: none;
-            margin-top: 15px;
-            padding: 15px;
-            background: white;
-            border: 2px solid #3182ce;
-            border-radius: 8px;
-        }
-        .food-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: #2b6cb0;
-        }
-        .food-meta {
-            font-size: 13px;
-            color: #718096;
-            margin: 4px 0 10px 0;
-        }
-        .food-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 10px;
-        }
-        .skip-btn {
-            background-color: #e53e3e;
-            color: white;
-            border: none;
-            padding: 8px 14px;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        .skip-btn:hover { background-color: #c53030; }
-        .accept-btn {
-            background-color: #38a169;
-            color: white;
-            border: none;
-            padding: 8px 14px;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        .accept-btn:hover { background-color: #2f855a; }
-        .recent-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            font-size: 13px;
-        }
-        .recent-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 0;
-            border-bottom: 1px solid #edf2f7;
-        }
-
         #status { 
             display: none; 
             padding: 12px 15px; 
@@ -429,7 +346,6 @@
         <button class="tab-btn active" onclick="switchTab('verifier')">District Verifier</button>
         <button class="tab-btn" onclick="switchTab('guidelines')">Destination Wizard</button>
         <button class="tab-btn" onclick="switchTab('routing')">Hospital Nav</button>
-        <button class="tab-btn" onclick="switchTab('food')">Food Decision</button>
         <button class="tab-btn" onclick="switchTab('home')">Take Me Home</button>
     </div>
 
@@ -507,47 +423,7 @@
         <div id="outsideErGrid" class="er-grid"></div>
     </div>
 
-    <!-- TAB 4: Crew Food Randomizer -->
-    <div id="foodTab" class="tab-content">
-        <h2>Google-Sourced St. Matthews Food Randomizer (&gt;51% Food Sales)</h2>
-        <p>Picks from food-primary Google establishments within the service area plus a 1-mile buffer zone. Every spin automatically applies an immediate 30-minute cool-down block.</p>
-
-        <div class="selector-box" style="margin-bottom: 15px;">
-            <div class="selector-group" style="margin-bottom: 0;">
-                <label>Filter Cuisine / Establishment Style</label>
-                <select id="cuisineFilter">
-                    <option value="all">🎲 Randomize All Food Spots</option>
-                    <option value="sitdown">Sit-Down & Casual Dining</option>
-                    <option value="fastfood">Fast Food & Quick Service</option>
-                    <option value="mexican">Mexican / Tacos / Tex-Mex</option>
-                    <option value="asian">Asian / Sushi / Thai / Vietnamese</option>
-                    <option value="italian">Italian & Pizza</option>
-                    <option value="bbq">BBQ & Steaks</option>
-                    <option value="breakfast">Breakfast, Bakery & Coffee</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="food-card">
-            <button class="spin-btn" onclick="spinMealWheel()">🎲 Pick Crew Food Spot</button>
-            
-            <div id="foodResult" class="food-result">
-                <div id="foodName" class="food-title">Restaurant Name</div>
-                <div id="foodMeta" class="food-meta">Type • Address</div>
-                <div class="food-actions">
-                    <button class="accept-btn" onclick="acceptMealChoice()">✅ Eating Here</button>
-                    <button class="skip-btn" onclick="skipMealChoice()">❌ Skip / Not This</button>
-                    <button class="action-btn" style="padding: 8px 14px; font-size: 13px;" onclick="openNavAddress(currentFoodChoice.address)">🗺️ Navigate</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="section-header">Recent Spun Locations (30-Minute Cool Down Exclusions)</div>
-        <ul id="recentFoodList" class="recent-list"></ul>
-        <button class="clear-history-btn" style="margin-top: 10px;" onclick="clearFoodHistory()">Reset Exclusion List</button>
-    </div>
-
-    <!-- TAB 5: Take Me Home (St. Matthews Fire & EMS Stations) -->
+    <!-- TAB 4: Take Me Home (St. Matthews Fire & EMS Stations) -->
     <div id="homeTab" class="tab-content">
         <h2>St. Matthews Fire & EMS Stations</h2>
         <p>Tap a station to launch direct navigation back to quarters.</p>
@@ -676,7 +552,7 @@
                             [-85.5788215, 38.287619], [-85.5776413, 38.2861284], [-85.5775179, 38.2859389], [-85.5767884, 38.28596],
                             [-85.5760964, 38.2860905], [-85.575458, 38.2862884], [-85.5749377, 38.2864526], [-85.5744817, 38.2865958],
                             [-85.5729206, 38.2871642], [-85.5723145, 38.2873706], [-85.5714025, 38.2861663], [-85.57063, 38.2854084],
-                            [-85.5697503, 38.2845241], [-85.5673577, 38.2813155], [-85.668213, 38.2804311], [-85.5664887, 38.279749],
+                            [-85.5697503, 38.2845241], [-85.5673577, 38.2813155], [-85.5668213, 38.2804311], [-85.5664887, 38.279749],
                             [-85.5662634, 38.2792015], [-85.5638279, 38.2739628], [-85.563398, 38.2742368], [-85.5610484, 38.2749612],
                             [-85.5606192, 38.274818], [-85.5605334, 38.2745063], [-85.5600291, 38.2734956], [-85.559557, 38.2723501],
                             [-85.5589455, 38.2709687], [-85.5589509, 38.2708045], [-85.5598199, 38.2708297], [-85.561794, 38.2708634],
@@ -724,26 +600,6 @@
             }
         ]
     };
-
-    // Google-Sourced Food-Primary Establishments (>51% Food Sales) within Service Area + 1 Mile Buffer
-    const districtFoodOptions = [
-        { name: "Texas Roadhouse (St. Matthews)", type: "sitdown", desc: "Steaks, Ribs & American Grill", address: "5005 Shelbyville Rd, Louisville, KY 40207", lat: 38.2525, lng: -85.6360, hours: { 0: [15.0, 22.0], 1: [15.0, 22.0], 2: [15.0, 22.0], 3: [15.0, 22.0], 4: [15.0, 23.0], 5: [15.0, 23.0], 6: [15.0, 22.0] } },
-        { name: "Texas de Brazil (Mall St. Matthews)", type: "sitdown", desc: "Brazilian Steakhouse & Salad Bar", address: "5000 Shelbyville Rd, Louisville, KY 40207", lat: 38.2510, lng: -85.6380, hours: { 0: [16.0, 21.0], 1: [17.0, 21.3], 2: [17.0, 21.3], 3: [17.0, 21.3], 4: [17.0, 21.3], 5: [17.0, 22.0], 6: [16.0, 22.0] } },
-        { name: "Mission BBQ", type: "bbq", desc: "Authentic Smoked BBQ & Sides", address: "4607 Shelbyville Rd, Louisville, KY 40207", lat: 38.2485, lng: -85.6288, hours: { 0: [11.0, 21.0], 1: [11.0, 21.0], 2: [11.0, 21.0], 3: [11.0, 21.0], 4: [11.0, 21.0], 5: [11.0, 21.0], 6: [11.0, 21.0] } },
-        { name: "Oriental House", type: "asian", desc: "Traditional Chinese Dining & Dim Sum", address: "4302 Shelbyville Rd, St Matthews, KY 40207", lat: 38.2448, lng: -85.6380, hours: { 0: [11.0, 21.5], 1: [11.0, 21.5], 2: [11.0, 21.5], 3: [11.0, 21.5], 4: [11.0, 22.0], 5: [11.0, 22.0], 6: [11.0, 21.5] } },
-        { name: "First Watch", type: "breakfast", desc: "Daytime Cafe, Breakfast & Brunch", address: "960 Breckenridge Ln, Louisville, KY 40207", lat: 38.2392, lng: -85.6350, hours: { 0: [7.0, 14.5], 1: [7.0, 14.5], 2: [7.0, 14.5], 3: [7.0, 14.5], 4: [7.0, 14.5], 5: [7.0, 14.5], 6: [7.0, 14.5] } },
-        { name: "Limon y Sal", type: "mexican", desc: "Mexican Restaurant & Tequila Bar", address: "3900 Shelbyville Rd, Louisville, KY 40207", lat: 38.2386, lng: -85.6512, hours: { 0: [8.0, 22.0], 1: [8.0, 22.0], 2: [8.0, 22.0], 3: [8.0, 22.0], 4: [8.0, 23.0], 5: [8.0, 23.0], 6: [8.0, 22.0] } },
-        { name: "Biscuit Belly", type: "breakfast", desc: "Southern Gourmet Biscuit Sandwiches", address: "3723 Lexington Rd, Louisville, KY 40207", lat: 38.2490, lng: -85.6550, hours: { 0: [7.3, 14.0], 1: [7.3, 14.0], 2: [7.3, 14.0], 3: [7.3, 14.0], 4: [7.3, 14.0], 5: [7.3, 14.0], 6: [7.3, 14.0] } },
-        { name: "Chicken Salad Chick", type: "fastfood", desc: "Variety of Chicken Salad Flavors & Sides", address: "7900 Shelbyville Rd, Louisville, KY 40222", lat: 38.2515, lng: -85.5510, hours: { 0: [10.5, 20.0], 1: [10.5, 20.0], 2: [10.5, 20.0], 3: [10.5, 20.0], 4: [10.5, 20.0], 5: [10.5, 20.0], 6: [10.5, 20.0] } },
-        { name: "Jersey Mike's Subs", type: "fastfood", desc: "Fresh Sub Sandwiches", address: "4121 Shelbyville Rd, Louisville, KY 40207", lat: 38.2425, lng: -85.6440, hours: { 0: [10.0, 21.0], 1: [10.0, 21.0], 2: [10.0, 21.0], 3: [10.0, 21.0], 4: [10.0, 21.0], 5: [10.0, 21.0], 6: [10.0, 21.0] } },
-        { name: "Plehn's Bakery", type: "breakfast", desc: "Historic Local Bakery & Pastries", address: "3940 Shelbyville Rd, Louisville, KY 40207", lat: 38.2405, lng: -85.6495, hours: { 0: [6.5, 14.0], 1: [6.5, 17.0], 2: [6.5, 17.0], 3: [6.5, 17.0], 4: [6.5, 17.0], 5: [6.5, 17.0], 6: [6.5, 17.0] } },
-        { name: "Chick-fil-A St. Matthews", type: "fastfood", desc: "Chicken Sandwiches & Meals", address: "5001 Shelbyville Rd, Louisville, KY 40207", lat: 38.2522, lng: -85.6371, hours: { 0: null, 1: [6.5, 22.0], 2: [6.5, 22.0], 3: [6.5, 22.0], 4: [6.5, 22.0], 5: [6.5, 22.0], 6: [6.5, 22.0] } },
-        { name: "Buffalo Wild Wings", type: "sitdown", desc: "Wings, Burgers & American Sports Fare", address: "4600 Shelbyville Rd, Louisville, KY 40207", lat: 38.2482, lng: -85.6295, hours: { 0: [11.0, 24.0], 1: [11.0, 24.0], 2: [11.0, 24.0], 3: [11.0, 24.0], 4: [11.0, 1.0], 5: [11.0, 1.0], 6: [11.0, 24.0] } },
-        { name: "Blaze Pizza", type: "italian", desc: "Custom Fast-Fire'd Pizza", address: "4010 Shelbyville Rd, Louisville, KY 40207", lat: 38.2415, lng: -85.6470, hours: { 0: [11.0, 22.0], 1: [11.0, 22.0], 2: [11.0, 22.0], 3: [11.0, 22.0], 4: [11.0, 22.0], 5: [11.0, 23.0], 6: [11.0, 23.0] } },
-        { name: "Jet's Pizza", type: "italian", desc: "Detroit-Style Pizza & Wings", address: "4207 Shelbyville Rd, Louisville, KY 40207", lat: 38.2438, lng: -85.6415, hours: { 0: [10.5, 22.0], 1: [10.0, 22.0], 2: [10.0, 22.0], 3: [10.0, 22.0], 4: [10.0, 22.0], 5: [10.0, 23.0], 6: [10.0, 23.0] } },
-        { name: "Firehouse Subs", type: "fastfood", desc: "Hot Sub Sandwiches", address: "4600 Shelbyville Rd, Louisville, KY 40207", lat: 38.2480, lng: -85.6290, hours: { 0: [10.5, 21.0], 1: [10.5, 21.0], 2: [10.5, 21.0], 3: [10.5, 21.0], 4: [10.5, 21.0], 5: [10.5, 21.5], 6: [10.5, 21.5] } },
-        { name: "Heine Brothers' Coffee", type: "breakfast", desc: "Organic Coffee & Baked Goods", address: "4305 Shelbyville Rd, Louisville, KY 40207", lat: 38.2445, lng: -85.6385, hours: { 0: [6.0, 19.0], 1: [6.0, 20.0], 2: [6.0, 20.0], 3: [6.0, 20.0], 4: [6.0, 20.0], 5: [6.0, 20.0], 6: [6.0, 19.0] } }
-    ];
 
     // Central Master List of Destination Facilities
     const masterHospitals = [
@@ -901,8 +757,6 @@
     let autoClearTimer;
     let searchHistory = [];
     let userLocation = null;
-    let currentFoodChoice = null;
-    let recentFoodHistory = JSON.parse(localStorage.getItem('stmfd_recent_meals_timed') || '[]');
 
     const inputEl = document.getElementById('addressInput');
     const clearBtn = document.getElementById('clearBtn');
@@ -963,117 +817,6 @@
             evaluateDestination();
             renderRoutingHospitals();
         }
-    }
-
-    function isWithinServiceAreaPlusBuffer(lat, lng) {
-        const point = new google.maps.LatLng(lat, lng);
-        if (google.maps.geometry.poly.containsLocation(point, boundaryPolygon)) {
-            return true;
-        }
-        const ring = geojsonData.features[0].geometry.coordinates[0];
-        for (let coord of ring) {
-            let dist = calculateDistance(lat, lng, coord[1], coord[0]);
-            if (dist <= 1.0) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    function isOpenForAtLeast90Mins(item) {
-        if (!item.hours) return true;
-        const now = new Date();
-        const day = now.getDay();
-        const currentDecimalTime = now.getHours() + (now.getMinutes() / 60);
-        const todayHours = item.hours[day];
-        if (!todayHours) return false;
-        return (currentDecimalTime >= todayHours[0]) && ((todayHours[1] - currentDecimalTime) >= 1.5);
-    }
-
-    function cleanExpiredCoolDowns() {
-        const now = Date.now();
-        const thirtyMinutesMs = 30 * 60 * 1000;
-        recentFoodHistory = recentFoodHistory.filter(entry => (now - entry.timestamp) < thirtyMinutesMs);
-        localStorage.setItem('stmfd_recent_meals_timed', JSON.stringify(recentFoodHistory));
-    }
-
-    function spinMealWheel() {
-        cleanExpiredCoolDowns();
-        const excludedNames = recentFoodHistory.map(e => e.name);
-        const selectedCuisine = document.getElementById('cuisineFilter').value;
-
-        let pool = districtFoodOptions.filter(opt => isWithinServiceAreaPlusBuffer(opt.lat, opt.lng));
-
-        if (selectedCuisine !== 'all') {
-            pool = pool.filter(opt => opt.type === selectedCuisine);
-        }
-
-        let availableOptions = pool.filter(opt => !excludedNames.includes(opt.name));
-        let openAvailableOptions = availableOptions.filter(opt => isOpenForAtLeast90Mins(opt));
-
-        let finalPool = openAvailableOptions;
-        if (finalPool.length === 0) finalPool = pool.filter(opt => isOpenForAtLeast90Mins(opt));
-        if (finalPool.length === 0) finalPool = pool;
-        if (finalPool.length === 0) finalPool = districtFoodOptions;
-
-        const randomChoice = finalPool[Math.floor(Math.random() * finalPool.length)];
-        currentFoodChoice = randomChoice;
-
-        const existingIndex = recentFoodHistory.findIndex(e => e.name === currentFoodChoice.name);
-        if (existingIndex > -1) {
-            recentFoodHistory.splice(existingIndex, 1);
-        }
-        recentFoodHistory.unshift({
-            name: currentFoodChoice.name,
-            timestamp: Date.now()
-        });
-        localStorage.setItem('stmfd_recent_meals_timed', JSON.stringify(recentFoodHistory));
-        renderFoodHistory();
-
-        document.getElementById('foodName').innerText = randomChoice.name;
-        document.getElementById('foodMeta').innerText = `${randomChoice.desc} • ${randomChoice.address}`;
-        document.getElementById('foodResult').style.display = 'block';
-    }
-
-    function acceptMealChoice() {
-        if (!currentFoodChoice) return;
-        document.getElementById('foodResult').style.display = 'none';
-    }
-
-    function skipMealChoice() {
-        if (!currentFoodChoice) return;
-        document.getElementById('foodResult').style.display = 'none';
-    }
-
-    function renderFoodHistory() {
-        cleanExpiredCoolDowns();
-        const listEl = document.getElementById('recentFoodList');
-        if (!listEl) return;
-        
-        if (recentFoodHistory.length === 0) {
-            listEl.innerHTML = '<li class="recent-item" style="color:#a0aec0;">No active 30-minute cool-down exclusions.</li>';
-            return;
-        }
-
-        listEl.innerHTML = recentFoodHistory.map(entry => {
-            const elapsedMs = Date.now() - entry.timestamp;
-            const remainingMs = (30 * 60 * 1000) - elapsedMs;
-            const minsLeft = Math.ceil(remainingMs / 60000);
-            const displayMins = Math.max(1, minsLeft);
-            
-            return `
-                <li class="recent-item">
-                    <span>🚫 ${entry.name}</span>
-                    <span style="font-size:11px; color:#e53e3e; font-weight:600;">Cool-down: ~${displayMins} min remaining</span>
-                </li>
-            `;
-        }).join('');
-    }
-
-    function clearFoodHistory() {
-        recentFoodHistory = [];
-        localStorage.removeItem('stmfd_recent_meals_timed');
-        renderFoodHistory();
     }
 
     function renderRoutingHospitals() {
@@ -1209,16 +952,8 @@
             if (marker) marker.setMap(null);
             if (!userLocation) getUserGeolocation();
             renderRoutingHospitals();
-        } else if (tab === 'food') {
-            document.querySelectorAll('.tab-btn')[3].classList.add('active');
-            document.getElementById('foodTab').classList.add('active');
-            mapWrapper.style.display = 'none';
-            historyContainer.style.display = 'none';
-            statusDiv.style.display = 'none';
-            if (marker) marker.setMap(null);
-            renderFoodHistory();
         } else if (tab === 'home') {
-            document.querySelectorAll('.tab-btn')[4].classList.add('active');
+            document.querySelectorAll('.tab-btn')[3].classList.add('active');
             document.getElementById('homeTab').classList.add('active');
             mapWrapper.style.display = 'none';
             historyContainer.style.display = 'none';
@@ -1372,7 +1107,6 @@
     }
 
     renderRoutingHospitals();
-    renderFoodHistory();
     loadGoogleMaps();
 </script>
 
