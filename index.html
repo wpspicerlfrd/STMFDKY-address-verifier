@@ -676,7 +676,7 @@
                             [-85.5788215, 38.287619], [-85.5776413, 38.2861284], [-85.5775179, 38.2859389], [-85.5767884, 38.28596],
                             [-85.5760964, 38.2860905], [-85.575458, 38.2862884], [-85.5749377, 38.2864526], [-85.5744817, 38.2865958],
                             [-85.5729206, 38.2871642], [-85.5723145, 38.2873706], [-85.5714025, 38.2861663], [-85.57063, 38.2854084],
-                            [-85.5697503, 38.2845241], [-85.5673577, 38.2813155], [-85.5668213, 38.2804311], [-85.5664887, 38.279749],
+                            [-85.5697503, 38.2845241], [-85.5673577, 38.2813155], [-85.668213, 38.2804311], [-85.5664887, 38.279749],
                             [-85.5662634, 38.2792015], [-85.5638279, 38.2739628], [-85.563398, 38.2742368], [-85.5610484, 38.2749612],
                             [-85.5606192, 38.274818], [-85.5605334, 38.2745063], [-85.5600291, 38.2734956], [-85.559557, 38.2723501],
                             [-85.5589455, 38.2709687], [-85.5589509, 38.2708045], [-85.5598199, 38.2708297], [-85.561794, 38.2708634],
@@ -1019,7 +1019,6 @@
         const randomChoice = finalPool[Math.floor(Math.random() * finalPool.length)];
         currentFoodChoice = randomChoice;
 
-        // FIXED: Prevent duplicate entries in history; update timestamp if already present
         const existingIndex = recentFoodHistory.findIndex(e => e.name === currentFoodChoice.name);
         if (existingIndex > -1) {
             recentFoodHistory.splice(existingIndex, 1);
@@ -1057,12 +1056,15 @@
         }
 
         listEl.innerHTML = recentFoodHistory.map(entry => {
-            const minsAgo = Math.floor((Date.now() - entry.timestamp) / 60000);
-            const minsLeft = Math.max(1, 30 - minsAgo);
+            const elapsedMs = Date.now() - entry.timestamp;
+            const remainingMs = (30 * 60 * 1000) - elapsedMs;
+            const minsLeft = Math.ceil(remainingMs / 60000);
+            const displayMins = Math.max(1, minsLeft);
+            
             return `
                 <li class="recent-item">
                     <span>🚫 ${entry.name}</span>
-                    <span style="font-size:11px; color:#e53e3e; font-weight:600;">Cool-down: ~${minsLeft} min remaining</span>
+                    <span style="font-size:11px; color:#e53e3e; font-weight:600;">Cool-down: ~${displayMins} min remaining</span>
                 </li>
             `;
         }).join('');
