@@ -202,6 +202,31 @@
             transition: background 0.2s; 
         }
         button.action-btn:hover { background-color: #002244; }
+
+        /* Battalion Chief Call Assistance Button */
+        .bc-call-btn {
+            width: 100%;
+            background-color: #c53030;
+            color: white;
+            border: none;
+            padding: 12px 16px;
+            font-size: 14px;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(197, 48, 48, 0.2);
+            transition: background 0.2s;
+        }
+        .bc-call-btn:hover {
+            background-color: #9b2c2c;
+        }
+
         #status { 
             display: none; 
             padding: 12px 15px; 
@@ -342,6 +367,11 @@
     <!-- TAB 2: Destination Guidelines Wizard -->
     <div id="guidelinesTab" class="tab-content">
         <h2>Triage Destination Guidelines</h2>
+        
+        <a href="tel:5026897312" class="bc-call-btn">
+            📞 I still need more destination decision assistance
+        </a>
+
         <p>Select patient demographic and condition criteria to evaluate capable facilities.</p>
 
         <div id="locationStatus" class="location-status">
@@ -518,7 +548,7 @@
                             [-85.6285138, 38.2895029], [-85.6280793, 38.2895576], [-85.6277843, 38.2894397], [-85.6275804, 38.2896629],
                             [-85.6274839, 38.2898355], [-85.6270332, 38.2902186], [-85.6268079, 38.290926], [-85.6259282, 38.2914565],
                             [-85.6255634, 38.291507], [-85.6250377, 38.2909428], [-85.6241043, 38.2914902], [-85.6236537, 38.2922396],
-                            [-85.6225593, 38.2918523], [-85.6222589, 38.2920881], [-85.6222482, 38.2927785], [-85.622589, 38.2937806],
+                            [-85.6225593, 38.2918523], [-85.622589, 38.2920881], [-85.6222482, 38.2927785], [-85.6222589, 38.2937806],
                             [-85.6218298, 38.2939827], [-85.6214435, 38.2943616], [-85.6210787, 38.2948752], [-85.6208963, 38.2949089],
                             [-85.620435, 38.2950521], [-85.6199522, 38.2953973], [-85.6190832, 38.2960457], [-85.6186755, 38.2967614],
                             [-85.6178834, 38.2977783], [-85.6166388, 38.298393], [-85.615405, 38.2975173], [-85.6150617, 38.2968353],
