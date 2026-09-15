@@ -62,18 +62,18 @@
             margin-bottom: 15px; 
         }
         .section-header {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 700;
-            color: #2b6cb0;
+            color: #003366;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin: 15px 0 8px 0;
+            margin: 18px 0 10px 0;
             padding-bottom: 4px;
-            border-bottom: 1px solid #edf2f7;
+            border-bottom: 2px solid #edf2f7;
         }
         .er-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
             gap: 10px;
             margin-bottom: 15px;
         }
@@ -144,9 +144,7 @@
             padding: 0 4px;
             line-height: 1;
         }
-        .clear-btn:hover {
-            color: #4a5568;
-        }
+        .clear-btn:hover { color: #4a5568; }
         button.action-btn { 
             background-color: #003366; 
             color: white; 
@@ -158,9 +156,7 @@
             cursor: pointer; 
             transition: background 0.2s; 
         }
-        button.action-btn:hover { 
-            background-color: #002244; 
-        }
+        button.action-btn:hover { background-color: #002244; }
         #status { 
             display: none; 
             padding: 12px 15px; 
@@ -173,6 +169,7 @@
         #status.inside { background-color: #c6f6d5; color: #22543d; border: 1px solid #9ae6b4; display: block; }
         #status.outside { background-color: #fed7d7; color: #742a2a; border: 1px solid #feb2b2; display: block; }
         #status.loading { background-color: #e2e8f0; color: #4a5568; border: 1px solid #cbd5e0; display: block; }
+        #mapWrapper { width: 100%; }
         #map { 
             width: 100%; 
             height: 380px; 
@@ -239,50 +236,44 @@
     <!-- TAB 2: Hospital Navigation Buttons -->
     <div id="routingTab" class="tab-content">
         <h2>Hospital Transport Destinations</h2>
-        <p>Tap any hospital below to open direct turn-by-turn navigation in your device's default map app.</p>
+        <p>Tap any hospital below to launch turn-by-turn navigation in your default map app.</p>
 
-        <!-- Jefferson County Adult ERs -->
-        <div class="section-header">Jefferson County, KY — Adult ERs</div>
+        <!-- Jefferson County ER (Sorted by Proximity to 240 Sears Ave) -->
+        <div class="section-header">Jefferson County, KY ER</div>
         <div class="er-grid">
             <button class="er-btn" onclick="openNav('4000 Kresge Way, Louisville, KY 40207')">Baptist Health Louisville</button>
-            <button class="er-btn" onclick="openNav('11701 Bluegrass Pkwy, Louisville, KY 40299')">Baptist Health ER (Blankenbaker)</button>
+            <button class="er-btn" onclick="openNav('4001 Dutchmans Ln, Louisville, KY 40207')">Norton Women's & Children's ER</button>
+            <button class="er-btn peds" onclick="openNav('4001 Dutchmans Ln, Louisville, KY 40207')">Norton W&C Pediatric ER</button>
+            <button class="er-btn" onclick="openNav('3920 Dutchmans Ln, Louisville, KY 40207')">UofL Health - MC East ER</button>
             <button class="er-btn" onclick="openNav('4960 Norton Healthcare Blvd, Louisville, KY 40241')">Norton Brownsboro ER</button>
+            <button class="er-btn peds" onclick="openNav('9880 Chamberlain Ln, Louisville, KY 40241')">Norton Children's MC (Chamberlain)</button>
+            <button class="er-btn" onclick="openNav('11701 Bluegrass Pkwy, Louisville, KY 40299')">Baptist Health ER (Blankenbaker)</button>
+            <button class="er-btn" onclick="openNav('2401 Terra Crossing Blvd, Louisville, KY 40245')">UofL Health - MC Northeast ER</button>
             <button class="er-btn" onclick="openNav('3100 Audubon Hospital Dr, Louisville, KY 40217')">Norton Audubon ER</button>
             <button class="er-btn" onclick="openNav('200 E Chestnut St, Louisville, KY 40202')">Norton Hospital (Downtown)</button>
-            <button class="er-btn" onclick="openNav('4001 Dutchmans Ln, Louisville, KY 40207')">Norton Women's & Children's</button>
-            <button class="er-btn" onclick="openNav('850 S 28th St, Louisville, KY 40211')">Norton West Louisville ER</button>
-            <button class="er-btn" onclick="openNav('530 S Jackson St, Louisville, KY 40202')">UofL Health - Hospital (Downtown)</button>
-            <button class="er-btn" onclick="openNav('200 Abraham Flexner Way, Louisville, KY 40202')">UofL Health - Jewish Hospital</button>
-            <button class="er-btn" onclick="openNav('1850 Bluegrass Ave, Louisville, KY 40215')">UofL Health - Mary & Elizabeth</button>
-            <button class="er-btn" onclick="openNav('2401 Terra Crossing Blvd, Louisville, KY 40245')">UofL Health - MC Northeast</button>
-            <button class="er-btn" onclick="openNav('3920 Dutchmans Ln, Louisville, KY 40207')">UofL Health - MC East</button>
-            <button class="er-btn" onclick="openNav('9700 Stonestreet Rd, Louisville, KY 40272')">UofL Health - MC Southwest</button>
-        </div>
-
-        <!-- Pediatric Dedicated ERs -->
-        <div class="section-header">Dedicated Pediatric ERs</div>
-        <div class="er-grid">
             <button class="er-btn peds" onclick="openNav('231 E Chestnut St, Louisville, KY 40202')">Norton Children's (Downtown)</button>
-            <button class="er-btn peds" onclick="openNav('4001 Dutchmans Ln, Louisville, KY 40207')">Norton Women's & Children's Peds ER</button>
+            <button class="er-btn" onclick="openNav('200 Abraham Flexner Way, Louisville, KY 40202')">UofL Health - Jewish Hospital</button>
+            <button class="er-btn" onclick="openNav('530 S Jackson St, Louisville, KY 40202')">UofL Health - UofL Hospital</button>
+            <button class="er-btn" onclick="openNav('850 S 28th St, Louisville, KY 40211')">Norton West Louisville ER</button>
+            <button class="er-btn" onclick="openNav('1850 Bluegrass Ave, Louisville, KY 40215')">UofL Health - Mary & Elizabeth</button>
+            <button class="er-btn" onclick="openNav('9700 Stonestreet Rd, Louisville, KY 40272')">UofL Health - MC Southwest ER</button>
         </div>
 
-        <!-- Oldham County ERs -->
-        <div class="section-header">Oldham County, KY</div>
+        <!-- Outside Jefferson County ER -->
+        <div class="section-header">Outside Jefferson County ER</div>
         <div class="er-grid">
             <button class="er-btn" onclick="openNav('1025 New La Grange Rd, La Grange, KY 40031')">Baptist Health LaGrange</button>
-        </div>
-
-        <!-- Indiana ERs (Clark & Floyd) -->
-        <div class="section-header">Indiana — Clark & Floyd Counties</div>
-        <div class="er-grid">
-            <button class="er-btn" onclick="openNav('1220 Missouri Ave, Jeffersonville, IN 47130')">Norton Clark Hospital</button>
-            <button class="er-btn" onclick="openNav('2023 Mercy Way, Jeffersonville, IN 47130')">Norton Medical Center (Jeff Commons)</button>
-            <button class="er-btn" onclick="openNav('1850 State St, New Albany, IN 47150')">Baptist Health Floyd</button>
+            <button class="er-btn" onclick="openNav('1220 Missouri Ave, Jeffersonville, IN 47130')">Norton Clark Hospital (IN)</button>
+            <button class="er-btn" onclick="openNav('2023 Mercy Way, Jeffersonville, IN 47130')">Norton Medical Center Jeff (IN)</button>
+            <button class="er-btn" onclick="openNav('1850 State St, New Albany, IN 47150')">Baptist Health Floyd (IN)</button>
+            <button class="er-btn" onclick="openNav('190 Enterprise Dr, Brooks, KY 40109')">UofL Health - MC South (Brooks)</button>
         </div>
     </div>
 
-    <!-- Map Display -->
-    <div id="map"></div>
+    <!-- Map Display (Visible only in District Verifier tab) -->
+    <div id="mapWrapper">
+        <div id="map"></div>
+    </div>
 
     <div id="historyContainer" class="history-container">
         <div class="history-header">
@@ -435,6 +426,7 @@
     const clearBtn = document.getElementById('clearBtn');
     const verifyBtn = document.getElementById('verifyBtn');
     const statusDiv = document.getElementById('status');
+    const mapWrapper = document.getElementById('mapWrapper');
     const historyContainer = document.getElementById('historyContainer');
     const historyList = document.getElementById('historyList');
 
@@ -451,11 +443,13 @@
         if (tab === 'verifier') {
             document.querySelectorAll('.tab-btn')[0].classList.add('active');
             document.getElementById('verifierTab').classList.add('active');
+            mapWrapper.style.display = 'block';
             historyContainer.style.display = searchHistory.length > 0 ? 'block' : 'none';
             if (map && boundaryBounds) map.fitBounds(boundaryBounds);
         } else {
             document.querySelectorAll('.tab-btn')[1].classList.add('active');
             document.getElementById('routingTab').classList.add('active');
+            mapWrapper.style.display = 'none';
             historyContainer.style.display = 'none';
             statusDiv.style.display = 'none';
             if (marker) marker.setMap(null);
