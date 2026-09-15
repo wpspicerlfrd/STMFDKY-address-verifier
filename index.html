@@ -369,7 +369,7 @@
         <h2>Triage Destination Guidelines</h2>
         
         <a href="tel:5026897312" class="bc-call-btn">
-            📞 I need more help (Call the BC)
+            📞 I still need more destination decision assistance
         </a>
 
         <p>Select patient demographic and condition criteria to evaluate capable facilities.</p>
@@ -408,36 +408,19 @@
     <!-- TAB 3: Hospital Navigation Buttons -->
     <div id="routingTab" class="tab-content">
         <h2>Hospital Transport Destinations</h2>
-        <p>Tap any hospital below to launch direct navigation to the ER ambulance entrance.</p>
+        <p>Tap any hospital below to launch direct navigation to the ER ambulance entrance. Facilities are sorted by proximity to your current location.</p>
+
+        <div id="routingLocationStatus" class="location-status">
+            <span>📍 Requesting current location for distance sorting...</span>
+        </div>
 
         <!-- Jefferson County ER -->
         <div class="section-header">Jefferson County, KY ER</div>
-        <div class="er-grid">
-            <button class="er-btn" onclick="openNav(38.23885368709200, -85.63917771315160)">Baptist Health Louisville</button>
-            <button class="er-btn split-peds" onclick="openNav(38.23558071531270, -85.63158611445510)">Norton Women's & Children's (Suburban)</button>
-            <button class="er-btn" onclick="openNav(38.23114041993000, -85.63694179169460)">UofL Health - MC East ER (Jewish East)</button>
-            <button class="er-btn" onclick="openNav(38.31634156358550, -85.57558139921120)">Norton Brownsboro</button>
-            <button class="er-btn peds" onclick="openNav(38.31569198353950, -85.56956072719920)">Norton Children's MC (Brownsboro)</button>
-            <button class="er-btn" onclick="openNav(38.21744177540010, -85.53839801419970)">Baptist Health ER (Blankenbaker)</button>
-            <button class="er-btn" onclick="openNav(38.21520796968180, -85.72403667459940)">Norton Audubon</button>
-            <button class="er-btn" onclick="openNav(38.24750719216270, -85.75149999973130)">Norton Hospital (Downtown)</button>
-            <button class="er-btn peds" onclick="openNav(38.24818271556100, -85.75017118854950)">Norton Children's (Downtown)</button>
-            <button class="er-btn" onclick="openNav(38.24839488506370, -85.75157457164980)">Jewish Hospital (Downtown)</button>
-            <button class="er-btn" onclick="openNav(38.24786926143180, -85.74318088452280)">UofL Health - UofL Hospital</button>
-            <button class="er-btn" onclick="openNav(38.24720893353440, -85.79873887144740)">Norton West Louisville ER</button>
-            <button class="er-btn" onclick="openNav(38.17880867023050, -85.79382665040330)">UofL Health - Mary & Elizabeth</button>
-            <button class="er-btn" onclick="openNav(38.136018474849024, -85.58069320336894)">Baptist Health Glenmary</button>
-            <button class="er-btn" onclick="openNav(38.11322941906840, -85.84092345934400)">UofL Health - MC Southwest ER</button>
-        </div>
+        <div id="jeffersonErGrid" class="er-grid"></div>
 
         <!-- Outside Jefferson County ER -->
         <div class="section-header">Outside Jefferson County ER</div>
-        <div class="er-grid">
-            <button class="er-btn" onclick="openNav(38.39436543175370, -85.37700258407050)">Baptist Health LaGrange</button>
-            <button class="er-btn" onclick="openNav(38.28185133304160, -85.74788493093270)">Norton Clark Hospital (IN)</button>
-            <button class="er-btn" onclick="openNav(38.30038280115690, -85.83484296507200)">Baptist Health Floyd (IN)</button>
-            <button class="er-btn" onclick="openNav(38.06108454853360, -85.69721919213730)">UofL Health - MC South (Brooks)</button>
-        </div>
+        <div id="outsideErGrid" class="er-grid"></div>
     </div>
 
     <!-- TAB 4: Take Me Home (St. Matthews Fire & EMS Stations) -->
@@ -594,7 +577,7 @@
                             [-85.6195205, 38.2343721], [-85.619102, 38.233858], [-85.6187051, 38.2334282], [-85.6182974, 38.2329478],
                             [-85.6177341, 38.2332512], [-85.6167953, 38.2339001], [-85.6164842, 38.2341951], [-85.6162053, 38.234094],
                             [-85.615819, 38.2338664], [-85.6155937, 38.2336642], [-85.6152933, 38.2333271], [-85.6152182, 38.2330321],
-                            [-85.6151753, 38.2327456], [-85.6155401, 38.2325349], [-85.6166076, 38.2319534], [-85.6177341, 38.2332512],
+                            [-85.6151753, 38.2327456], [-85.615401, 38.2325349], [-85.6166076, 38.2319534], [-85.6177341, 38.2332512],
                             [-85.6182974, 38.2329478], [-85.6171548, 38.2316542], [-85.6167323, 38.2311928], [-85.6196949, 38.2296737],
                             [-85.6226318, 38.2281777], [-85.6229056, 38.2280123], [-85.6221798, 38.2271482], [-85.6236148, 38.2263644],
                             [-85.6253001, 38.2254377], [-85.6243594, 38.2243194], [-85.6222779, 38.2218055], [-85.6216609, 38.2221406],
@@ -620,25 +603,25 @@
 
     // Central Master List of Destination Facilities
     const masterHospitals = [
-        { id: "baptist_louisville", name: "Baptist Health Louisville", lat: 38.23885368709200, lng: -85.63917771315160, type: "adult" },
-        { id: "norton_women_children", name: "Norton Women's & Children's (Suburban)", lat: 38.23558071531270, lng: -85.63158611445510, type: "split" },
-        { id: "uofl_mc_east", name: "UofL Health - MC East ER (Jewish East)", lat: 38.23114041993000, lng: -85.63694179169460, type: "adult" },
-        { id: "norton_brownsboro", name: "Norton Brownsboro", lat: 38.31634156358550, lng: -85.57558139921120, type: "adult" },
-        { id: "norton_children_brownsboro", name: "Norton Children's MC (Brownsboro)", lat: 38.31569198353950, lng: -85.56956072719920, type: "peds" },
-        { id: "baptist_blankenbaker", name: "Baptist Health ER (Blankenbaker)", lat: 38.21744177540010, lng: -85.53839801419970, type: "adult" },
-        { id: "norton_audubon", name: "Norton Audubon", lat: 38.21520796968180, lng: -85.72403667459940, type: "adult" },
-        { id: "norton_downtown", name: "Norton Hospital (Downtown)", lat: 38.24750719216270, lng: -85.75149999973130, type: "adult" },
-        { id: "norton_children_downtown", name: "Norton Children's (Downtown)", lat: 38.24818271556100, lng: -85.75017118854950, type: "peds" },
-        { id: "jewish_downtown", name: "Jewish Hospital (Downtown)", lat: 38.24839488506370, lng: -85.75157457164980, type: "adult" },
-        { id: "uofl_hospital", name: "UofL Health - UofL Hospital", lat: 38.24786926143180, lng: -85.74318088452280, type: "adult" },
-        { id: "norton_west_louisville", name: "Norton West Louisville ER", lat: 38.24720893353440, lng: -85.79873887144740, type: "adult" },
-        { id: "uofl_mary_elizabeth", name: "UofL Health - Mary & Elizabeth", lat: 38.17880867023050, lng: -85.79382665040330, type: "adult" },
-        { id: "baptist_glenmary", name: "Baptist Health Glenmary", lat: 38.136018474849024, lng: -85.58069320336894, type: "adult" },
-        { id: "uofl_mc_southwest", name: "UofL Health - MC Southwest ER", lat: 38.11322941906840, lng: -85.84092345934400, type: "adult" },
-        { id: "baptist_lagrange", name: "Baptist Health LaGrange", lat: 38.39436543175370, lng: -85.37700258407050, type: "adult" },
-        { id: "norton_clark", name: "Norton Clark Hospital (IN)", lat: 38.28185133304160, lng: -85.74788493093270, type: "adult" },
-        { id: "baptist_floyd", name: "Baptist Health Floyd (IN)", lat: 38.30038280115690, lng: -85.83484296507200, type: "adult" },
-        { id: "uofl_mc_south", name: "UofL Health - MC South (Brooks)", lat: 38.06108454853360, lng: -85.69721919213730, type: "adult" }
+        { id: "baptist_louisville", name: "Baptist Health Louisville", lat: 38.23885368709200, lng: -85.63917771315160, type: "adult", region: "jefferson" },
+        { id: "norton_women_children", name: "Norton Women's & Children's (Suburban)", lat: 38.23558071531270, lng: -85.63158611445510, type: "split", region: "jefferson" },
+        { id: "uofl_mc_east", name: "UofL Health - MC East ER (Jewish East)", lat: 38.23114041993000, lng: -85.63694179169460, type: "adult", region: "jefferson" },
+        { id: "norton_brownsboro", name: "Norton Brownsboro", lat: 38.31634156358550, lng: -85.57558139921120, type: "adult", region: "jefferson" },
+        { id: "norton_children_brownsboro", name: "Norton Children's MC (Brownsboro)", lat: 38.31569198353950, lng: -85.56956072719920, type: "peds", region: "jefferson" },
+        { id: "baptist_blankenbaker", name: "Baptist Health ER (Blankenbaker)", lat: 38.21744177540010, lng: -85.53839801419970, type: "adult", region: "jefferson" },
+        { id: "norton_audubon", name: "Norton Audubon", lat: 38.21520796968180, lng: -85.72403667459940, type: "adult", region: "jefferson" },
+        { id: "norton_downtown", name: "Norton Hospital (Downtown)", lat: 38.24750719216270, lng: -85.75149999973130, type: "adult", region: "jefferson" },
+        { id: "norton_children_downtown", name: "Norton Children's (Downtown)", lat: 38.24818271556100, lng: -85.75017118854950, type: "peds", region: "jefferson" },
+        { id: "jewish_downtown", name: "Jewish Hospital (Downtown)", lat: 38.24839488506370, lng: -85.75157457164980, type: "adult", region: "jefferson" },
+        { id: "uofl_hospital", name: "UofL Health - UofL Hospital", lat: 38.24786926143180, lng: -85.74318088452280, type: "adult", region: "jefferson" },
+        { id: "norton_west_louisville", name: "Norton West Louisville ER", lat: 38.24720893353440, lng: -85.79873887144740, type: "adult", region: "jefferson" },
+        { id: "uofl_mary_elizabeth", name: "UofL Health - Mary & Elizabeth", lat: 38.17880867023050, lng: -85.79382665040330, type: "adult", region: "jefferson" },
+        { id: "baptist_glenmary", name: "Baptist Health Glenmary", lat: 38.136018474849024, lng: -85.58069320336894, type: "adult", region: "jefferson" },
+        { id: "uofl_mc_southwest", name: "UofL Health - MC Southwest ER", lat: 38.11322941906840, lng: -85.84092345934400, type: "adult", region: "jefferson" },
+        { id: "baptist_lagrange", name: "Baptist Health LaGrange", lat: 38.39436543175370, lng: -85.37700258407050, type: "adult", region: "outside" },
+        { id: "norton_clark", name: "Norton Clark Hospital (IN)", lat: 38.28185133304160, lng: -85.74788493093270, type: "adult", region: "outside" },
+        { id: "baptist_floyd", name: "Baptist Health Floyd (IN)", lat: 38.30038280115690, lng: -85.83484296507200, type: "adult", region: "outside" },
+        { id: "uofl_mc_south", name: "UofL Health - MC South (Brooks)", lat: 38.06108454853360, lng: -85.69721919213730, type: "adult", region: "outside" }
     ];
 
     // Adult Emergency Conditions Data mapped directly to Master Hospital IDs[cite: 1]
@@ -803,6 +786,13 @@
 
     function getUserGeolocation() {
         const locStatus = document.getElementById('locationStatus');
+        const routingLocStatus = document.getElementById('routingLocationStatus');
+        
+        const updateStatusText = (html) => {
+            if (locStatus) locStatus.innerHTML = html;
+            if (routingLocStatus) routingLocStatus.innerHTML = html;
+        };
+
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
@@ -810,22 +800,60 @@
                         lat: position.coords.latitude,
                         lng: position.coords.longitude
                     };
-                    locStatus.innerHTML = `<span>📍 Distance sorted from current GPS position</span>`;
+                    updateStatusText(`<span>📍 Distance sorted from current GPS position</span>`);
                     evaluateDestination();
+                    renderRoutingHospitals();
                 },
                 (error) => {
                     // Fallback to St. Matthews Station 46 (Sears Ave) coordinates if GPS unavailable
                     userLocation = { lat: 38.2520, lng: -85.6441 };
-                    locStatus.innerHTML = `<span>📍 GPS unavailable. Distance sorted from St. Matthews St. 46</span>`;
+                    updateStatusText(`<span>📍 GPS unavailable. Distance sorted from St. Matthews St. 46</span>`);
                     evaluateDestination();
+                    renderRoutingHospitals();
                 },
                 { enableHighAccuracy: true, timeout: 5000, maximumAge: 60000 }
             );
         } else {
             userLocation = { lat: 38.2520, lng: -85.6441 };
-            locStatus.innerHTML = `<span>📍 Distance sorted from St. Matthews St. 46</span>`;
+            updateStatusText(`<span>📍 Distance sorted from St. Matthews St. 46</span>`);
             evaluateDestination();
+            renderRoutingHospitals();
         }
+    }
+
+    function renderRoutingHospitals() {
+        const jeffersonGrid = document.getElementById('jeffersonErGrid');
+        const outsideGrid = document.getElementById('outsideErGrid');
+        if (!jeffersonGrid || !outsideGrid) return;
+
+        let sortedHospitals = masterHospitals.map(hosp => {
+            let dist = null;
+            if (userLocation) {
+                dist = calculateDistance(userLocation.lat, userLocation.lng, hosp.lat, hosp.lng);
+            }
+            return { ...hosp, distance: dist };
+        });
+
+        if (userLocation) {
+            sortedHospitals.sort((a, b) => a.distance - b.distance);
+        }
+
+        const jeffersonList = sortedHospitals.filter(h => h.region === 'jefferson');
+        const outsideList = sortedHospitals.filter(h => h.region === 'outside');
+
+        const createButtonHtml = (hosp) => {
+            let btnClass = "er-btn";
+            if (hosp.type === "peds") btnClass += " peds";
+            if (hosp.type === "split") btnClass += " split-peds";
+            
+            const distText = hosp.distance !== null ? `<span class="dist-tag">(${hosp.distance.toFixed(1)} mi)</span>` : '';
+            return `<button class="${btnClass}" onclick="openNav(${hosp.lat}, ${hosp.lng})">
+                <span>${hosp.name} ${distText}</span>
+            </button>`;
+        };
+
+        jeffersonGrid.innerHTML = jeffersonList.map(createButtonHtml).join('');
+        outsideGrid.innerHTML = outsideList.map(createButtonHtml).join('');
     }
 
     function updateEmergencyOptions() {
@@ -929,6 +957,8 @@
             historyContainer.style.display = 'none';
             statusDiv.style.display = 'none';
             if (marker) marker.setMap(null);
+            if (!userLocation) getUserGeolocation();
+            renderRoutingHospitals();
         } else if (tab === 'home') {
             document.querySelectorAll('.tab-btn')[3].classList.add('active');
             document.getElementById('homeTab').classList.add('active');
@@ -1096,6 +1126,9 @@
             autoClearTimer = setTimeout(resetForm, 15000);
         });
     }
+
+    // Pre-render static routing list before GPS resolves
+    renderRoutingHospitals();
 
     loadGoogleMaps();
 </script>
