@@ -120,28 +120,23 @@
             opacity: 0.8;
             margin-top: 2px;
         }
-        /* Audio Controls Header Bar */
-        .home-header-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        .home-header-bar h2 { margin: 0; }
-        .audio-btn {
-            background: #edf2f7;
-            border: 1px solid #cbd5e0;
-            border-radius: 6px;
-            padding: 6px 12px;
-            font-size: 12px;
-            font-weight: 600;
-            color: #2d3748;
-            cursor: pointer;
+        /* Audio Player Bar */
+        .audio-player-container {
+            background-color: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 10px 14px;
+            margin-bottom: 15px;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 12px;
         }
-        .audio-btn:hover { background: #e2e8f0; }
+        audio {
+            width: 100%;
+            height: 36px;
+            border-radius: 4px;
+            outline: none;
+        }
         /* Pink Pediatric Buttons */
         .er-btn.peds {
             background-color: #fff5f7;
@@ -338,11 +333,16 @@
 
     <!-- TAB 3: Take Me Home (St. Matthews Fire & EMS Stations) -->
     <div id="homeTab" class="tab-content">
-        <div class="home-header-bar">
-            <h2>St. Matthews Fire & EMS Stations</h2>
-            <button id="toggleAudioBtn" class="audio-btn" onclick="toggleCountryRoadsAudio()">🔊 Mute Audio</button>
-        </div>
+        <h2>St. Matthews Fire & EMS Stations</h2>
         <p>Tap a station to launch direct navigation back to quarters.</p>
+
+        <!-- MP3 Audio Player -->
+        <div class="audio-player-container">
+            <audio id="countryRoadsAudio" controls preload="auto">
+                <source src="https://archive.org/download/ka-john-denver/john%20Danver%20-%20take%20me%20home%20country%20roads.mp3" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+        </div>
 
         <div class="section-header">Fire & EMS Quarters</div>
         <div class="er-grid">
@@ -525,11 +525,6 @@
     let autoClearTimer;
     let searchHistory = [];
 
-    // Synthesized Polyphonic Audio Setup for "Take Me Home, Country Roads" Instrumental Chorus
-    let audioCtx = null;
-    let audioPlaying = false;
-    let audioTimeouts = [];
-
     const inputEl = document.getElementById('addressInput');
     const clearBtn = document.getElementById('clearBtn');
     const verifyBtn = document.getElementById('verifyBtn');
@@ -537,6 +532,7 @@
     const mapWrapper = document.getElementById('mapWrapper');
     const historyContainer = document.getElementById('historyContainer');
     const historyList = document.getElementById('historyList');
+    const audioPlayer = document.getElementById('countryRoadsAudio');
 
     inputEl.addEventListener('input', function() {
         clearBtn.style.display = this.value ? 'block' : 'none';
@@ -549,14 +545,14 @@
         document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
         if (tab === 'verifier') {
-            stopCountryRoads();
+            audioPlayer.pause();
             document.querySelectorAll('.tab-btn')[0].classList.add('active');
             document.getElementById('verifierTab').classList.add('active');
             mapWrapper.style.display = 'block';
             historyContainer.style.display = searchHistory.length > 0 ? 'block' : 'none';
             if (map && boundaryBounds) map.fitBounds(boundaryBounds);
         } else if (tab === 'routing') {
-            stopCountryRoads();
+            audioPlayer.pause();
             document.querySelectorAll('.tab-btn')[1].classList.add('active');
             document.getElementById('routingTab').classList.add('active');
             mapWrapper.style.display = 'none';
@@ -570,128 +566,12 @@
             historyContainer.style.display = 'none';
             statusDiv.style.display = 'none';
             if (marker) marker.setMap(null);
-            playCountryRoads();
-        }
-    }
-
-    function playNote(freq, type, startTime, duration, vol = 0.1) {
-        if (!audioCtx || !audioPlaying) return;
-        let osc = audioCtx.createOscillator();
-        let gain = audioCtx.createGain();
-        osc.type = type;
-        osc.frequency.setValueAtTime(freq, startTime);
-
-        gain.gain.setValueAtTime(vol, startTime);
-        gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration - 0.03);
-
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-
-        osc.start(startTime);
-        osc.stop(startTime + duration);
-    }
-
-    function playCountryRoads() {
-        stopCountryRoads();
-        if (!audioCtx) {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        }
-        if (audioCtx.state === 'suspended') {
-            audioCtx.resume();
-        }
-
-        audioPlaying = true;
-        document.getElementById('toggleAudioBtn').innerText = "🔊 Mute Audio";
-
-        const startT = audioCtx.currentTime + 0.1;
-
-        // Frequencies (Key of A Major)
-        const N = {
-            E3: 164.81, Fs3: 185.00, A3: 220.00, B3: 246.94, Cs4: 277.18, D4: 293.66, E4: 329.63,
-            Fs4: 369.99, Gs4: 415.30, A4: 440.00, B4: 493.88, Cs5: 554.37, D5: 587.33, E5: 659.25
-        };
-
-        // Lead Vocal Melody Line
-        const leadNotes = [
-            // "Country roads, take me home..."
-            { f: N.Fs4, d: 0.5 }, { f: N.A4, d: 0.5 }, { f: N.A4, d: 0.9 },
-            { f: N.Fs4, d: 0.4 }, { f: N.A4, d: 0.4 }, { f: N.B4, d: 1.1 },
-            // "...to the place I belong..."
-            { f: N.A4, d: 0.4 }, { f: N.B4, d: 0.4 }, { f: N.Cs5, d: 0.7 }, { f: N.B4, d: 0.4 }, { f: N.A4, d: 1.3 },
-            // "West Virginia, mountain mama..."
-            { f: N.A4, d: 0.5 }, { f: N.Cs5, d: 0.5 }, { f: N.D5, d: 0.7 }, { f: N.Cs5, d: 0.5 },
-            { f: N.B4, d: 0.5 }, { f: N.A4, d: 0.5 }, { f: N.Fs4, d: 0.5 }, { f: N.E4, d: 0.9 },
-            // "Take me home, country roads."
-            { f: N.Fs4, d: 0.5 }, { f: N.A4, d: 0.5 }, { f: N.B4, d: 0.9 },
-            { f: N.A4, d: 0.5 }, { f: N.Fs4, d: 0.5 }, { f: N.A4, d: 1.6 }
-        ];
-
-        // Bassline Accompaniment (A - E - F#m - D progression)
-        const bassNotes = [
-            { f: N.A3, d: 2.3 }, { f: N.E3, d: 1.9 }, { f: N.Fs3, d: 2.2 }, { f: N.D4/2, d: 2.2 },
-            { f: N.A3, d: 2.2 }, { f: N.E3, d: 2.4 }, { f: N.Fs3, d: 1.9 }, { f: N.D4/2, d: 2.7 }
-        ];
-
-        // Harmony Pads / Chords
-        const chordPads = [
-            { chord: [N.Cs4, N.E4], d: 2.3 },  // A Major
-            { chord: [N.B3, N.Gs4], d: 1.9 },  // E Major
-            { chord: [N.Cs4, N.Fs4], d: 2.2 }, // F# minor
-            { chord: [N.D4, N.Fs4], d: 2.2 },  // D Major
-            { chord: [N.Cs4, N.E4], d: 2.2 },  // A Major
-            { chord: [N.B3, N.Gs4], d: 2.4 },  // E Major
-            { chord: [N.Cs4, N.Fs4], d: 1.9 }, // F# minor
-            { chord: [N.D4, N.Fs4], d: 2.7 }   // D Major
-        ];
-
-        // Schedule Lead Melody (Triangle wave lead)
-        let leadTime = startT;
-        leadNotes.forEach(n => {
-            playNote(n.f, 'triangle', leadTime, n.d, 0.18);
-            leadTime += n.d;
-        });
-
-        // Schedule Bassline (Sine wave sub bass)
-        let bassTime = startT;
-        bassNotes.forEach(b => {
-            playNote(b.f, 'sine', bassTime, b.d, 0.22);
-            bassTime += b.d;
-        });
-
-        // Schedule Harmony Chords (Soft sine wave pad)
-        let chordTime = startT;
-        chordPads.forEach(c => {
-            c.chord.forEach(freq => {
-                playNote(freq, 'sine', chordTime, c.d, 0.06);
+            
+            // Jump directly to chorus (~32 seconds in) and play
+            audioPlayer.currentTime = 32;
+            audioPlayer.play().catch(() => {
+                // Handle autoplay block by user interaction requirement
             });
-            chordTime += c.d;
-        });
-
-        const totalDuration = (leadTime - audioCtx.currentTime) * 1000;
-        let t = setTimeout(() => {
-            if (audioPlaying && document.getElementById('homeTab').classList.contains('active')) {
-                playCountryRoads(); // Continuous instrumental loop
-            }
-        }, totalDuration);
-        audioTimeouts.push(t);
-    }
-
-    function stopCountryRoads() {
-        audioPlaying = false;
-        audioTimeouts.forEach(t => clearTimeout(t));
-        audioTimeouts = [];
-        if (audioCtx && audioCtx.state === 'running') {
-            audioCtx.suspend();
-        }
-        const btn = document.getElementById('toggleAudioBtn');
-        if (btn) btn.innerText = "🔈 Play Audio";
-    }
-
-    function toggleCountryRoadsAudio() {
-        if (audioPlaying) {
-            stopCountryRoads();
-        } else {
-            playCountryRoads();
         }
     }
 
