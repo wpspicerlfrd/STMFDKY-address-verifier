@@ -500,7 +500,21 @@
     <!-- TAB 4: Crew Food Randomizer -->
     <div id="foodTab" class="tab-content">
         <h2>Fast & Cheap Crew Meal Randomizer (Yelp Verified)</h2>
-        <p>Picks real, Yelp-verified fast and cheap spots within the district or up to 1 mile outside. Excludes any location suggested within the last 30 minutes and guarantees open status for at least 90 minutes.</p>
+        <p>Picks real, Yelp-verified fast and cheap spots within the district or up to 1 mile outside. Filter by category or let it spin! Excludes any spot chosen within the last 30 minutes.</p>
+
+        <div class="selector-box" style="margin-bottom: 15px;">
+            <div class="selector-group" style="margin-bottom: 0;">
+                <label>Filter Cuisine / Style Preference</label>
+                <select id="cuisineFilter">
+                    <option value="all">🎲 Randomize All Categories</option>
+                    <option value="burger">Burgers & American Fast Food</option>
+                    <option value="mexican">Mexican / Tacos</option>
+                    <option value="chicken">Chicken & Wings</option>
+                    <option value="sub">Subs, Sandwiches & Pizza</option>
+                    <option value="breakfast">Breakfast & Diner</option>
+                </select>
+            </div>
+        </div>
 
         <div class="food-card">
             <button class="spin-btn" onclick="spinMealWheel()">🎲 Pick Crew Meal Destination</button>
@@ -655,7 +669,7 @@
                             [-85.5589455, 38.2709687], [-85.5589509, 38.2708045], [-85.5598199, 38.2708297], [-85.561794, 38.2708634],
                             [-85.5668151, 38.270775], [-85.56441, 38.2656852], [-85.5638199, 38.2643037], [-85.5635302, 38.2636298],
                             [-85.5638199, 38.2633349], [-85.5643456, 38.2630317], [-85.5651395, 38.2628042], [-85.567081, 38.2625094],
-                            [-85.5664162, 38.2621977], [-85.5672209, 38.2617933], [-85.5677895, 38.2614816], [-85.5686371, 38.2614732],
+                            [-85.5664162, 38.2621977], [-85.672209, 38.2617933], [-85.5677895, 38.2614816], [-85.5686371, 38.2614732],
                             [-85.5689161, 38.2615237], [-85.5693559, 38.2617596], [-85.5696134, 38.2619281], [-85.5701928, 38.2621808],
                             [-85.5707614, 38.2622651], [-85.5716412, 38.262164], [-85.5727892, 38.2618439], [-85.5734544, 38.2615574],
                             [-85.5740874, 38.2613131], [-85.5747633, 38.2611194], [-85.5767696, 38.2602096], [-85.5771344, 38.2600663],
@@ -678,7 +692,7 @@
                             [-85.6182974, 38.2329478], [-85.6171548, 38.2316542], [-85.6167323, 38.2311928], [-85.6196949, 38.2296737],
                             [-85.6226318, 38.2281777], [-85.6229056, 38.2280123], [-85.6221798, 38.2271482], [-85.6236148, 38.2263644],
                             [-85.6253001, 38.2254377], [-85.6243594, 38.2243194], [-85.6222779, 38.2218055], [-85.6216609, 38.2221406],
-                            [-85.621352, 38.2222986], [-85.6211728, 38.2223618], [-85.6204352, 38.2225409], [-85.6203225, 38.2225704],
+                            [-85.6213552, 38.2222986], [-85.6211728, 38.2223618], [-85.6204352, 38.2225409], [-85.6203225, 38.2225704],
                             [-85.6202823, 38.2223471], [-85.6199765, 38.2209732], [-85.62069, 38.2205686], [-85.6206159, 38.220441],
                             [-85.6211658, 38.2204684], [-85.6206159, 38.2197604], [-85.6206186, 38.2197077], [-85.6295074, 38.2201966],
                             [-85.6418241, 38.2208962], [-85.6509437, 38.2216042], [-85.6520743, 38.2216666]
@@ -698,43 +712,20 @@
         ]
     };
 
-    // Yelp-Verified Fast & Cheap Food Options (In-District & within ~1 mile buffer)
+    // Expanded Directory of Yelp-Verified, Fast/Cheap Options in St. Matthews & Corridor (categorized)
     const districtFoodOptions = [
-        { 
-            name: "Biscuit Belly (St. Matthews)", 
-            type: "Southern Fast-Casual Breakfast", 
-            address: "3929 Shelbyville Rd, Louisville, KY 40207",
-            lat: 38.2395, lng: -85.6502,
-            hours: { 0: [7.3, 14.0], 1: [7.3, 14.0], 2: [7.3, 14.0], 3: [7.3, 14.0], 4: [7.3, 14.0], 5: [7.3, 14.0], 6: [7.3, 14.0] } 
-        },
-        { 
-            name: "Blaze Pizza", 
-            type: "Fast-Fire'd Custom Pizza", 
-            address: "4010 Shelbyville Rd, Louisville, KY 40207",
-            lat: 38.2415, lng: -85.6470,
-            hours: { 0: [11.0, 22.0], 1: [11.0, 22.0], 2: [11.0, 22.0], 3: [11.0, 22.0], 4: [11.0, 22.0], 5: [11.0, 23.0], 6: [11.0, 23.0] } 
-        },
-        { 
-            name: "Naf Naf Middle Eastern Grill", 
-            type: "Middle Eastern Fast Casual", 
-            address: "4000 Shelbyville Rd, Louisville, KY 40207",
-            lat: 38.2402, lng: -85.6489,
-            hours: { 0: [10.5, 21.0], 1: [10.5, 21.0], 2: [10.5, 21.0], 3: [10.5, 21.0], 4: [10.5, 21.0], 5: [10.5, 22.0], 6: [10.5, 22.0] } 
-        },
-        { 
-            name: "Jet's Pizza", 
-            type: "Detroit-Style Slice Combo / Wings", 
-            address: "4207 Shelbyville Rd, Louisville, KY 40207",
-            lat: 38.2438, lng: -85.6415,
-            hours: { 0: [10.5, 22.0], 1: [10.0, 22.0], 2: [10.0, 22.0], 3: [10.0, 22.0], 4: [10.0, 22.0], 5: [10.0, 23.0], 6: [10.0, 23.0] } 
-        },
-        { 
-            name: "Firehouse Subs", 
-            type: "Hot Subs & Salads", 
-            address: "4600 Shelbyville Rd, Louisville, KY 40207",
-            lat: 38.2480, lng: -85.6290,
-            hours: { 0: [10.5, 21.0], 1: [10.5, 21.0], 2: [10.5, 21.0], 3: [10.5, 21.0], 4: [10.5, 21.0], 5: [10.5, 21.5], 6: [10.5, 21.5] } 
-        }
+        { name: "Biscuit Belly (St. Matthews)", type: "breakfast", desc: "Southern Fast-Casual Breakfast", address: "3929 Shelbyville Rd, Louisville, KY 40207", lat: 38.2395, lng: -85.6502, hours: { 0: [7.3, 14.0], 1: [7.3, 14.0], 2: [7.3, 14.0], 3: [7.3, 14.0], 4: [7.3, 14.0], 5: [7.3, 14.0], 6: [7.3, 14.0] } },
+        { name: "Blaze Pizza", type: "sub", desc: "Fast-Fire'd Custom Pizza", address: "4010 Shelbyville Rd, Louisville, KY 40207", lat: 38.2415, lng: -85.6470, hours: { 0: [11.0, 22.0], 1: [11.0, 22.0], 2: [11.0, 22.0], 3: [11.0, 22.0], 4: [11.0, 22.0], 5: [11.0, 23.0], 6: [11.0, 23.0] } },
+        { name: "Naf Naf Middle Eastern Grill", type: "mexican", desc: "Middle Eastern Fast Casual", address: "4000 Shelbyville Rd, Louisville, KY 40207", lat: 38.2402, lng: -85.6489, hours: { 0: [10.5, 21.0], 1: [10.5, 21.0], 2: [10.5, 21.0], 3: [10.5, 21.0], 4: [10.5, 21.0], 5: [10.5, 22.0], 6: [10.5, 22.0] } },
+        { name: "Jet's Pizza", type: "sub", desc: "Detroit-Style Slice Combo / Wings", address: "4207 Shelbyville Rd, Louisville, KY 40207", lat: 38.2438, lng: -85.6415, hours: { 0: [10.5, 22.0], 1: [10.0, 22.0], 2: [10.0, 22.0], 3: [10.0, 22.0], 4: [10.0, 22.0], 5: [10.0, 23.0], 6: [10.0, 23.0] } },
+        { name: "Firehouse Subs", type: "sub", desc: "Hot Subs & Salads", address: "4600 Shelbyville Rd, Louisville, KY 40207", lat: 38.2480, lng: -85.6290, hours: { 0: [10.5, 21.0], 1: [10.5, 21.0], 2: [10.5, 21.0], 3: [10.5, 21.0], 4: [10.5, 21.0], 5: [10.5, 21.5], 6: [10.5, 21.5] } },
+        { name: "Chick-fil-A St. Matthews", type: "chicken", desc: "Fast Food Chicken", address: "5001 Shelbyville Rd, Louisville, KY 40207", lat: 38.2522, lng: -85.6371, hours: { 0: null, 1: [6.5, 22.0], 2: [6.5, 22.0], 3: [6.5, 22.0], 4: [6.5, 22.0], 5: [6.5, 22.0], 6: [6.5, 22.0] } },
+        { name: "McDonald's St. Matthews", type: "burger", desc: "Fast Food Burgers", address: "5015 Shelbyville Rd, Louisville, KY 40207", lat: 38.2527, lng: -85.6358, hours: { 0: [5.0, 23.0], 1: [5.0, 23.0], 2: [5.0, 23.0], 3: [5.0, 23.0], 4: [5.0, 23.0], 5: [5.0, 23.0], 6: [5.0, 23.0] } },
+        { name: "Raising Cane's Chicken Fingers", type: "chicken", desc: "Fast Food Chicken Fingers", address: "4030 Shelbyville Rd, St Matthews, KY 40207", lat: 38.2410, lng: -85.6475, hours: { 0: [10.0, 23.0], 1: [10.0, 23.0], 2: [10.0, 23.0], 3: [10.0, 23.0], 4: [10.0, 23.0], 5: [10.0, 24.0], 6: [10.0, 24.0] } },
+        { name: "Chipotle Mexican Grill", type: "mexican", desc: "Burritos & Bowls", address: "4013 Shelbyville Rd, St Matthews, KY 40207", lat: 38.2405, lng: -85.6482, hours: { 0: [10.5, 22.0], 1: [10.5, 22.0], 2: [10.5, 22.0], 3: [10.5, 22.0], 4: [10.5, 22.0], 5: [10.5, 22.0], 6: [10.5, 22.0] } },
+        { name: "Penn Station East Coast Subs", type: "sub", desc: "Hot Subs & Fries", address: "4310 Shelbyville Rd, St Matthews, KY 40207", lat: 38.2450, lng: -85.6375, hours: { 0: [11.0, 21.0], 1: [10.5, 22.0], 2: [10.5, 22.0], 3: [10.5, 22.0], 4: [10.5, 22.0], 5: [10.5, 22.0], 6: [10.5, 22.0] } },
+        { name: "Salsarita's Fresh Mexican Grill", type: "mexican", desc: "Mexican Fast Casual", address: "12915 Shelbyville Rd, Louisville, KY 40243", lat: 38.2492, lng: -85.5450, hours: { 0: [11.0, 21.0], 1: [11.0, 21.0], 2: [11.0, 21.0], 3: [11.0, 21.0], 4: [11.0, 21.0], 5: [11.0, 21.0], 6: [11.0, 21.0] } },
+        { name: "Waffle House", type: "breakfast", desc: "Classic Diner / Fast Breakfast", address: "100 Sue Ave, Louisville, KY 40207", lat: 38.2295, lng: -85.6585, hours: { 0: [0.0, 24.0], 1: [0.0, 24.0], 2: [0.0, 24.0], 3: [0.0, 24.0], 4: [0.0, 24.0], 5: [0.0, 24.0], 6: [0.0, 24.0] } }
     ];
 
     // Central Master List of Destination Facilities
@@ -894,8 +885,6 @@
     let searchHistory = [];
     let userLocation = null;
     let currentFoodChoice = null;
-    
-    // Storing recent meals with timestamps for 30-minute cool-down check
     let recentFoodHistory = JSON.parse(localStorage.getItem('stmfd_recent_meals_timed') || '[]');
 
     const inputEl = document.getElementById('addressInput');
@@ -994,26 +983,32 @@
     function spinMealWheel() {
         cleanExpiredCoolDowns();
         const excludedNames = recentFoodHistory.map(e => e.name);
+        const selectedCuisine = document.getElementById('cuisineFilter').value;
 
-        // Filter options within district + 1 mile buffer
-        const extendedRadiusOptions = districtFoodOptions.filter(opt => isWithinExtendedFoodRadius(opt.lat, opt.lng));
+        // 1. Filter by radius buffer
+        let pool = districtFoodOptions.filter(opt => isWithinExtendedFoodRadius(opt.lat, opt.lng));
+
+        // 2. Filter by cuisine selection if active
+        if (selectedCuisine !== 'all') {
+            pool = pool.filter(opt => opt.type === selectedCuisine);
+        }
+
+        // 3. Exclude items chosen within the last 30 minutes
+        let availableOptions = pool.filter(opt => !excludedNames.includes(opt.name));
         
-        // Exclude items chosen within the last 30 minutes
-        let availableOptions = extendedRadiusOptions.filter(opt => !excludedNames.includes(opt.name));
-        
-        // Filter for open & >90 mins remaining
+        // 4. Filter for open & >90 mins remaining
         let openAvailableOptions = availableOptions.filter(opt => isOpenForAtLeast90Mins(opt));
 
-        let pool = openAvailableOptions;
-        if (pool.length === 0) pool = extendedRadiusOptions.filter(opt => isOpenForAtLeast90Mins(opt));
-        if (pool.length === 0) pool = extendedRadiusOptions;
-        if (pool.length === 0) pool = districtFoodOptions;
+        let finalPool = openAvailableOptions;
+        if (finalPool.length === 0) finalPool = pool.filter(opt => isOpenForAtLeast90Mins(opt));
+        if (finalPool.length === 0) finalPool = pool;
+        if (finalPool.length === 0) finalPool = districtFoodOptions;
 
-        const randomChoice = pool[Math.floor(Math.random() * pool.length)];
+        const randomChoice = finalPool[Math.floor(Math.random() * finalPool.length)];
         currentFoodChoice = randomChoice;
 
         document.getElementById('foodName').innerText = randomChoice.name;
-        document.getElementById('foodMeta').innerText = `${randomChoice.type} • ${randomChoice.address}`;
+        document.getElementById('foodMeta').innerText = `${randomChoice.desc} • ${randomChoice.address}`;
         document.getElementById('foodResult').style.display = 'block';
     }
 
@@ -1331,7 +1326,6 @@
 
                 if (isInside) {
                     statusDiv.className = 'inside';
-                    statusDiv.html = '✅ IN DISTRICT: Address is WITHIN the STMFDKY service area.';
                     statusDiv.innerHTML = '✅ IN DISTRICT: Address is WITHIN the STMFDKY service area.';
                     addHistoryEntry(formattedAddress, 'in-district', 'In District');
                 } else {
