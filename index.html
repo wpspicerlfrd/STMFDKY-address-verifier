@@ -31,10 +31,10 @@
         }
         .tab-btn {
             flex: 1;
-            padding: 10px 12px;
+            padding: 10px 8px;
             background: none;
             border: none;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             color: #718096;
             cursor: pointer;
@@ -227,6 +227,79 @@
             background-color: #9b2c2c;
         }
 
+        /* Food Decision Wheel Styles */
+        .food-card {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .spin-btn {
+            background-color: #dd6b20;
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            font-size: 16px;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s;
+            box-shadow: 0 2px 4px rgba(221, 107, 32, 0.3);
+        }
+        .spin-btn:hover {
+            background-color: #c05621;
+        }
+        .food-result {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border: 2px solid #3182ce;
+            border-radius: 8px;
+        }
+        .food-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2b6cb0;
+        }
+        .food-meta {
+            font-size: 13px;
+            color: #718096;
+            margin: 4px 0 10px 0;
+        }
+        .food-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        .accept-btn {
+            background-color: #38a169;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .accept-btn:hover { background-color: #2f855a; }
+        .recent-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            font-size: 13px;
+        }
+        .recent-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #edf2f7;
+        }
+
         #status { 
             display: none; 
             padding: 12px 15px; 
@@ -345,7 +418,8 @@
     <div class="tab-nav">
         <button class="tab-btn active" onclick="switchTab('verifier')">District Verifier</button>
         <button class="tab-btn" onclick="switchTab('guidelines')">Destination Wizard</button>
-        <button class="tab-btn" onclick="switchTab('routing')">Hospital Navigation</button>
+        <button class="tab-btn" onclick="switchTab('routing')">Hospital Nav</button>
+        <button class="tab-btn" onclick="switchTab('food')">Food Decision</button>
         <button class="tab-btn" onclick="switchTab('home')">Take Me Home</button>
     </div>
 
@@ -423,7 +497,30 @@
         <div id="outsideErGrid" class="er-grid"></div>
     </div>
 
-    <!-- TAB 4: Take Me Home (St. Matthews Fire & EMS Stations) -->
+    <!-- TAB 4: Crew Food Randomizer -->
+    <div id="foodTab" class="tab-content">
+        <h2>In-District Crew Meal Randomizer</h2>
+        <p>Solves the hardest shift decision: picking lunch/dinner. Automatically filters out spots eaten at recently and stays strictly within STMFD response district boundaries.</p>
+
+        <div class="food-card">
+            <button class="spin-btn" onclick="spinMealWheel()">🎲 Pick Crew Meal Destination</button>
+            
+            <div id="foodResult" class="food-result">
+                <div id="foodName" class="food-title">Restaurant Name</div>
+                <div id="foodMeta" class="food-meta">Type • Address</div>
+                <div class="food-actions">
+                    <button class="accept-btn" onclick="acceptMealChoice()">✅ We're Eating Here (Log Meal)</button>
+                    <button class="action-btn" style="padding: 8px 14px; font-size: 13px;" onclick="openNavAddress(currentFoodChoice.address)">🗺️ Navigate</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-header">Recent Shift Meals (Excluded from Randomizer)</div>
+        <ul id="recentFoodList" class="recent-list"></ul>
+        <button class="clear-history-btn" style="margin-top: 10px;" onclick="clearFoodHistory()">Reset Meal History</button>
+    </div>
+
+    <!-- TAB 5: Take Me Home (St. Matthews Fire & EMS Stations) -->
     <div id="homeTab" class="tab-content">
         <h2>St. Matthews Fire & EMS Stations</h2>
         <p>Tap a station to launch direct navigation back to quarters.</p>
@@ -577,7 +674,7 @@
                             [-85.6195205, 38.2343721], [-85.619102, 38.233858], [-85.6187051, 38.2334282], [-85.6182974, 38.2329478],
                             [-85.6177341, 38.2332512], [-85.6167953, 38.2339001], [-85.6164842, 38.2341951], [-85.6162053, 38.234094],
                             [-85.615819, 38.2338664], [-85.6155937, 38.2336642], [-85.6152933, 38.2333271], [-85.6152182, 38.2330321],
-                            [-85.6151753, 38.2327456], [-85.615401, 38.2325349], [-85.6166076, 38.2319534], [-85.6177341, 38.2332512],
+                            [-85.6151753, 38.2327456], [-85.6155401, 38.2325349], [-85.6166076, 38.2319534], [-85.6177341, 38.2332512],
                             [-85.6182974, 38.2329478], [-85.6171548, 38.2316542], [-85.6167323, 38.2311928], [-85.6196949, 38.2296737],
                             [-85.6226318, 38.2281777], [-85.6229056, 38.2280123], [-85.6221798, 38.2271482], [-85.6236148, 38.2263644],
                             [-85.6253001, 38.2254377], [-85.6243594, 38.2243194], [-85.6222779, 38.2218055], [-85.6216609, 38.2221406],
@@ -600,6 +697,23 @@
             }
         ]
     };
+
+    // Master List of In-District Food Options (Verified within STMFD boundaries)
+    const districtFoodOptions = [
+        { name: "Plehn's Bakery & Deli", type: "Deli / Sandwiches", address: "3940 Shelbyville Rd, St Matthews, KY" },
+        { name: "St. Matthews Station (Sears Ave)", type: "Station Kitchen", address: "240 Sears Ave, St Matthews, KY" },
+        { name: "Siddharth Indian Kitchen", type: "Indian", address: "4214 Shelbyville Rd, St Matthews, KY" },
+        { name: "Taco City St. Matthews", type: "Tacos / Mexican", address: "4255 Shelbyville Rd, St Matthews, KY" },
+        { name: "Moby Dick Seafood", type: "Seafood / Fast Casual", address: "3939 Shelbyville Rd, St Matthews, KY" },
+        { name: "Frank Otte / Substation II", type: "Sub Sandwiches", address: "4203 Shelbyville Rd, St Matthews, KY" },
+        { name: "Zeggz Amazing Breakfast", type: "Breakfast / Brunch", address: "116 Landis Lakes Cir, Louisville, KY" },
+        { name: "Breckinridge Inn Deli / Kayrouz", type: "American / Subs", address: "3801 Shelbyville Rd, St Matthews, KY" },
+        { name: "Meridian Cafe", type: "Breakfast / Lunch", address: "112 Meridian Ave, St Matthews, KY" },
+        { name: "Salsarita's Fresh Mexican Grill", type: "Mexican Casual", address: "4100 Shelbyville Rd, St Matthews, KY" },
+        { name: "Chipotle Mexican Grill", type: "Burritos / Bowls", address: "4013 Shelbyville Rd, St Matthews, KY" },
+        { name: "Raising Cane's Chicken Fingers", type: "Chicken Tenders", address: "4030 Shelbyville Rd, St Matthews, KY" },
+        { name: "Penn Station East Coast Subs", type: "Hot Subs", address: "4310 Shelbyville Rd, St Matthews, KY" }
+    ];
 
     // Central Master List of Destination Facilities
     const masterHospitals = [
@@ -624,7 +738,7 @@
         { id: "uofl_mc_south", name: "UofL Health - MC South (Brooks)", lat: 38.06108454853360, lng: -85.69721919213730, type: "adult", region: "outside" }
     ];
 
-    // Adult Emergency Conditions Data mapped directly to Master Hospital IDs[cite: 1]
+    // Adult Emergency Conditions Data mapped directly to Master Hospital IDs
     const adultConditions = [
         {
             id: "med1",
@@ -714,7 +828,7 @@
         }
     ];
 
-    // Pediatric Emergency Conditions Data mapped directly to Master Hospital IDs[cite: 1]
+    // Pediatric Emergency Conditions Data mapped directly to Master Hospital IDs
     const pedConditions = [
         {
             id: "ped_newborn",
@@ -757,6 +871,8 @@
     let autoClearTimer;
     let searchHistory = [];
     let userLocation = null;
+    let currentFoodChoice = null;
+    let recentFoodHistory = JSON.parse(localStorage.getItem('stmfd_recent_meals') || '[]');
 
     const inputEl = document.getElementById('addressInput');
     const clearBtn = document.getElementById('clearBtn');
@@ -805,7 +921,6 @@
                     renderRoutingHospitals();
                 },
                 (error) => {
-                    // Fallback to St. Matthews Station 46 (Sears Ave) coordinates if GPS unavailable
                     userLocation = { lat: 38.2520, lng: -85.6441 };
                     updateStatusText(`<span>📍 GPS unavailable. Distance sorted from St. Matthews St. 46</span>`);
                     evaluateDestination();
@@ -819,6 +934,57 @@
             evaluateDestination();
             renderRoutingHospitals();
         }
+    }
+
+    /* FOOD RANDOMIZER LOGIC */
+    function spinMealWheel() {
+        // Filter out options eaten within the last 5 choices
+        const availableOptions = districtFoodOptions.filter(opt => !recentFoodHistory.includes(opt.name));
+        
+        // If all places are exhausted, fallback to full list
+        const pool = availableOptions.length > 0 ? availableOptions : districtFoodOptions;
+        
+        const randomChoice = pool[Math.floor(Math.random() * pool.length)];
+        currentFoodChoice = randomChoice;
+
+        document.getElementById('foodName').innerText = randomChoice.name;
+        document.getElementById('foodMeta').innerText = `${randomChoice.type} • ${randomChoice.address}`;
+        document.getElementById('foodResult').style.display = 'block';
+    }
+
+    function acceptMealChoice() {
+        if (!currentFoodChoice) return;
+        
+        // Add to recent history, keep last 5
+        recentFoodHistory.unshift(currentFoodChoice.name);
+        if (recentFoodHistory.length > 5) recentFoodHistory.pop();
+        
+        localStorage.setItem('stmfd_recent_meals', JSON.stringify(recentFoodHistory));
+        renderFoodHistory();
+        document.getElementById('foodResult').style.display = 'none';
+    }
+
+    function renderFoodHistory() {
+        const listEl = document.getElementById('recentFoodList');
+        if (!listEl) return;
+        
+        if (recentFoodHistory.length === 0) {
+            listEl.innerHTML = '<li class="recent-item" style="color:#a0aec0;">No recent meals logged.</li>';
+            return;
+        }
+
+        listEl.innerHTML = recentFoodHistory.map((item, index) => `
+            <li class="recent-item">
+                <span>🍽️ ${item}</span>
+                <span style="font-size:11px; color:#a0aec0;">Logged ${index === 0 ? 'Recently' : index + ' shifts ago'}</span>
+            </li>
+        `).join('');
+    }
+
+    function clearFoodHistory() {
+        recentFoodHistory = [];
+        localStorage.removeItem('stmfd_recent_meals');
+        renderFoodHistory();
     }
 
     function renderRoutingHospitals() {
@@ -959,8 +1125,16 @@
             if (marker) marker.setMap(null);
             if (!userLocation) getUserGeolocation();
             renderRoutingHospitals();
-        } else if (tab === 'home') {
+        } else if (tab === 'food') {
             document.querySelectorAll('.tab-btn')[3].classList.add('active');
+            document.getElementById('foodTab').classList.add('active');
+            mapWrapper.style.display = 'none';
+            historyContainer.style.display = 'none';
+            statusDiv.style.display = 'none';
+            if (marker) marker.setMap(null);
+            renderFoodHistory();
+        } else if (tab === 'home') {
+            document.querySelectorAll('.tab-btn')[4].classList.add('active');
             document.getElementById('homeTab').classList.add('active');
             mapWrapper.style.display = 'none';
             historyContainer.style.display = 'none';
@@ -1127,9 +1301,8 @@
         });
     }
 
-    // Pre-render static routing list before GPS resolves
     renderRoutingHospitals();
-
+    renderFoodHistory();
     loadGoogleMaps();
 </script>
 
