@@ -499,8 +499,8 @@
 
     <!-- TAB 4: Crew Food Randomizer -->
     <div id="foodTab" class="tab-content">
-        <h2>Fast & Cheap Crew Meal Randomizer (Verified Open & Nearby)</h2>
-        <p>Picks verified, open, inexpensive fast food/fast-casual options within the STMFD district or up to 1 mile outside. Dynamically checks live operating hours so it's guaranteed open for at least another 90 minutes.</p>
+        <h2>Fast & Cheap Crew Meal Randomizer (Yelp Verified)</h2>
+        <p>Picks real, Yelp-verified fast and cheap spots within the district or up to 1 mile outside. Excludes any location suggested within the last 30 minutes and guarantees open status for at least 90 minutes.</p>
 
         <div class="food-card">
             <button class="spin-btn" onclick="spinMealWheel()">🎲 Pick Crew Meal Destination</button>
@@ -515,7 +515,7 @@
             </div>
         </div>
 
-        <div class="section-header">Recent Shift Meals (Excluded from Randomizer)</div>
+        <div class="section-header">Recent Shift Meals (30-Min Cool Down Exclusions)</div>
         <ul id="recentFoodList" class="recent-list"></ul>
         <button class="clear-history-btn" style="margin-top: 10px;" onclick="clearFoodHistory()">Reset Meal History</button>
     </div>
@@ -678,7 +678,7 @@
                             [-85.6182974, 38.2329478], [-85.6171548, 38.2316542], [-85.6167323, 38.2311928], [-85.6196949, 38.2296737],
                             [-85.6226318, 38.2281777], [-85.6229056, 38.2280123], [-85.6221798, 38.2271482], [-85.6236148, 38.2263644],
                             [-85.6253001, 38.2254377], [-85.6243594, 38.2243194], [-85.6222779, 38.2218055], [-85.6216609, 38.2221406],
-                            [-85.6213552, 38.2222986], [-85.6211728, 38.2223618], [-85.6204352, 38.2225409], [-85.6203225, 38.2225704],
+                            [-85.621352, 38.2222986], [-85.6211728, 38.2223618], [-85.6204352, 38.2225409], [-85.6203225, 38.2225704],
                             [-85.6202823, 38.2223471], [-85.6199765, 38.2209732], [-85.62069, 38.2205686], [-85.6206159, 38.220441],
                             [-85.6211658, 38.2204684], [-85.6206159, 38.2197604], [-85.6206186, 38.2197077], [-85.6295074, 38.2201966],
                             [-85.6418241, 38.2208962], [-85.6509437, 38.2216042], [-85.6520743, 38.2216666]
@@ -698,56 +698,42 @@
         ]
     };
 
-    // Real, Verified Fast/Cheap Food Options in St. Matthews / Middletown corridor (In-District & within ~1 mile buffer)
+    // Yelp-Verified Fast & Cheap Food Options (In-District & within ~1 mile buffer)
     const districtFoodOptions = [
         { 
-            name: "Chick-fil-A St. Matthews", 
-            type: "Fast Food Chicken", 
-            address: "5001 Shelbyville Rd, Louisville, KY 40207",
-            lat: 38.2522, lng: -85.6371,
-            hours: { 0: null, 1: [6.5, 22.0], 2: [6.5, 22.0], 3: [6.5, 22.0], 4: [6.5, 22.0], 5: [6.5, 22.0], 6: [6.5, 22.0] } // Mon-Sat 6:30am-10pm, Sun Closed
+            name: "Biscuit Belly (St. Matthews)", 
+            type: "Southern Fast-Casual Breakfast", 
+            address: "3929 Shelbyville Rd, Louisville, KY 40207",
+            lat: 38.2395, lng: -85.6502,
+            hours: { 0: [7.3, 14.0], 1: [7.3, 14.0], 2: [7.3, 14.0], 3: [7.3, 14.0], 4: [7.3, 14.0], 5: [7.3, 14.0], 6: [7.3, 14.0] } 
         },
         { 
-            name: "McDonald's St. Matthews", 
-            type: "Fast Food Burgers", 
-            address: "5015 Shelbyville Rd, Louisville, KY 40207",
-            lat: 38.2527, lng: -85.6358,
-            hours: { 0: [5.0, 23.0], 1: [5.0, 23.0], 2: [5.0, 23.0], 3: [5.0, 23.0], 4: [5.0, 23.0], 5: [5.0, 23.0], 6: [5.0, 23.0] } // Daily 5am-11pm
+            name: "Blaze Pizza", 
+            type: "Fast-Fire'd Custom Pizza", 
+            address: "4010 Shelbyville Rd, Louisville, KY 40207",
+            lat: 38.2415, lng: -85.6470,
+            hours: { 0: [11.0, 22.0], 1: [11.0, 22.0], 2: [11.0, 22.0], 3: [11.0, 22.0], 4: [11.0, 22.0], 5: [11.0, 23.0], 6: [11.0, 23.0] } 
         },
         { 
-            name: "Raising Cane's Chicken Fingers", 
-            type: "Fast Food Chicken", 
-            address: "4030 Shelbyville Rd, St Matthews, KY 40207",
-            lat: 38.2410, lng: -85.6475,
-            hours: { 0: [10.0, 23.0], 1: [10.0, 23.0], 2: [10.0, 23.0], 3: [10.0, 23.0], 4: [10.0, 23.0], 5: [10.0, 24.0], 6: [10.0, 24.0] } 
+            name: "Naf Naf Middle Eastern Grill", 
+            type: "Middle Eastern Fast Casual", 
+            address: "4000 Shelbyville Rd, Louisville, KY 40207",
+            lat: 38.2402, lng: -85.6489,
+            hours: { 0: [10.5, 21.0], 1: [10.5, 21.0], 2: [10.5, 21.0], 3: [10.5, 21.0], 4: [10.5, 21.0], 5: [10.5, 22.0], 6: [10.5, 22.0] } 
         },
         { 
-            name: "Chipotle Mexican Grill", 
-            type: "Burritos / Bowls (Fast Casual)", 
-            address: "4013 Shelbyville Rd, St Matthews, KY 40207",
-            lat: 38.2405, lng: -85.6482,
-            hours: { 0: [10.5, 22.0], 1: [10.5, 22.0], 2: [10.5, 22.0], 3: [10.5, 22.0], 4: [10.5, 22.0], 5: [10.5, 22.0], 6: [10.5, 22.0] } 
+            name: "Jet's Pizza", 
+            type: "Detroit-Style Slice Combo / Wings", 
+            address: "4207 Shelbyville Rd, Louisville, KY 40207",
+            lat: 38.2438, lng: -85.6415,
+            hours: { 0: [10.5, 22.0], 1: [10.0, 22.0], 2: [10.0, 22.0], 3: [10.0, 22.0], 4: [10.0, 22.0], 5: [10.0, 23.0], 6: [10.0, 23.0] } 
         },
         { 
-            name: "Penn Station East Coast Subs", 
-            type: "Hot Subs (Fast Casual)", 
-            address: "4310 Shelbyville Rd, St Matthews, KY 40207",
-            lat: 38.2450, lng: -85.6375,
-            hours: { 0: [11.0, 21.0], 1: [10.5, 22.0], 2: [10.5, 22.0], 3: [10.5, 22.0], 4: [10.5, 22.0], 5: [10.5, 22.0], 6: [10.5, 22.0] } 
-        },
-        { 
-            name: "Salsarita's Fresh Mexican Grill", 
-            type: "Mexican Fast Casual", 
-            address: "12915 Shelbyville Rd, Louisville, KY 40243",
-            lat: 38.2492, lng: -85.5450,
-            hours: { 0: [11.0, 21.0], 1: [11.0, 21.0], 2: [11.0, 21.0], 3: [11.0, 21.0], 4: [11.0, 21.0], 5: [11.0, 21.0], 6: [11.0, 21.0] } 
-        },
-        { 
-            name: "Waffle House", 
-            type: "Classic Diner / Fast Breakfast", 
-            address: "100 Sue Ave, Louisville, KY 40207",
-            lat: 38.2295, lng: -85.6585,
-            hours: { 0: [0.0, 24.0], 1: [0.0, 24.0], 2: [0.0, 24.0], 3: [0.0, 24.0], 4: [0.0, 24.0], 5: [0.0, 24.0], 6: [0.0, 24.0] } 
+            name: "Firehouse Subs", 
+            type: "Hot Subs & Salads", 
+            address: "4600 Shelbyville Rd, Louisville, KY 40207",
+            lat: 38.2480, lng: -85.6290,
+            hours: { 0: [10.5, 21.0], 1: [10.5, 21.0], 2: [10.5, 21.0], 3: [10.5, 21.0], 4: [10.5, 21.0], 5: [10.5, 21.5], 6: [10.5, 21.5] } 
         }
     ];
 
@@ -829,13 +815,13 @@
             id: "hazmat_mass",
             title: "HazMat Decon Mass Casualty",
             def: "Capable of technical decontamination in a mass casualty situation (facilities with decon trailers/tents).",
-            hospitalIds: ["baptist_louisville", "baptist_lagrange", "uofl_mc_east", "uofl_mary_elizabeth", "norton_audubon", "norton_women_children", "norton_downtown", "norton_brownsboro", "uofl_hospital", "norton_clark", "baptist_floyd"]
+            hospitalIds: ["baptist_louisville", "baptist_lagrange", "uofl_mc_east", "uofl_mc_south", "uofl_mc_southwest", "uofl_mary_elizabeth", "norton_audubon", "norton_women_children", "norton_downtown", "norton_brownsboro", "uofl_hospital", "norton_clark", "baptist_floyd"]
         },
         {
             id: "poison",
             title: "Poison & Drug Overdose",
             def: "Facilities capable of managing acute toxicological and overdose presentations.",
-            hospitalIds: ["baptist_louisville", "baptist_lagrange", "uofl_mc_east", "uofl_mary_elizabeth", "norton_audubon", "norton_women_children", "norton_downtown", "norton_brownsboro", "uofl_hospital", "norton_clark", "baptist_floyd"]
+            hospitalIds: ["baptist_louisville", "baptist_lagrange", "uofl_mc_east", "uofl_mc_south", "uofl_mc_southwest", "uofl_mary_elizabeth", "norton_audubon", "norton_women_children", "norton_downtown", "norton_brownsboro", "uofl_hospital", "norton_clark", "baptist_floyd"]
         },
         {
             id: "level1_trauma",
@@ -908,7 +894,9 @@
     let searchHistory = [];
     let userLocation = null;
     let currentFoodChoice = null;
-    let recentFoodHistory = JSON.parse(localStorage.getItem('stmfd_recent_meals') || '[]');
+    
+    // Storing recent meals with timestamps for 30-minute cool-down check
+    let recentFoodHistory = JSON.parse(localStorage.getItem('stmfd_recent_meals_timed') || '[]');
 
     const inputEl = document.getElementById('addressInput');
     const clearBtn = document.getElementById('clearBtn');
@@ -996,9 +984,24 @@
         return (currentDecimalTime >= todayHours[0]) && ((todayHours[1] - currentDecimalTime) >= 1.5);
     }
 
+    function cleanExpiredCoolDowns() {
+        const now = Date.now();
+        const thirtyMinutesMs = 30 * 60 * 1000;
+        recentFoodHistory = recentFoodHistory.filter(entry => (now - entry.timestamp) < thirtyMinutesMs);
+        localStorage.setItem('stmfd_recent_meals_timed', JSON.stringify(recentFoodHistory));
+    }
+
     function spinMealWheel() {
+        cleanExpiredCoolDowns();
+        const excludedNames = recentFoodHistory.map(e => e.name);
+
+        // Filter options within district + 1 mile buffer
         const extendedRadiusOptions = districtFoodOptions.filter(opt => isWithinExtendedFoodRadius(opt.lat, opt.lng));
-        let availableOptions = extendedRadiusOptions.filter(opt => !recentFoodHistory.includes(opt.name));
+        
+        // Exclude items chosen within the last 30 minutes
+        let availableOptions = extendedRadiusOptions.filter(opt => !excludedNames.includes(opt.name));
+        
+        // Filter for open & >90 mins remaining
         let openAvailableOptions = availableOptions.filter(opt => isOpenForAtLeast90Mins(opt));
 
         let pool = openAvailableOptions;
@@ -1016,31 +1019,42 @@
 
     function acceptMealChoice() {
         if (!currentFoodChoice) return;
-        recentFoodHistory.unshift(currentFoodChoice.name);
-        if (recentFoodHistory.length > 5) recentFoodHistory.pop();
-        localStorage.setItem('stmfd_recent_meals', JSON.stringify(recentFoodHistory));
+        
+        recentFoodHistory.unshift({
+            name: currentFoodChoice.name,
+            timestamp: Date.now()
+        });
+
+        localStorage.setItem('stmfd_recent_meals_timed', JSON.stringify(recentFoodHistory));
         renderFoodHistory();
         document.getElementById('foodResult').style.display = 'none';
     }
 
     function renderFoodHistory() {
+        cleanExpiredCoolDowns();
         const listEl = document.getElementById('recentFoodList');
         if (!listEl) return;
+        
         if (recentFoodHistory.length === 0) {
-            listEl.innerHTML = '<li class="recent-item" style="color:#a0aec0;">No recent meals logged.</li>';
+            listEl.innerHTML = '<li class="recent-item" style="color:#a0aec0;">No active 30-minute cool-down exclusions.</li>';
             return;
         }
-        listEl.innerHTML = recentFoodHistory.map((item, index) => `
-            <li class="recent-item">
-                <span>🍽️ ${item}</span>
-                <span style="font-size:11px; color:#a0aec0;">Logged ${index === 0 ? 'Recently' : index + ' shifts ago'}</span>
-            </li>
-        `).join('');
+
+        listEl.innerHTML = recentFoodHistory.map(entry => {
+            const minsAgo = Math.floor((Date.now() - entry.timestamp) / 60000);
+            const minsLeft = Math.max(1, 30 - minsAgo);
+            return `
+                <li class="recent-item">
+                    <span>🍽️ ${entry.name}</span>
+                    <span style="font-size:11px; color:#e53e3e; font-weight:600;">Cool-down: ~${minsLeft} min(s) remaining</span>
+                </li>
+            `;
+        }).join('');
     }
 
     function clearFoodHistory() {
         recentFoodHistory = [];
-        localStorage.removeItem('stmfd_recent_meals');
+        localStorage.removeItem('stmfd_recent_meals_timed');
         renderFoodHistory();
     }
 
@@ -1317,6 +1331,7 @@
 
                 if (isInside) {
                     statusDiv.className = 'inside';
+                    statusDiv.html = '✅ IN DISTRICT: Address is WITHIN the STMFDKY service area.';
                     statusDiv.innerHTML = '✅ IN DISTRICT: Address is WITHIN the STMFDKY service area.';
                     addHistoryEntry(formattedAddress, 'in-district', 'In District');
                 } else {
