@@ -109,6 +109,19 @@
             color: white;
             border-color: #d53f8c;
         }
+        /* Split Blue & Pink Button */
+        .er-btn.split-peds {
+            background: linear-gradient(90deg, #ebf8ff 50%, #fff5f7 50%);
+            color: #2d3748;
+            border: 1px solid #cbd5e0;
+            border-left: 4px solid #3182ce;
+            border-right: 4px solid #d53f8c;
+        }
+        .er-btn.split-peds:hover {
+            background: linear-gradient(90deg, #003366 50%, #d53f8c 50%);
+            color: white;
+            border-color: #003366;
+        }
         .er-btn::after {
             content: "➔";
             font-size: 12px;
@@ -251,7 +264,7 @@
         <div class="section-header">Jefferson County, KY ER</div>
         <div class="er-grid">
             <button class="er-btn" onclick="openNav(38.23885368709200, -85.63917771315160)">Baptist Health Louisville</button>
-            <button class="er-btn" onclick="openNav(38.23558071531270, -85.63158611445510)">Norton Women's & Children's (Suburban)</button>
+            <button class="er-btn split-peds" onclick="openNav(38.23558071531270, -85.63158611445510)">Norton Women's & Children's (Suburban)</button>
             <button class="er-btn" onclick="openNav(38.23114041993000, -85.63694179169460)">UofL Health - MC East ER (Jewish East)</button>
             <button class="er-btn" onclick="openNav(38.31634156358550, -85.57558139921120)">Norton Brownsboro</button>
             <button class="er-btn peds" onclick="openNav(38.31569198353950, -85.56956072719920)">Norton Children's MC (Brownsboro)</button>
