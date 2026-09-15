@@ -510,7 +510,7 @@
     <!-- TAB 4: Crew Food Randomizer -->
     <div id="foodTab" class="tab-content">
         <h2>Google-Sourced St. Matthews Food Randomizer (&gt;51% Food Sales)</h2>
-        <p>Picks from Google-verified local eateries where food sales exceed 51% of business operations. Any spun location enters an immediate 30-minute cool-down block whether accepted or skipped.</p>
+        <p>Picks from food-primary Google establishments within the service area plus a 1-mile buffer zone. Every spin automatically applies an immediate 30-minute cool-down block.</p>
 
         <div class="selector-box" style="margin-bottom: 15px;">
             <div class="selector-group" style="margin-bottom: 0;">
@@ -676,7 +676,7 @@
                             [-85.5788215, 38.287619], [-85.5776413, 38.2861284], [-85.5775179, 38.2859389], [-85.5767884, 38.28596],
                             [-85.5760964, 38.2860905], [-85.575458, 38.2862884], [-85.5749377, 38.2864526], [-85.5744817, 38.2865958],
                             [-85.5729206, 38.2871642], [-85.5723145, 38.2873706], [-85.5714025, 38.2861663], [-85.57063, 38.2854084],
-                            [-85.697503, 38.2845241], [-85.5673577, 38.2813155], [-85.5668213, 38.2804311], [-85.5664887, 38.279749],
+                            [-85.5697503, 38.2845241], [-85.5673577, 38.2813155], [-85.5668213, 38.2804311], [-85.5664887, 38.279749],
                             [-85.5662634, 38.2792015], [-85.5638279, 38.2739628], [-85.563398, 38.2742368], [-85.5610484, 38.2749612],
                             [-85.5606192, 38.274818], [-85.5605334, 38.2745063], [-85.5600291, 38.2734956], [-85.559557, 38.2723501],
                             [-85.5589455, 38.2709687], [-85.5589509, 38.2708045], [-85.5598199, 38.2708297], [-85.561794, 38.2708634],
@@ -725,7 +725,7 @@
         ]
     };
 
-    // Google-Sourced St. Matthews Food Establishments (>51% Food Sales, Food-Primary)
+    // Google-Sourced Food-Primary Establishments (>51% Food Sales) within Service Area + 1 Mile Buffer
     const districtFoodOptions = [
         { name: "Texas Roadhouse (St. Matthews)", type: "sitdown", desc: "Steaks, Ribs & American Grill", address: "5005 Shelbyville Rd, Louisville, KY 40207", lat: 38.2525, lng: -85.6360, hours: { 0: [15.0, 22.0], 1: [15.0, 22.0], 2: [15.0, 22.0], 3: [15.0, 22.0], 4: [15.0, 23.0], 5: [15.0, 23.0], 6: [15.0, 22.0] } },
         { name: "Texas de Brazil (Mall St. Matthews)", type: "sitdown", desc: "Brazilian Steakhouse & Salad Bar", address: "5000 Shelbyville Rd, Louisville, KY 40207", lat: 38.2510, lng: -85.6380, hours: { 0: [16.0, 21.0], 1: [17.0, 21.3], 2: [17.0, 21.3], 3: [17.0, 21.3], 4: [17.0, 21.3], 5: [17.0, 22.0], 6: [16.0, 22.0] } },
@@ -965,15 +965,17 @@
         }
     }
 
-    function isWithinExtendedFoodRadius(lat, lng) {
+    // Checks if a point is inside the polygon OR within a 1-mile buffer outside it
+    function isWithinServiceAreaPlusBuffer(lat, lng) {
         const point = new google.maps.LatLng(lat, lng);
         if (google.maps.geometry.poly.containsLocation(point, boundaryPolygon)) {
             return true;
         }
+        // Check distance to any vertex or check if within 1 mile of the ring boundary
         const ring = geojsonData.features[0].geometry.coordinates[0];
         for (let coord of ring) {
             let dist = calculateDistance(lat, lng, coord[1], coord[0]);
-            if (dist <= 1.2) {
+            if (dist <= 1.0) {
                 return true;
             }
         }
@@ -1002,15 +1004,15 @@
         const excludedNames = recentFoodHistory.map(e => e.name);
         const selectedCuisine = document.getElementById('cuisineFilter').value;
 
-        // 1. Filter by radius buffer
-        let pool = districtFoodOptions.filter(opt => isWithinExtendedFoodRadius(opt.lat, opt.lng));
+        // 1. Filter by Service Area + 1 Mile Buffer
+        let pool = districtFoodOptions.filter(opt => isWithinServiceAreaPlusBuffer(opt.lat, opt.lng));
 
         // 2. Filter by cuisine/style selection if active
         if (selectedCuisine !== 'all') {
             pool = pool.filter(opt => opt.type === selectedCuisine);
         }
 
-        // 3. Exclude items spun within the last 30 minutes
+        // 3. Exclude items currently on 30-minute cool down
         let availableOptions = pool.filter(opt => !excludedNames.includes(opt.name));
         
         // 4. Filter for open & >90 mins remaining
@@ -1024,7 +1026,7 @@
         const randomChoice = finalPool[Math.floor(Math.random() * finalPool.length)];
         currentFoodChoice = randomChoice;
 
-        // IMMEDIATE EXCLUSION: Add to cool-down list the moment it's spun (whether accepted or skipped)
+        // IMMEDIATE EXCLUSION: Triggered instantly on EVERY spin
         recentFoodHistory.unshift({
             name: currentFoodChoice.name,
             timestamp: Date.now()
