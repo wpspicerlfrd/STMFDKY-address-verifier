@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STMFDKY Service Area Verification</title>
+    <title>STMFDKY District Verifier & Routing Tool</title>
     <style>
         * { 
             box-sizing: border-box; 
@@ -24,20 +24,53 @@
             width: 100%; 
             max-width: 650px; 
         }
+        .tab-nav {
+            display: flex;
+            border-bottom: 2px solid #e2e8f0;
+            margin-bottom: 20px;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 10px 15px;
+            background: none;
+            border: none;
+            font-size: 15px;
+            font-weight: 600;
+            color: #718096;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+        }
+        .tab-btn.active {
+            color: #003366;
+            border-bottom-color: #003366;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
         h2 { 
             margin-top: 0; 
             color: #1a202c; 
-            font-size: 22px; 
+            font-size: 20px; 
         }
         p { 
             color: #4a5568; 
             font-size: 14px; 
-            margin-bottom: 20px; 
+            margin-bottom: 15px; 
         }
         .form-group { 
             display: flex; 
             gap: 10px; 
             margin-bottom: 15px; 
+        }
+        .form-group-vertical {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
         }
         .input-wrapper {
             position: relative;
@@ -45,15 +78,19 @@
             display: flex;
             align-items: center;
         }
-        input[type="text"] { 
+        input[type="text"], select { 
             width: 100%; 
-            padding: 12px 35px 12px 15px; 
+            padding: 12px 15px; 
             font-size: 15px; 
             border: 1px solid #cbd5e0; 
             border-radius: 6px; 
             outline: none; 
+            background-color: #fff;
         }
-        input[type="text"]:focus { 
+        input[type="text"] {
+            padding-right: 35px;
+        }
+        input[type="text"]:focus, select:focus { 
             border-color: #3182ce; 
             box-shadow: 0 0 0 3px rgba(49,130,206,0.2); 
         }
@@ -68,7 +105,6 @@
             display: none;
             padding: 0 4px;
             line-height: 1;
-            transition: color 0.2s;
         }
         .clear-btn:hover {
             color: #4a5568;
@@ -91,12 +127,12 @@
             background-color: #a0aec0;
             cursor: not-allowed;
         }
-        #status { 
+        #status, #routeSummary { 
             display: none; 
-            padding: 15px; 
+            padding: 12px 15px; 
             border-radius: 6px; 
             font-weight: 600; 
-            font-size: 16px; 
+            font-size: 15px; 
             margin-bottom: 15px; 
             text-align: center; 
         }
@@ -112,17 +148,33 @@
             border: 1px solid #feb2b2; 
             display: block; 
         }
-        #status.loading { 
+        #status.loading, #routeSummary.loading { 
             background-color: #e2e8f0; 
             color: #4a5568; 
             border: 1px solid #cbd5e0; 
             display: block; 
+        }
+        #routeSummary.active {
+            background-color: #ebf8ff;
+            color: #2c5282;
+            border: 1px solid #bee3f8;
+            display: block;
         }
         #map { 
             width: 100%; 
             height: 380px; 
             border-radius: 6px; 
             border: 1px solid #e2e8f0; 
+        }
+        .directions-panel {
+            margin-top: 15px;
+            max-height: 250px;
+            overflow-y: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 10px;
+            background: #f8fafc;
+            display: none;
         }
         .history-container {
             margin-top: 25px;
@@ -148,7 +200,6 @@
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
-            padding: 0;
         }
         .clear-history-btn:hover {
             text-decoration: underline;
@@ -184,40 +235,59 @@
             font-weight: 700;
             text-transform: uppercase;
         }
-        .badge.in-district {
-            background-color: #c6f6d5;
-            color: #22543d;
-        }
-        .badge.out-district {
-            background-color: #fed7d7;
-            color: #742a2a;
-        }
-        .badge.not-found {
-            background-color: #e2e8f0;
-            color: #4a5568;
-        }
+        .badge.in-district { background-color: #c6f6d5; color: #22543d; }
+        .badge.out-district { background-color: #fed7d7; color: #742a2a; }
+        .badge.not-found { background-color: #e2e8f0; color: #4a5568; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>STMFDKY Service Area Verifier</h2>
-    <p>Enter an address below to verify if it falls within the district boundary.</p>
-
-    <div class="form-group">
-        <div class="input-wrapper">
-            <input type="text" id="addressInput" placeholder="Enter street address (e.g. 4100 Shelbyville Rd)" autofocus>
-            <button id="clearBtn" class="clear-btn" onclick="resetForm()" title="Clear address">&times;</button>
-        </div>
-        <button id="verifyBtn" class="action-btn" onclick="verifyAddress()">Verify Address</button>
+    <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab('verifier')">District Verifier</button>
+        <button class="tab-btn" onclick="switchTab('routing')">Hospital Routing</button>
     </div>
 
-    <div id="status"></div>
+    <!-- TAB 1: District Verifier -->
+    <div id="verifierTab" class="tab-content active">
+        <h2>District Boundary Check</h2>
+        <p>Enter an address to verify if it falls within the STMFDKY service area.</p>
+
+        <div class="form-group">
+            <div class="input-wrapper">
+                <input type="text" id="addressInput" placeholder="Enter street address (e.g. 4100 Shelbyville Rd)" autofocus>
+                <button id="clearBtn" class="clear-btn" onclick="resetForm()" title="Clear address">&times;</button>
+            </div>
+            <button id="verifyBtn" class="action-btn" onclick="verifyAddress()">Verify Address</button>
+        </div>
+        <div id="status"></div>
+    </div>
+
+    <!-- TAB 2: Hospital Routing -->
+    <div id="routingTab" class="tab-content">
+        <h2>Hospital Transport Routing</h2>
+        <p>Select a destination hospital. Your current GPS location will be used as the starting point.</p>
+
+        <div class="form-group-vertical">
+            <select id="hospitalSelect">
+                <option value="4000 Kresge Way, Louisville, KY 40207">Baptist Health Louisville</option>
+                <option value="4001 Dutchmans Ln, Louisville, KY 40207">Norton Suburban / Women's & Children's Hospital</option>
+                <option value="200 E Chestnut St, Louisville, KY 40202">Norton Healthcare Pavilion / Norton Hospital</option>
+                <option value="200 Abraham Flexner Way, Louisville, KY 40202">UofL Health - Jewish Hospital</option>
+                <option value="530 S Jackson St, Louisville, KY 40202">UofL Health - UofL Hospital</option>
+            </select>
+            <button id="routeBtn" class="action-btn" onclick="calculateRouteFromCurrentLocation()">Get Route from Current Location</button>
+        </div>
+        <div id="routeSummary"></div>
+    </div>
+
+    <!-- Map & Shared Output Displays -->
     <div id="map"></div>
+    <div id="directionsPanel" class="directions-panel"></div>
 
     <div id="historyContainer" class="history-container">
         <div class="history-header">
-            <h3>Recent Searches</h3>
+            <h3>Recent Boundary Searches</h3>
             <button class="clear-history-btn" onclick="clearHistory()">Clear History</button>
         </div>
         <ul id="historyList" class="history-list"></ul>
@@ -359,13 +429,19 @@
     let boundaryPolygon;
     let boundaryBounds;
     let geocoder;
+    let directionsService;
+    let directionsRenderer;
     let autoClearTimer;
     let searchHistory = [];
 
     const inputEl = document.getElementById('addressInput');
+    const hospitalEl = document.getElementById('hospitalSelect');
     const clearBtn = document.getElementById('clearBtn');
     const verifyBtn = document.getElementById('verifyBtn');
+    const routeBtn = document.getElementById('routeBtn');
     const statusDiv = document.getElementById('status');
+    const routeSummary = document.getElementById('routeSummary');
+    const directionsPanel = document.getElementById('directionsPanel');
     const historyContainer = document.getElementById('historyContainer');
     const historyList = document.getElementById('historyList');
 
@@ -373,45 +449,45 @@
         clearBtn.style.display = this.value ? 'block' : 'none';
     });
 
-    inputEl.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') {
-            verifyAddress();
+    inputEl.addEventListener('keydown', e => { if (e.key === 'Enter') verifyAddress(); });
+
+    function switchTab(tab) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+        if (tab === 'verifier') {
+            document.querySelectorAll('.tab-btn')[0].classList.add('active');
+            document.getElementById('verifierTab').classList.add('active');
+            historyContainer.style.display = searchHistory.length > 0 ? 'block' : 'none';
+            directionsPanel.style.display = 'none';
+            routeSummary.style.display = 'none';
+            if (directionsRenderer) directionsRenderer.setMap(null);
+            if (map && boundaryBounds) map.fitBounds(boundaryBounds);
+        } else {
+            document.querySelectorAll('.tab-btn')[1].classList.add('active');
+            document.getElementById('routingTab').classList.add('active');
+            historyContainer.style.display = 'none';
+            statusDiv.style.display = 'none';
+            if (marker) marker.setMap(null);
         }
-    });
+    }
 
     function resetForm() {
         if (autoClearTimer) clearTimeout(autoClearTimer);
-        
         inputEl.value = '';
         clearBtn.style.display = 'none';
         statusDiv.className = '';
         statusDiv.style.display = 'none';
         statusDiv.innerHTML = '';
-        
-        if (marker) {
-            marker.setMap(null);
-            marker = null;
-        }
-
-        if (map && boundaryBounds) {
-            map.fitBounds(boundaryBounds);
-        }
-
+        if (marker) { marker.setMap(null); marker = null; }
+        if (map && boundaryBounds) map.fitBounds(boundaryBounds);
         inputEl.focus();
     }
 
     function addHistoryEntry(address, statusClass, badgeText) {
-        // Remove duplicate entry if searched again
         searchHistory = searchHistory.filter(item => item.address.toLowerCase() !== address.toLowerCase());
-        
-        // Add new lookup to top
         searchHistory.unshift({ address, statusClass, badgeText });
-        
-        // Keep max 5 recent entries
-        if (searchHistory.length > 5) {
-            searchHistory.pop();
-        }
-
+        if (searchHistory.length > 5) searchHistory.pop();
         renderHistory();
     }
 
@@ -421,8 +497,9 @@
             historyList.innerHTML = '';
             return;
         }
-
-        historyContainer.style.display = 'block';
+        if (document.getElementById('verifierTab').classList.contains('active')) {
+            historyContainer.style.display = 'block';
+        }
         historyList.innerHTML = searchHistory.map(item => `
             <li class="history-item">
                 <span class="history-address" title="${item.address}">${item.address}</span>
@@ -453,6 +530,8 @@
         });
 
         geocoder = new google.maps.Geocoder();
+        directionsService = new google.maps.DirectionsService();
+        directionsRenderer = new google.maps.DirectionsRenderer();
 
         map.data.addGeoJson(geojsonData);
         map.data.setStyle(function(feature) {
@@ -511,12 +590,7 @@
                 }
 
                 if (marker) marker.setMap(null);
-                marker = new google.maps.Marker({
-                    position: location,
-                    map: map,
-                    title: address
-                });
-
+                marker = new google.maps.Marker({ position: location, map: map, title: address });
                 map.setCenter(location);
                 map.setZoom(15);
             } else {
@@ -527,6 +601,82 @@
 
             autoClearTimer = setTimeout(resetForm, 10000);
         });
+    }
+
+    function calculateRouteFromCurrentLocation() {
+        const destination = hospitalEl.value;
+
+        if (!navigator.geolocation) {
+            routeSummary.className = 'loading';
+            routeSummary.style.display = 'block';
+            routeSummary.innerHTML = '❌ Geolocation is not supported by your browser.';
+            return;
+        }
+
+        routeBtn.disabled = true;
+        routeSummary.className = 'loading';
+        routeSummary.style.display = 'block';
+        routeSummary.innerHTML = '📡 Acquiring current GPS location...';
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const userLatLng = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+
+                routeSummary.innerHTML = '🔍 Calculating best route...';
+
+                directionsService.route(
+                    {
+                        origin: userLatLng,
+                        destination: destination,
+                        travelMode: google.maps.TravelMode.DRIVING
+                    },
+                    (response, status) => {
+                        routeBtn.disabled = false;
+                        if (status === 'OK') {
+                            directionsRenderer.setMap(map);
+                            directionsRenderer.setPanel(directionsPanel);
+                            directionsRenderer.setDirections(response);
+                            directionsPanel.style.display = 'block';
+
+                            const routeLeg = response.routes[0].legs[0];
+                            routeSummary.className = 'active';
+                            routeSummary.innerHTML = `🚑 Estimated Drive Time: <strong>${routeLeg.duration.text}</strong> (${routeLeg.distance.text})`;
+                        } else {
+                            routeSummary.className = 'loading';
+                            routeSummary.innerHTML = '❌ Could not calculate route to selected hospital.';
+                            directionsPanel.style.display = 'none';
+                        }
+                    }
+                );
+            },
+            (error) => {
+                routeBtn.disabled = false;
+                routeSummary.className = 'loading';
+                routeSummary.style.display = 'block';
+                switch (error.code) {
+                    case error.PERMISSION_DENIED:
+                        routeSummary.innerHTML = '❌ Location access denied. Please allow location permissions in your browser.';
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        routeSummary.innerHTML = '❌ Location information is currently unavailable.';
+                        break;
+                    case error.TIMEOUT:
+                        routeSummary.innerHTML = '❌ Location request timed out. Please try again.';
+                        break;
+                    default:
+                        routeSummary.innerHTML = '❌ An unknown error occurred while retrieving location.';
+                        break;
+                }
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
+            }
+        );
     }
 
     loadGoogleMaps();
