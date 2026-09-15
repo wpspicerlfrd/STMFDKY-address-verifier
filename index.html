@@ -509,8 +509,8 @@
 
     <!-- TAB 4: Crew Food Randomizer -->
     <div id="foodTab" class="tab-content">
-        <h2>Complete St. Matthews Area Food Randomizer</h2>
-        <p>Includes all Yelp-verified dining establishments (casual, sit-down, fast-food, coffee, and specialty spots) within the district and surrounding corridors. Automatically applies a 30-minute exclusion block on any spun location whether accepted or skipped.</p>
+        <h2>Google-Sourced St. Matthews Food Randomizer (&gt;51% Food Sales)</h2>
+        <p>Picks from Google-verified local eateries where food sales exceed 51% of business operations. Any spun location enters an immediate 30-minute cool-down block whether accepted or skipped.</p>
 
         <div class="selector-box" style="margin-bottom: 15px;">
             <div class="selector-group" style="margin-bottom: 0;">
@@ -535,8 +535,8 @@
                 <div id="foodName" class="food-title">Restaurant Name</div>
                 <div id="foodMeta" class="food-meta">Type • Address</div>
                 <div class="food-actions">
-                    <button class="accept-btn" onclick="acceptMealChoice(true)">✅ Eating Here</button>
-                    <button class="skip-btn" onclick="acceptMealChoice(false)">❌ Skip / Not This</button>
+                    <button class="accept-btn" onclick="acceptMealChoice()">✅ Eating Here</button>
+                    <button class="skip-btn" onclick="skipMealChoice()">❌ Skip / Not This</button>
                     <button class="action-btn" style="padding: 8px 14px; font-size: 13px;" onclick="openNavAddress(currentFoodChoice.address)">🗺️ Navigate</button>
                 </div>
             </div>
@@ -676,7 +676,7 @@
                             [-85.5788215, 38.287619], [-85.5776413, 38.2861284], [-85.5775179, 38.2859389], [-85.5767884, 38.28596],
                             [-85.5760964, 38.2860905], [-85.575458, 38.2862884], [-85.5749377, 38.2864526], [-85.5744817, 38.2865958],
                             [-85.5729206, 38.2871642], [-85.5723145, 38.2873706], [-85.5714025, 38.2861663], [-85.57063, 38.2854084],
-                            [-85.5697503, 38.2845241], [-85.5673577, 38.2813155], [-85.5668213, 38.2804311], [-85.5664887, 38.279749],
+                            [-85.697503, 38.2845241], [-85.5673577, 38.2813155], [-85.5668213, 38.2804311], [-85.5664887, 38.279749],
                             [-85.5662634, 38.2792015], [-85.5638279, 38.2739628], [-85.563398, 38.2742368], [-85.5610484, 38.2749612],
                             [-85.5606192, 38.274818], [-85.5605334, 38.2745063], [-85.5600291, 38.2734956], [-85.559557, 38.2723501],
                             [-85.5589455, 38.2709687], [-85.5589509, 38.2708045], [-85.5598199, 38.2708297], [-85.561794, 38.2708634],
@@ -725,50 +725,24 @@
         ]
     };
 
-    // Comprehensive Master Directory of Yelp-Verified St. Matthews Food Establishments (All Categories)
+    // Google-Sourced St. Matthews Food Establishments (>51% Food Sales, Food-Primary)
     const districtFoodOptions = [
-        // Sit-Down & Casual Dining
-        { name: "Mesh Louisville", type: "sitdown", desc: "Upscale American Bistro & Bar", address: "3608 Brownsboro Rd, Louisville, KY 40207", lat: 38.2568, lng: -85.6482, hours: { 0: [11.0, 22.0], 1: [11.0, 22.0], 2: [11.0, 22.0], 3: [11.0, 22.0], 4: [11.0, 23.0], 5: [11.0, 23.0], 6: [11.0, 21.0] } },
-        { name: "The Park House", type: "sitdown", desc: "New American Restaurant & Bar", address: "3815 Frankfort Ave, Louisville, KY 40207", lat: 38.2580, lng: -85.6520, hours: { 0: [11.0, 21.0], 1: [11.0, 22.0], 2: [11.0, 22.0], 3: [11.0, 22.0], 4: [11.0, 23.0], 5: [11.0, 23.0], 6: [11.0, 21.0] } },
-        { name: "Porcini", type: "sitdown", desc: "Fine Dining Italian Restaurant", address: "3927 Frankfort Ave, Louisville, KY 40207", lat: 38.2591, lng: -85.6495, hours: { 0: [17.0, 22.0], 1: [17.0, 22.0], 2: [17.0, 22.0], 3: [17.0, 22.0], 4: [17.0, 23.0], 5: [17.0, 23.0], 6: [17.0, 22.0] } },
-        { name: "Hiko A-Mon", type: "asian", desc: "Authentic Japanese & Sushi Bar", address: "111 S Hubbards Ln, Louisville, KY 40207", lat: 38.2460, lng: -85.6321, hours: { 0: [17.0, 21.5], 1: [11.5, 21.5], 2: [11.5, 21.5], 3: [11.5, 21.5], 4: [11.5, 22.0], 5: [11.5, 22.0], 6: [17.0, 21.5] } },
-        { name: "Palermo", type: "italian", desc: "Classic Italian & Pizza", address: "3921 Shelbyville Rd, Louisville, KY 40207", lat: 38.2392, lng: -85.6508, hours: { 0: [11.0, 21.0], 1: [11.0, 21.0], 2: [11.0, 21.0], 3: [11.0, 21.0], 4: [11.0, 22.0], 5: [11.0, 22.0], 6: [11.0, 21.0] } },
-        
-        // Mexican / Tacos
-        { name: "Guacamole Modern Mexican", type: "mexican", desc: "Upscale Mexican & Tequila Bar", address: "3905 Shelbyville Rd, Louisville, KY 40207", lat: 38.2390, lng: -85.6515, hours: { 0: [11.0, 21.5], 1: [11.0, 21.5], 2: [11.0, 21.5], 3: [11.0, 21.5], 4: [11.0, 22.5], 5: [11.0, 22.5], 6: [11.0, 21.5] } },
-        { name: "Chipotle Mexican Grill", type: "mexican", desc: "Burritos & Bowls", address: "4013 Shelbyville Rd, St Matthews, KY 40207", lat: 38.2405, lng: -85.6482, hours: { 0: [10.5, 22.0], 1: [10.5, 22.0], 2: [10.5, 22.0], 3: [10.5, 22.0], 4: [10.5, 22.0], 5: [10.5, 22.0], 6: [10.5, 22.0] } },
-        { name: "Salsarita's Fresh Mexican Grill", type: "mexican", desc: "Mexican Fast Casual", address: "12915 Shelbyville Rd, Louisville, KY 40243", lat: 38.2492, lng: -85.5450, hours: { 0: [11.0, 21.0], 1: [11.0, 21.0], 2: [11.0, 21.0], 3: [11.0, 21.0], 4: [11.0, 21.0], 5: [11.0, 21.0], 6: [11.0, 21.0] } },
-        { name: "Naf Naf Middle Eastern Grill", type: "mexican", desc: "Middle Eastern Fast Casual", address: "4000 Shelbyville Rd, Louisville, KY 40207", lat: 38.2402, lng: -85.6489, hours: { 0: [10.5, 21.0], 1: [10.5, 21.0], 2: [10.5, 21.0], 3: [10.5, 21.0], 4: [10.5, 21.0], 5: [10.5, 22.0], 6: [10.5, 22.0] } },
-
-        // BBQ & Steaks
-        { name: "River City Licking BBQ", type: "bbq", desc: "Local BBQ Smokehouse", address: "3922 Shelbyville Rd, Louisville, KY 40207", lat: 38.2398, lng: -85.6500, hours: { 0: [11.0, 20.0], 1: [11.0, 20.0], 2: [11.0, 20.0], 3: [11.0, 20.0], 4: [11.0, 21.0], 5: [11.0, 21.0], 6: [11.0, 20.0] } },
-        { name: "Logan's Roadhouse", type: "bbq", desc: "Steaks, Ribs & American Grill", address: "4600 Shelbyville Rd, Louisville, KY 40207", lat: 38.2475, lng: -85.6285, hours: { 0: [11.0, 22.0], 1: [11.0, 22.0], 2: [11.0, 22.0], 3: [11.0, 22.0], 4: [11.0, 23.0], 5: [11.0, 23.0], 6: [11.0, 22.0] } },
-
-        // Asian & Sushi
-        { name: "Sapporo Microbrew & Sushi", type: "asian", desc: "Sushi, Seafood & Craft Beer", address: "1706 Bardstown Rd, Louisville, KY 40205", lat: 38.2350, lng: -85.7020, hours: { 0: [17.0, 22.0], 1: [17.0, 22.0], 2: [17.0, 22.0], 3: [17.0, 22.0], 4: [17.0, 23.0], 5: [17.0, 23.0], 6: [17.0, 22.0] } },
-        { name: "Joy Luck Diner", type: "asian", desc: "Modern Asian Diner & Cocktails", address: "1285 Bardstown Rd, Louisville, KY 40204", lat: 38.2390, lng: -85.7110, hours: { 0: [11.0, 22.0], 1: [11.0, 22.0], 2: [11.0, 22.0], 3: [11.0, 22.0], 4: [11.0, 23.0], 5: [11.0, 23.0], 6: [11.0, 22.0] } },
-
-        // Pizza & Italian
-        { name: "Blaze Pizza", type: "italian", desc: "Fast-Fire'd Custom Pizza", address: "4010 Shelbyville Rd, Louisville, KY 40207", lat: 38.2415, lng: -85.6470, hours: { 0: [11.0, 22.0], 1: [11.0, 22.0], 2: [11.0, 22.0], 3: [11.0, 22.0], 4: [11.0, 22.0], 5: [11.0, 23.0], 6: [11.0, 23.0] } },
+        { name: "Texas Roadhouse (St. Matthews)", type: "sitdown", desc: "Steaks, Ribs & American Grill", address: "5005 Shelbyville Rd, Louisville, KY 40207", lat: 38.2525, lng: -85.6360, hours: { 0: [15.0, 22.0], 1: [15.0, 22.0], 2: [15.0, 22.0], 3: [15.0, 22.0], 4: [15.0, 23.0], 5: [15.0, 23.0], 6: [15.0, 22.0] } },
+        { name: "Texas de Brazil (Mall St. Matthews)", type: "sitdown", desc: "Brazilian Steakhouse & Salad Bar", address: "5000 Shelbyville Rd, Louisville, KY 40207", lat: 38.2510, lng: -85.6380, hours: { 0: [16.0, 21.0], 1: [17.0, 21.3], 2: [17.0, 21.3], 3: [17.0, 21.3], 4: [17.0, 21.3], 5: [17.0, 22.0], 6: [16.0, 22.0] } },
+        { name: "Mission BBQ", type: "bbq", desc: "Authentic Smoked BBQ & Sides", address: "4607 Shelbyville Rd, Louisville, KY 40207", lat: 38.2485, lng: -85.6288, hours: { 0: [11.0, 21.0], 1: [11.0, 21.0], 2: [11.0, 21.0], 3: [11.0, 21.0], 4: [11.0, 21.0], 5: [11.0, 21.0], 6: [11.0, 21.0] } },
+        { name: "Oriental House", type: "asian", desc: "Traditional Chinese Dining & Dim Sum", address: "4302 Shelbyville Rd, St Matthews, KY 40207", lat: 38.2448, lng: -85.6380, hours: { 0: [11.0, 21.5], 1: [11.0, 21.5], 2: [11.0, 21.5], 3: [11.0, 21.5], 4: [11.0, 22.0], 5: [11.0, 22.0], 6: [11.0, 21.5] } },
+        { name: "First Watch", type: "breakfast", desc: "Daytime Cafe, Breakfast & Brunch", address: "960 Breckenridge Ln, Louisville, KY 40207", lat: 38.2392, lng: -85.6350, hours: { 0: [7.0, 14.5], 1: [7.0, 14.5], 2: [7.0, 14.5], 3: [7.0, 14.5], 4: [7.0, 14.5], 5: [7.0, 14.5], 6: [7.0, 14.5] } },
+        { name: "Limon y Sal", type: "mexican", desc: "Mexican Restaurant & Tequila Bar", address: "3900 Shelbyville Rd, Louisville, KY 40207", lat: 38.2386, lng: -85.6512, hours: { 0: [8.0, 22.0], 1: [8.0, 22.0], 2: [8.0, 22.0], 3: [8.0, 22.0], 4: [8.0, 23.0], 5: [8.0, 23.0], 6: [8.0, 22.0] } },
+        { name: "Biscuit Belly", type: "breakfast", desc: "Southern Gourmet Biscuit Sandwiches", address: "3723 Lexington Rd, Louisville, KY 40207", lat: 38.2490, lng: -85.6550, hours: { 0: [7.3, 14.0], 1: [7.3, 14.0], 2: [7.3, 14.0], 3: [7.3, 14.0], 4: [7.3, 14.0], 5: [7.3, 14.0], 6: [7.3, 14.0] } },
+        { name: "Chicken Salad Chick", type: "fastfood", desc: "Variety of Chicken Salad Flavors & Sides", address: "7900 Shelbyville Rd, Louisville, KY 40222", lat: 38.2515, lng: -85.5510, hours: { 0: [10.5, 20.0], 1: [10.5, 20.0], 2: [10.5, 20.0], 3: [10.5, 20.0], 4: [10.5, 20.0], 5: [10.5, 20.0], 6: [10.5, 20.0] } },
+        { name: "Jersey Mike's Subs", type: "fastfood", desc: "Fresh Sub Sandwiches", address: "4121 Shelbyville Rd, Louisville, KY 40207", lat: 38.2425, lng: -85.6440, hours: { 0: [10.0, 21.0], 1: [10.0, 21.0], 2: [10.0, 21.0], 3: [10.0, 21.0], 4: [10.0, 21.0], 5: [10.0, 21.0], 6: [10.0, 21.0] } },
+        { name: "Plehn's Bakery", type: "breakfast", desc: "Historic Local Bakery & Pastries", address: "3940 Shelbyville Rd, Louisville, KY 40207", lat: 38.2405, lng: -85.6495, hours: { 0: [6.5, 14.0], 1: [6.5, 17.0], 2: [6.5, 17.0], 3: [6.5, 17.0], 4: [6.5, 17.0], 5: [6.5, 17.0], 6: [6.5, 17.0] } },
+        { name: "Chick-fil-A St. Matthews", type: "fastfood", desc: "Chicken Sandwiches & Meals", address: "5001 Shelbyville Rd, Louisville, KY 40207", lat: 38.2522, lng: -85.6371, hours: { 0: null, 1: [6.5, 22.0], 2: [6.5, 22.0], 3: [6.5, 22.0], 4: [6.5, 22.0], 5: [6.5, 22.0], 6: [6.5, 22.0] } },
+        { name: "Buffalo Wild Wings", type: "sitdown", desc: "Wings, Burgers & American Sports Fare", address: "4600 Shelbyville Rd, Louisville, KY 40207", lat: 38.2482, lng: -85.6295, hours: { 0: [11.0, 24.0], 1: [11.0, 24.0], 2: [11.0, 24.0], 3: [11.0, 24.0], 4: [11.0, 1.0], 5: [11.0, 1.0], 6: [11.0, 24.0] } },
+        { name: "Blaze Pizza", type: "italian", desc: "Custom Fast-Fire'd Pizza", address: "4010 Shelbyville Rd, Louisville, KY 40207", lat: 38.2415, lng: -85.6470, hours: { 0: [11.0, 22.0], 1: [11.0, 22.0], 2: [11.0, 22.0], 3: [11.0, 22.0], 4: [11.0, 22.0], 5: [11.0, 23.0], 6: [11.0, 23.0] } },
         { name: "Jet's Pizza", type: "italian", desc: "Detroit-Style Pizza & Wings", address: "4207 Shelbyville Rd, Louisville, KY 40207", lat: 38.2438, lng: -85.6415, hours: { 0: [10.5, 22.0], 1: [10.0, 22.0], 2: [10.0, 22.0], 3: [10.0, 22.0], 4: [10.0, 22.0], 5: [10.0, 23.0], 6: [10.0, 23.0] } },
-
-        // Chicken & Wings
-        { name: "Chick-fil-A St. Matthews", type: "fastfood", desc: "Fast Food Chicken", address: "5001 Shelbyville Rd, Louisville, KY 40207", lat: 38.2522, lng: -85.6371, hours: { 0: null, 1: [6.5, 22.0], 2: [6.5, 22.0], 3: [6.5, 22.0], 4: [6.5, 22.0], 5: [6.5, 22.0], 6: [6.5, 22.0] } },
-        { name: "Raising Cane's Chicken Fingers", type: "fastfood", desc: "Fast Food Chicken Fingers", address: "4030 Shelbyville Rd, St Matthews, KY 40207", lat: 38.2410, lng: -85.6475, hours: { 0: [10.0, 23.0], 1: [10.0, 23.0], 2: [10.0, 23.0], 3: [10.0, 23.0], 4: [10.0, 23.0], 5: [10.0, 24.0], 6: [10.0, 24.0] } },
-        { name: "Buffalo Wild Wings", type: "sitdown", desc: "Wings, Burgers & Sports Bar", address: "4600 Shelbyville Rd, Louisville, KY 40207", lat: 38.2482, lng: -85.6295, hours: { 0: [11.0, 24.0], 1: [11.0, 24.0], 2: [11.0, 24.0], 3: [11.0, 24.0], 4: [11.0, 1.0], 5: [11.0, 1.0], 6: [11.0, 24.0] } },
-
-        // Burgers & Fast Food
-        { name: "McDonald's St. Matthews", type: "fastfood", desc: "Fast Food Burgers", address: "5015 Shelbyville Rd, Louisville, KY 40207", lat: 38.2527, lng: -85.6358, hours: { 0: [5.0, 23.0], 1: [5.0, 23.0], 2: [5.0, 23.0], 3: [5.0, 23.0], 4: [5.0, 23.0], 5: [5.0, 23.0], 6: [5.0, 23.0] } },
-        { name: "Wendy's", type: "fastfood", desc: "Burgers & Frostys", address: "3900 Shelbyville Rd, Louisville, KY 40207", lat: 38.2385, lng: -85.6510, hours: { 0: [10.0, 24.0], 1: [10.0, 24.0], 2: [10.0, 24.0], 3: [10.0, 24.0], 4: [10.0, 24.0], 5: [10.0, 24.0], 6: [10.0, 24.0] } },
-
-        // Subs & Sandwiches
-        { name: "Firehouse Subs", type: "fastfood", desc: "Hot Subs & Salads", address: "4600 Shelbyville Rd, Louisville, KY 40207", lat: 38.2480, lng: -85.6290, hours: { 0: [10.5, 21.0], 1: [10.5, 21.0], 2: [10.5, 21.0], 3: [10.5, 21.0], 4: [10.5, 21.0], 5: [10.5, 21.5], 6: [10.5, 21.5] } },
-        { name: "Penn Station East Coast Subs", type: "fastfood", desc: "Hot Subs & Fries", address: "4310 Shelbyville Rd, St Matthews, KY 40207", lat: 38.2450, lng: -85.6375, hours: { 0: [11.0, 21.0], 1: [10.5, 22.0], 2: [10.5, 22.0], 3: [10.5, 22.0], 4: [10.5, 22.0], 5: [10.5, 22.0], 6: [10.5, 22.0] } },
-
-        // Breakfast, Bakery & Coffee
-        { name: "Biscuit Belly (St. Matthews)", type: "breakfast", desc: "Southern Fast-Casual Breakfast", address: "3929 Shelbyville Rd, Louisville, KY 40207", lat: 38.2395, lng: -85.6502, hours: { 0: [7.3, 14.0], 1: [7.3, 14.0], 2: [7.3, 14.0], 3: [7.3, 14.0], 4: [7.3, 14.0], 5: [7.3, 14.0], 6: [7.3, 14.0] } },
-        { name: "Waffle House", type: "breakfast", desc: "Classic Diner / Fast Breakfast", address: "100 Sue Ave, Louisville, KY 40207", lat: 38.2295, lng: -85.6585, hours: { 0: [0.0, 24.0], 1: [0.0, 24.0], 2: [0.0, 24.0], 3: [0.0, 24.0], 4: [0.0, 24.0], 5: [0.0, 24.0], 6: [0.0, 24.0] } },
-        { name: "Heine Brothers' Coffee", type: "breakfast", desc: "Local Coffee & Pastries", address: "3934 Shelbyville Rd, Louisville, KY 40207", lat: 38.2400, lng: -85.6490, hours: { 0: [6.0, 19.0], 1: [6.0, 20.0], 2: [6.0, 20.0], 3: [6.0, 20.0], 4: [6.0, 20.0], 5: [6.0, 20.0], 6: [6.0, 19.0] } }
+        { name: "Firehouse Subs", type: "fastfood", desc: "Hot Sub Sandwiches", address: "4600 Shelbyville Rd, Louisville, KY 40207", lat: 38.2480, lng: -85.6290, hours: { 0: [10.5, 21.0], 1: [10.5, 21.0], 2: [10.5, 21.0], 3: [10.5, 21.0], 4: [10.5, 21.0], 5: [10.5, 21.5], 6: [10.5, 21.5] } },
+        { name: "Heine Brothers' Coffee", type: "breakfast", desc: "Organic Coffee & Baked Goods", address: "4305 Shelbyville Rd, Louisville, KY 40207", lat: 38.2445, lng: -85.6385, hours: { 0: [6.0, 19.0], 1: [6.0, 20.0], 2: [6.0, 20.0], 3: [6.0, 20.0], 4: [6.0, 20.0], 5: [6.0, 20.0], 6: [6.0, 19.0] } }
     ];
 
     // Central Master List of Destination Facilities
@@ -1036,7 +1010,7 @@
             pool = pool.filter(opt => opt.type === selectedCuisine);
         }
 
-        // 3. Exclude items spun within the last 30 minutes (whether eaten or skipped)
+        // 3. Exclude items spun within the last 30 minutes
         let availableOptions = pool.filter(opt => !excludedNames.includes(opt.name));
         
         // 4. Filter for open & >90 mins remaining
@@ -1050,22 +1024,26 @@
         const randomChoice = finalPool[Math.floor(Math.random() * finalPool.length)];
         currentFoodChoice = randomChoice;
 
+        // IMMEDIATE EXCLUSION: Add to cool-down list the moment it's spun (whether accepted or skipped)
+        recentFoodHistory.unshift({
+            name: currentFoodChoice.name,
+            timestamp: Date.now()
+        });
+        localStorage.setItem('stmfd_recent_meals_timed', JSON.stringify(recentFoodHistory));
+        renderFoodHistory();
+
         document.getElementById('foodName').innerText = randomChoice.name;
         document.getElementById('foodMeta').innerText = `${randomChoice.desc} • ${randomChoice.address}`;
         document.getElementById('foodResult').style.display = 'block';
     }
 
-    function acceptMealChoice(wasAccepted) {
+    function acceptMealChoice() {
         if (!currentFoodChoice) return;
-        
-        // Exclude for 30 minutes regardless of whether they ate there or skipped it
-        recentFoodHistory.unshift({
-            name: currentFoodChoice.name,
-            timestamp: Date.now()
-        });
+        document.getElementById('foodResult').style.display = 'none';
+    }
 
-        localStorage.setItem('stmfd_recent_meals_timed', JSON.stringify(recentFoodHistory));
-        renderFoodHistory();
+    function skipMealChoice() {
+        if (!currentFoodChoice) return;
         document.getElementById('foodResult').style.display = 'none';
     }
 
