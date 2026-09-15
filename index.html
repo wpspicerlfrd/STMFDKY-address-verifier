@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STMFDKY District Verifier & Routing Tool</title>
+    <title>STMFDKY District Verifier & Hospital Navigation</title>
     <style>
         * { 
             box-sizing: border-box; 
@@ -22,7 +22,7 @@
             border-radius: 10px; 
             box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
             width: 100%; 
-            max-width: 650px; 
+            max-width: 700px; 
         }
         .tab-nav {
             display: flex;
@@ -61,16 +61,57 @@
             font-size: 14px; 
             margin-bottom: 15px; 
         }
+        .section-header {
+            font-size: 14px;
+            font-weight: 700;
+            color: #2b6cb0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 15px 0 8px 0;
+            padding-bottom: 4px;
+            border-bottom: 1px solid #edf2f7;
+        }
+        .er-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .er-btn {
+            background-color: #f8fafc;
+            color: #2d3748;
+            border: 1px solid #cbd5e0;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .er-btn:hover {
+            background-color: #003366;
+            color: white;
+            border-color: #003366;
+        }
+        .er-btn.peds {
+            border-left: 4px solid #ed8936;
+        }
+        .er-btn::after {
+            content: "➔";
+            font-size: 12px;
+            opacity: 0.5;
+        }
+        .er-btn:hover::after {
+            opacity: 1;
+        }
         .form-group { 
             display: flex; 
             gap: 10px; 
             margin-bottom: 15px; 
-        }
-        .form-group-vertical {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-bottom: 15px;
         }
         .input-wrapper {
             position: relative;
@@ -78,19 +119,16 @@
             display: flex;
             align-items: center;
         }
-        input[type="text"], select { 
+        input[type="text"] { 
             width: 100%; 
-            padding: 12px 15px; 
+            padding: 12px 35px 12px 15px; 
             font-size: 15px; 
             border: 1px solid #cbd5e0; 
             border-radius: 6px; 
             outline: none; 
             background-color: #fff;
         }
-        input[type="text"] {
-            padding-right: 35px;
-        }
-        input[type="text"]:focus, select:focus { 
+        input[type="text"]:focus { 
             border-color: #3182ce; 
             box-shadow: 0 0 0 3px rgba(49,130,206,0.2); 
         }
@@ -119,21 +157,9 @@
             border-radius: 6px; 
             cursor: pointer; 
             transition: background 0.2s; 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
         }
         button.action-btn:hover { 
             background-color: #002244; 
-        }
-        button.nav-btn {
-            background-color: #2b6cb0;
-            padding: 14px 20px;
-            font-size: 16px;
-        }
-        button.nav-btn:hover {
-            background-color: #2c5282;
         }
         #status { 
             display: none; 
@@ -144,24 +170,9 @@
             margin-bottom: 15px; 
             text-align: center; 
         }
-        #status.inside { 
-            background-color: #c6f6d5; 
-            color: #22543d; 
-            border: 1px solid #9ae6b4; 
-            display: block; 
-        }
-        #status.outside { 
-            background-color: #fed7d7; 
-            color: #742a2a; 
-            border: 1px solid #feb2b2; 
-            display: block; 
-        }
-        #status.loading { 
-            background-color: #e2e8f0; 
-            color: #4a5568; 
-            border: 1px solid #cbd5e0; 
-            display: block; 
-        }
+        #status.inside { background-color: #c6f6d5; color: #22543d; border: 1px solid #9ae6b4; display: block; }
+        #status.outside { background-color: #fed7d7; color: #742a2a; border: 1px solid #feb2b2; display: block; }
+        #status.loading { background-color: #e2e8f0; color: #4a5568; border: 1px solid #cbd5e0; display: block; }
         #map { 
             width: 100%; 
             height: 380px; 
@@ -180,27 +191,10 @@
             align-items: center;
             margin-bottom: 12px;
         }
-        .history-header h3 {
-            margin: 0;
-            font-size: 16px;
-            color: #2d3748;
-        }
-        .clear-history-btn {
-            background: none;
-            border: none;
-            color: #e53e3e;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        .clear-history-btn:hover {
-            text-decoration: underline;
-        }
-        .history-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
+        .history-header h3 { margin: 0; font-size: 16px; color: #2d3748; }
+        .clear-history-btn { background: none; border: none; color: #e53e3e; font-size: 13px; font-weight: 600; cursor: pointer; }
+        .clear-history-btn:hover { text-decoration: underline; }
+        .history-list { list-style: none; padding: 0; margin: 0; }
         .history-item {
             display: flex;
             justify-content: space-between;
@@ -212,21 +206,8 @@
             margin-bottom: 8px;
             font-size: 14px;
         }
-        .history-address {
-            color: #2d3748;
-            font-weight: 500;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            max-width: 380px;
-        }
-        .badge {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
+        .history-address { color: #2d3748; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 380px; }
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 700; text-transform: uppercase; }
         .badge.in-district { background-color: #c6f6d5; color: #22543d; }
         .badge.out-district { background-color: #fed7d7; color: #742a2a; }
         .badge.not-found { background-color: #e2e8f0; color: #4a5568; }
@@ -255,27 +236,52 @@
         <div id="status"></div>
     </div>
 
-    <!-- TAB 2: Hospital Navigation -->
+    <!-- TAB 2: Hospital Navigation Buttons -->
     <div id="routingTab" class="tab-content">
-        <h2>Hospital Transport Navigation</h2>
-        <p>Select your transport destination to launch direct turn-by-turn navigation in your device's native app.</p>
+        <h2>Hospital Transport Destinations</h2>
+        <p>Tap any hospital below to open direct turn-by-turn navigation in your device's default map app.</p>
 
-        <div class="form-group-vertical">
-            <label for="hospitalSelect" style="font-weight: 600; color: #2d3748; font-size: 14px;">Select Destination Hospital:</label>
-            <select id="hospitalSelect">
-                <option value="4000 Kresge Way, Louisville, KY 40207">Baptist Health Louisville</option>
-                <option value="4001 Dutchmans Ln, Louisville, KY 40207">Norton Suburban / Women's & Children's Hospital</option>
-                <option value="200 E Chestnut St, Louisville, KY 40202">Norton Healthcare Pavilion / Norton Hospital</option>
-                <option value="200 Abraham Flexner Way, Louisville, KY 40202">UofL Health - Jewish Hospital</option>
-                <option value="530 S Jackson St, Louisville, KY 40202">UofL Health - UofL Hospital</option>
-            </select>
-            <button class="action-btn nav-btn" onclick="openNativeNavigation()">
-                🧭 Launch Navigation App
-            </button>
+        <!-- Jefferson County Adult ERs -->
+        <div class="section-header">Jefferson County, KY — Adult ERs</div>
+        <div class="er-grid">
+            <button class="er-btn" onclick="openNav('4000 Kresge Way, Louisville, KY 40207')">Baptist Health Louisville</button>
+            <button class="er-btn" onclick="openNav('11701 Bluegrass Pkwy, Louisville, KY 40299')">Baptist Health ER (Blankenbaker)</button>
+            <button class="er-btn" onclick="openNav('4960 Norton Healthcare Blvd, Louisville, KY 40241')">Norton Brownsboro ER</button>
+            <button class="er-btn" onclick="openNav('3100 Audubon Hospital Dr, Louisville, KY 40217')">Norton Audubon ER</button>
+            <button class="er-btn" onclick="openNav('200 E Chestnut St, Louisville, KY 40202')">Norton Hospital (Downtown)</button>
+            <button class="er-btn" onclick="openNav('4001 Dutchmans Ln, Louisville, KY 40207')">Norton Women's & Children's</button>
+            <button class="er-btn" onclick="openNav('850 S 28th St, Louisville, KY 40211')">Norton West Louisville ER</button>
+            <button class="er-btn" onclick="openNav('530 S Jackson St, Louisville, KY 40202')">UofL Health - Hospital (Downtown)</button>
+            <button class="er-btn" onclick="openNav('200 Abraham Flexner Way, Louisville, KY 40202')">UofL Health - Jewish Hospital</button>
+            <button class="er-btn" onclick="openNav('1850 Bluegrass Ave, Louisville, KY 40215')">UofL Health - Mary & Elizabeth</button>
+            <button class="er-btn" onclick="openNav('2401 Terra Crossing Blvd, Louisville, KY 40245')">UofL Health - MC Northeast</button>
+            <button class="er-btn" onclick="openNav('3920 Dutchmans Ln, Louisville, KY 40207')">UofL Health - MC East</button>
+            <button class="er-btn" onclick="openNav('9700 Stonestreet Rd, Louisville, KY 40272')">UofL Health - MC Southwest</button>
+        </div>
+
+        <!-- Pediatric Dedicated ERs -->
+        <div class="section-header">Dedicated Pediatric ERs</div>
+        <div class="er-grid">
+            <button class="er-btn peds" onclick="openNav('231 E Chestnut St, Louisville, KY 40202')">Norton Children's (Downtown)</button>
+            <button class="er-btn peds" onclick="openNav('4001 Dutchmans Ln, Louisville, KY 40207')">Norton Women's & Children's Peds ER</button>
+        </div>
+
+        <!-- Oldham County ERs -->
+        <div class="section-header">Oldham County, KY</div>
+        <div class="er-grid">
+            <button class="er-btn" onclick="openNav('1025 New La Grange Rd, La Grange, KY 40031')">Baptist Health LaGrange</button>
+        </div>
+
+        <!-- Indiana ERs (Clark & Floyd) -->
+        <div class="section-header">Indiana — Clark & Floyd Counties</div>
+        <div class="er-grid">
+            <button class="er-btn" onclick="openNav('1220 Missouri Ave, Jeffersonville, IN 47130')">Norton Clark Hospital</button>
+            <button class="er-btn" onclick="openNav('2023 Mercy Way, Jeffersonville, IN 47130')">Norton Medical Center (Jeff Commons)</button>
+            <button class="er-btn" onclick="openNav('1850 State St, New Albany, IN 47150')">Baptist Health Floyd</button>
         </div>
     </div>
 
-    <!-- Map & Shared Output Displays -->
+    <!-- Map Display -->
     <div id="map"></div>
 
     <div id="historyContainer" class="history-container">
@@ -426,7 +432,6 @@
     let searchHistory = [];
 
     const inputEl = document.getElementById('addressInput');
-    const hospitalEl = document.getElementById('hospitalSelect');
     const clearBtn = document.getElementById('clearBtn');
     const verifyBtn = document.getElementById('verifyBtn');
     const statusDiv = document.getElementById('status');
@@ -498,18 +503,15 @@
         renderHistory();
     }
 
-    function openNativeNavigation() {
-        const destination = encodeURIComponent(hospitalEl.value);
+    function openNav(destinationAddress) {
+        const destination = encodeURIComponent(destinationAddress);
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
                       (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
         let navUrl;
-
         if (isIOS) {
-            // Apple Maps deep link with current location as origin
             navUrl = `maps://maps.apple.com/?daddr=${destination}&dirflg=d`;
         } else {
-            // Google Maps deep link with current location as origin
             navUrl = `https://www.google.com/maps/dir/?api=1&destination=${destination}&travelmode=driving`;
         }
 
