@@ -124,6 +124,78 @@
             border-radius: 6px; 
             border: 1px solid #e2e8f0; 
         }
+        .history-container {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            display: none;
+        }
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .history-header h3 {
+            margin: 0;
+            font-size: 16px;
+            color: #2d3748;
+        }
+        .clear-history-btn {
+            background: none;
+            border: none;
+            color: #e53e3e;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 0;
+        }
+        .clear-history-btn:hover {
+            text-decoration: underline;
+        }
+        .history-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            border-radius: 6px;
+            background-color: #f8fafc;
+            border: 1px solid #edf2f7;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        .history-address {
+            color: #2d3748;
+            font-weight: 500;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 380px;
+        }
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .badge.in-district {
+            background-color: #c6f6d5;
+            color: #22543d;
+        }
+        .badge.out-district {
+            background-color: #fed7d7;
+            color: #742a2a;
+        }
+        .badge.not-found {
+            background-color: #e2e8f0;
+            color: #4a5568;
+        }
     </style>
 </head>
 <body>
@@ -142,6 +214,14 @@
 
     <div id="status"></div>
     <div id="map"></div>
+
+    <div id="historyContainer" class="history-container">
+        <div class="history-header">
+            <h3>Recent Searches</h3>
+            <button class="clear-history-btn" onclick="clearHistory()">Clear History</button>
+        </div>
+        <ul id="historyList" class="history-list"></ul>
+    </div>
 </div>
 
 <script>
@@ -280,13 +360,15 @@
     let boundaryBounds;
     let geocoder;
     let autoClearTimer;
+    let searchHistory = [];
 
     const inputEl = document.getElementById('addressInput');
     const clearBtn = document.getElementById('clearBtn');
     const verifyBtn = document.getElementById('verifyBtn');
     const statusDiv = document.getElementById('status');
+    const historyContainer = document.getElementById('historyContainer');
+    const historyList = document.getElementById('historyList');
 
-    // Toggle clear button visibility dynamically based on user input
     inputEl.addEventListener('input', function() {
         clearBtn.style.display = this.value ? 'block' : 'none';
     });
@@ -316,6 +398,42 @@
         }
 
         inputEl.focus();
+    }
+
+    function addHistoryEntry(address, statusClass, badgeText) {
+        // Remove duplicate entry if searched again
+        searchHistory = searchHistory.filter(item => item.address.toLowerCase() !== address.toLowerCase());
+        
+        // Add new lookup to top
+        searchHistory.unshift({ address, statusClass, badgeText });
+        
+        // Keep max 5 recent entries
+        if (searchHistory.length > 5) {
+            searchHistory.pop();
+        }
+
+        renderHistory();
+    }
+
+    function renderHistory() {
+        if (searchHistory.length === 0) {
+            historyContainer.style.display = 'none';
+            historyList.innerHTML = '';
+            return;
+        }
+
+        historyContainer.style.display = 'block';
+        historyList.innerHTML = searchHistory.map(item => `
+            <li class="history-item">
+                <span class="history-address" title="${item.address}">${item.address}</span>
+                <span class="badge ${item.statusClass}">${item.badgeText}</span>
+            </li>
+        `).join('');
+    }
+
+    function clearHistory() {
+        searchHistory = [];
+        renderHistory();
     }
 
     function loadGoogleMaps() {
@@ -379,14 +497,17 @@
 
             if (status === 'OK' && results[0]) {
                 const location = results[0].geometry.location;
+                const formattedAddress = results[0].formatted_address;
                 const isInside = google.maps.geometry.poly.containsLocation(location, boundaryPolygon);
 
                 if (isInside) {
                     statusDiv.className = 'inside';
                     statusDiv.innerHTML = '✅ IN DISTRICT: Address is WITHIN the STMFDKY service area.';
+                    addHistoryEntry(formattedAddress, 'in-district', 'In District');
                 } else {
                     statusDiv.className = 'outside';
                     statusDiv.innerHTML = '❌ OUT OF DISTRICT: Address is OUTSIDE the STMFDKY service area.';
+                    addHistoryEntry(formattedAddress, 'out-district', 'Out of District');
                 }
 
                 if (marker) marker.setMap(null);
@@ -401,9 +522,9 @@
             } else {
                 statusDiv.className = 'outside';
                 statusDiv.innerHTML = '❌ Address not found. Check spelling or street number.';
+                addHistoryEntry(address, 'not-found', 'Not Found');
             }
 
-            // Trigger 10-second auto-clear timer following result display
             autoClearTimer = setTimeout(resetForm, 10000);
         });
     }
