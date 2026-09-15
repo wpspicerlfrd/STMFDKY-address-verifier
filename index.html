@@ -120,23 +120,6 @@
             opacity: 0.8;
             margin-top: 2px;
         }
-        /* Audio Player Bar */
-        .audio-player-container {
-            background-color: #f7fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 10px 14px;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        audio {
-            width: 100%;
-            height: 36px;
-            border-radius: 4px;
-            outline: none;
-        }
         /* Pink Pediatric Buttons */
         .er-btn.peds {
             background-color: #fff5f7;
@@ -336,14 +319,6 @@
         <h2>St. Matthews Fire & EMS Stations</h2>
         <p>Tap a station to launch direct navigation back to quarters.</p>
 
-        <!-- MP3 Audio Player -->
-        <div class="audio-player-container">
-            <audio id="countryRoadsAudio" controls preload="auto">
-                <source src="https://archive.org/download/ka-john-denver/john%20Danver%20-%20take%20me%20home%20country%20roads.mp3" type="audio/mpeg">
-                Your browser does not support the audio element.
-            </audio>
-        </div>
-
         <div class="section-header">Fire & EMS Quarters</div>
         <div class="er-grid">
             <button class="er-btn station-btn" onclick="openNavAddress('240 Sears Ave, Louisville, KY 40207')">
@@ -447,7 +422,7 @@
                             [-85.6285138, 38.2895029], [-85.6280793, 38.2895576], [-85.6277843, 38.2894397], [-85.6275804, 38.2896629],
                             [-85.6274839, 38.2898355], [-85.6270332, 38.2902186], [-85.6268079, 38.290926], [-85.6259282, 38.2914565],
                             [-85.6255634, 38.291507], [-85.6250377, 38.2909428], [-85.6241043, 38.2914902], [-85.6236537, 38.2922396],
-                            [-85.6225593, 38.2918523], [-85.6222589, 38.2920881], [-85.6222482, 38.2927785], [-85.6222589, 38.2937806],
+                            [-85.6225593, 38.2918523], [-85.6222589, 38.2920881], [-85.622482, 38.2927785], [-85.6222589, 38.2937806],
                             [-85.6218298, 38.2939827], [-85.6214435, 38.2943616], [-85.6210787, 38.2948752], [-85.6208963, 38.2949089],
                             [-85.620435, 38.2950521], [-85.6199522, 38.2953973], [-85.6190832, 38.2960457], [-85.6186755, 38.2967614],
                             [-85.6178834, 38.2977783], [-85.6166388, 38.298393], [-85.615405, 38.2975173], [-85.6150617, 38.2968353],
@@ -532,7 +507,6 @@
     const mapWrapper = document.getElementById('mapWrapper');
     const historyContainer = document.getElementById('historyContainer');
     const historyList = document.getElementById('historyList');
-    const audioPlayer = document.getElementById('countryRoadsAudio');
 
     inputEl.addEventListener('input', function() {
         clearBtn.style.display = this.value ? 'block' : 'none';
@@ -545,14 +519,12 @@
         document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
         if (tab === 'verifier') {
-            audioPlayer.pause();
             document.querySelectorAll('.tab-btn')[0].classList.add('active');
             document.getElementById('verifierTab').classList.add('active');
             mapWrapper.style.display = 'block';
             historyContainer.style.display = searchHistory.length > 0 ? 'block' : 'none';
             if (map && boundaryBounds) map.fitBounds(boundaryBounds);
         } else if (tab === 'routing') {
-            audioPlayer.pause();
             document.querySelectorAll('.tab-btn')[1].classList.add('active');
             document.getElementById('routingTab').classList.add('active');
             mapWrapper.style.display = 'none';
@@ -566,12 +538,6 @@
             historyContainer.style.display = 'none';
             statusDiv.style.display = 'none';
             if (marker) marker.setMap(null);
-            
-            // Jump directly to chorus (~32 seconds in) and play
-            audioPlayer.currentTime = 32;
-            audioPlayer.play().catch(() => {
-                // Handle autoplay block by user interaction requirement
-            });
         }
     }
 
