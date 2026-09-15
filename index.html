@@ -965,13 +965,11 @@
         }
     }
 
-    // Checks if a point is inside the polygon OR within a 1-mile buffer outside it
     function isWithinServiceAreaPlusBuffer(lat, lng) {
         const point = new google.maps.LatLng(lat, lng);
         if (google.maps.geometry.poly.containsLocation(point, boundaryPolygon)) {
             return true;
         }
-        // Check distance to any vertex or check if within 1 mile of the ring boundary
         const ring = geojsonData.features[0].geometry.coordinates[0];
         for (let coord of ring) {
             let dist = calculateDistance(lat, lng, coord[1], coord[0]);
@@ -1004,18 +1002,13 @@
         const excludedNames = recentFoodHistory.map(e => e.name);
         const selectedCuisine = document.getElementById('cuisineFilter').value;
 
-        // 1. Filter by Service Area + 1 Mile Buffer
         let pool = districtFoodOptions.filter(opt => isWithinServiceAreaPlusBuffer(opt.lat, opt.lng));
 
-        // 2. Filter by cuisine/style selection if active
         if (selectedCuisine !== 'all') {
             pool = pool.filter(opt => opt.type === selectedCuisine);
         }
 
-        // 3. Exclude items currently on 30-minute cool down
         let availableOptions = pool.filter(opt => !excludedNames.includes(opt.name));
-        
-        // 4. Filter for open & >90 mins remaining
         let openAvailableOptions = availableOptions.filter(opt => isOpenForAtLeast90Mins(opt));
 
         let finalPool = openAvailableOptions;
@@ -1026,7 +1019,11 @@
         const randomChoice = finalPool[Math.floor(Math.random() * finalPool.length)];
         currentFoodChoice = randomChoice;
 
-        // IMMEDIATE EXCLUSION: Triggered instantly on EVERY spin
+        // FIXED: Prevent duplicate entries in history; update timestamp if already present
+        const existingIndex = recentFoodHistory.findIndex(e => e.name === currentFoodChoice.name);
+        if (existingIndex > -1) {
+            recentFoodHistory.splice(existingIndex, 1);
+        }
         recentFoodHistory.unshift({
             name: currentFoodChoice.name,
             timestamp: Date.now()
@@ -1065,7 +1062,7 @@
             return `
                 <li class="recent-item">
                     <span>🚫 ${entry.name}</span>
-                    <span style="font-size:11px; color:#e53e3e; font-weight:600;">Cool-down: ~${minsLeft} min(s) remaining</span>
+                    <span style="font-size:11px; color:#e53e3e; font-weight:600;">Cool-down: ~${minsLeft} min remaining</span>
                 </li>
             `;
         }).join('');
