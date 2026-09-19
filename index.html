@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STMFDKY District Verifier & Hospital Navigation</title>
+    <title>STMFD SMART EMS - Station Matrix, Allocation & Routing Tool</title>
     <style>
         * { 
             box-sizing: border-box; 
@@ -23,6 +23,26 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
             width: 100%; 
             max-width: 750px; 
+        }
+        .app-header {
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #003366;
+        }
+        .app-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: #003366;
+            margin: 0 0 2px 0;
+            letter-spacing: -0.5px;
+        }
+        .app-subtitle {
+            font-size: 12px;
+            font-weight: 600;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 0;
         }
         .tab-nav {
             display: flex;
@@ -337,11 +357,51 @@
             font-weight: normal;
             margin-left: 4px;
         }
+
+        /* Footer Feedback Section */
+        .feedback-section {
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+        }
+        .feedback-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        .feedback-links {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .feedback-btn {
+            font-size: 13px;
+            font-weight: 600;
+            color: #003366;
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            background-color: #edf2f7;
+            transition: background 0.2s;
+        }
+        .feedback-btn:hover {
+            background-color: #e2e8f0;
+        }
     </style>
 </head>
 <body>
 
 <div class="card">
+    <div class="app-header">
+        <h1 class="app-title">STMFD SMART EMS</h1>
+        <div class="app-subtitle">Station Matrix, Allocation &amp; Routing Tool</div>
+    </div>
+
     <div class="tab-nav">
         <button class="tab-btn active" onclick="switchTab('verifier')">District Verifier</button>
         <button class="tab-btn" onclick="switchTab('guidelines')">Destination Wizard</button>
@@ -469,6 +529,19 @@
         </div>
         <ul id="historyList" class="history-list"></ul>
     </div>
+
+    <!-- Global App Feedback Section -->
+    <div class="feedback-section">
+        <div class="feedback-title">STMFD SMART EMS Testing Feedback</div>
+        <div class="feedback-links">
+            <a href="mailto:wspicer@stmfdky.gov?subject=STMFD%20SMART%20EMS%20Feedback&body=Please%20enter%20your%20suggestion%20or%20comment%20here:" class="feedback-btn">
+                ✉️ Email Feedback
+            </a>
+            <a href="sms:15022241865?body=STMFD%20SMART%20EMS%20Feedback:%20" class="feedback-btn">
+                💬 Text Feedback
+            </a>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -487,7 +560,7 @@
                             [-85.6600788, 38.2407461], [-85.6602719, 38.2411253], [-85.6611302, 38.2422376], [-85.6620958, 38.2434678],
                             [-85.6625887, 38.244063], [-85.6632941, 38.2449604], [-85.6638225, 38.2456471], [-85.6643053, 38.2463318],
                             [-85.6643912, 38.2464708], [-85.6645521, 38.2466814], [-85.6646674, 38.2467404], [-85.6651824, 38.2473997],
-                            [-85.6659334, 38.2483329], [-85.6660649, 38.2485246], [-85.6663277, 38.248889], [-85.666612, 38.2492302],
+                            [-85.6659334, 38.2483329], [-85.660649, 38.2485246], [-85.6663277, 38.248889], [-85.66612, 38.2492302],
                             [-85.6669312, 38.2496178], [-85.6672933, 38.2500517], [-85.668098, 38.2510101], [-85.6682857, 38.251305],
                             [-85.6686881, 38.2518126], [-85.6695705, 38.25291], [-85.6701445, 38.2536283], [-85.6704181, 38.2539758],
                             [-85.6705334, 38.2541296], [-85.6706568, 38.2543275], [-85.6708338, 38.2545993], [-85.6717592, 38.2556418],
@@ -618,6 +691,7 @@
         { id: "uofl_mary_elizabeth", name: "UofL Health - Mary & Elizabeth", lat: 38.17880867023050, lng: -85.79382665040330, type: "adult", region: "jefferson" },
         { id: "baptist_glenmary", name: "Baptist Health Glenmary", lat: 38.136018474849024, lng: -85.58069320336894, type: "adult", region: "jefferson" },
         { id: "uofl_mc_southwest", name: "UofL Health - MC Southwest ER", lat: 38.11322941906840, lng: -85.84092345934400, type: "adult", region: "jefferson" },
+        { id: "louisville_va", name: "Louisville VA Hospital", lat: 38.27017803622843, lng: -85.69673200715734, type: "adult", region: "jefferson" },
         { id: "baptist_lagrange", name: "Baptist Health LaGrange", lat: 38.39436543175370, lng: -85.37700258407050, type: "adult", region: "outside" },
         { id: "norton_clark", name: "Norton Clark Hospital (IN)", lat: 38.28185133304160, lng: -85.74788493093270, type: "adult", region: "outside" },
         { id: "baptist_floyd", name: "Baptist Health Floyd (IN)", lat: 38.30038280115690, lng: -85.83484296507200, type: "adult", region: "outside" },
@@ -630,13 +704,13 @@
             id: "med1",
             title: "Medical",
             def: "Capable of accepting medical patients who do not fit the Acute Medical requiring admission category.",
-            hospitalIds: ["baptist_louisville", "baptist_lagrange", "uofl_mc_east", "uofl_mc_south", "uofl_mc_southwest", "uofl_mary_elizabeth", "norton_audubon", "norton_women_children", "norton_downtown", "norton_brownsboro", "uofl_hospital", "norton_clark", "baptist_floyd"]
+            hospitalIds: ["baptist_louisville", "baptist_lagrange", "uofl_mc_east", "uofl_mc_south", "uofl_mc_southwest", "uofl_mary_elizabeth", "norton_audubon", "norton_women_children", "norton_downtown", "norton_brownsboro", "uofl_hospital", "norton_clark", "baptist_floyd", "louisville_va"]
         },
         {
             id: "med2",
             title: "Acute Medical (Requiring Admission)",
             def: "Capable of accepting patients in the ED whose medical condition would most likely require admission including: acute stroke with deficits, elderly with SOA and underlying medical conditions/abnormal vital signs, dialysis emergency, or acute coronary syndrome.",
-            hospitalIds: ["baptist_louisville", "baptist_lagrange", "uofl_mary_elizabeth", "norton_audubon", "norton_women_children", "norton_downtown", "norton_brownsboro", "uofl_hospital", "norton_clark", "baptist_floyd"]
+            hospitalIds: ["baptist_louisville", "baptist_lagrange", "uofl_mary_elizabeth", "norton_audubon", "norton_women_children", "norton_downtown", "norton_brownsboro", "uofl_hospital", "norton_clark", "baptist_floyd", "louisville_va"]
         },
         {
             id: "stemi",
@@ -659,7 +733,7 @@
         {
             id: "burn_center",
             title: "Burn Center",
-            def: "Patients with major burns as defined by LMEMS protocol.",
+            def: "Patients with major burns as defined by current protocol.",
             note: "Protocol Triaging: Patients < 18 yo go to Kosair/Norton Children's Hospital (KCH). All adult burn patients not triaged to KCH go to UofL Hospital.",
             hospitalIds: ["norton_children_downtown", "uofl_hospital"]
         },
@@ -679,18 +753,24 @@
             id: "hazmat_mass",
             title: "HazMat Decon Mass Casualty",
             def: "Capable of technical decontamination in a mass casualty situation (facilities with decon trailers/tents).",
-            hospitalIds: ["baptist_louisville", "baptist_lagrange", "uofl_mc_east", "uofl_mc_south", "uofl_mc_southwest", "uofl_mary_elizabeth", "norton_audubon", "norton_women_children", "norton_downtown", "norton_brownsboro", "uofl_hospital", "norton_clark", "baptist_floyd"]
+            hospitalIds: ["baptist_louisville", "baptist_lagrange", "uofl_mc_east", "uofl_mc_south", "uofl_mc_southwest", "uofl_mary_elizabeth", "norton_audubon", "norton_women_children", "norton_downtown", "norton_brownsboro", "uofl_hospital", "norton_clark", "baptist_floyd", "louisville_va"]
         },
         {
             id: "poison",
             title: "Poison & Drug Overdose",
             def: "Facilities capable of managing acute toxicological and overdose presentations.",
-            hospitalIds: ["baptist_louisville", "baptist_lagrange", "uofl_mc_east", "uofl_mc_south", "uofl_mc_southwest", "uofl_mary_elizabeth", "norton_audubon", "norton_women_children", "norton_downtown", "norton_brownsboro", "uofl_hospital", "norton_clark", "baptist_floyd"]
+            hospitalIds: ["baptist_louisville", "baptist_lagrange", "uofl_mc_east", "uofl_mc_south", "uofl_mc_southwest", "uofl_mary_elizabeth", "norton_audubon", "norton_women_children", "norton_downtown", "norton_brownsboro", "uofl_hospital", "norton_clark", "baptist_floyd", "louisville_va"]
+        },
+        {
+            id: "psychiatric",
+            title: "Psychiatric",
+            def: "Facilities designated to accept and evaluate patients presenting with primary psychiatric emergencies or acute mental health crises.",
+            hospitalIds: ["baptist_louisville", "baptist_lagrange", "uofl_mary_elizabeth", "norton_audubon", "norton_women_children", "norton_downtown", "norton_brownsboro", "uofl_hospital", "norton_clark", "baptist_floyd", "louisville_va"]
         },
         {
             id: "level1_trauma",
             title: "Level 1 Trauma",
-            def: "Major acute trauma requiring Level 1 capability as defined by LMEMS protocol.",
+            def: "Major acute trauma requiring Level 1 capability as defined by current protocol.",
             note: "Triage Criteria: Patients ≥ 13 years of age with penetrating trauma AND ≥ 15 years of age with blunt trauma will be triaged to UofL Hospital. All Level 1 trauma patients not triaged to UofL will be taken to KCH/Norton Children's.",
             hospitalIds: ["uofl_hospital", "norton_children_downtown"]
         },
