@@ -1121,7 +1121,7 @@
                             [-85.5826946, 38.2924484], [-85.5824586, 38.2922336], [-85.5821474, 38.2918589], [-85.5818256, 38.2914716],
                             [-85.5814983, 38.2910589], [-85.5812301, 38.2907053], [-85.5800553, 38.2892148], [-85.5797656, 38.2888232],
                             [-85.5788215, 38.287619], [-85.5776413, 38.2861284], [-85.5775179, 38.2859389], [-85.5767884, 38.28596],
-                            [-85.5760964, 38.2860905], [-85.575458, 38.2862884], [-85.5749377, 38.2864526], [-85.5744817, 38.2865958],
+                            [-85.5760964, 38.2860905], [-85.57458, 38.2862884], [-85.5749377, 38.2864526], [-85.5744817, 38.2865958],
                             [-85.5729206, 38.2871642], [-85.5723145, 38.2873706], [-85.5714025, 38.2861663], [-85.57063, 38.2854084],
                             [-85.5697503, 38.2845241], [-85.5673577, 38.2813155], [-85.5668213, 38.2804311], [-85.5664887, 38.279749],
                             [-85.5662634, 38.2792015], [-85.5638279, 38.2739628], [-85.563398, 38.2742368], [-85.5610484, 38.2749612],
@@ -1240,13 +1240,13 @@
                             <span>${hosp.name}${distText}${noteIndicator}</span>
                         </div>
                         <div style="display: flex; gap: 6px; flex-shrink: 0;">
-                            <button class="note-toggle-btn" onclick="toggleHospitalNotes('${hosp.id}')">📝 Notes</button>
+                            <button class="note-toggle-btn" onclick="toggleHospitalNotes('hosp-${hosp.id}')">📝 Notes</button>
                             <button class="nav-link-btn" onclick="openNav(${hosp.lat}, ${hosp.lng})">🗺️ Nav</button>
                         </div>
                     </div>
-                    <div id="hosp-notes-${hosp.id}" class="notes-section">
-                        <input type="text" id="hosp-note-input-${hosp.id}" value="${existingNote}" placeholder="Add shared crew note (e.g. ambulance entrance tips)...">
-                        <button class="web-link-btn" onclick="saveHospitalNote('${hosp.id}', document.getElementById('hosp-note-input-${hosp.id}').value)">💾 Save Note to Cloud</button>
+                    <div id="hosp-notes-hosp-${hosp.id}" class="notes-section">
+                        <input type="text" id="hosp-note-input-hosp-${hosp.id}" value="${existingNote}" placeholder="Add shared crew note (e.g. ambulance entrance tips)...">
+                        <button class="web-link-btn" onclick="saveHospitalNote('${hosp.id}', document.getElementById('hosp-note-input-hosp-${hosp.id}').value)">💾 Save Note to Cloud</button>
                     </div>
                 </div>
             `;
@@ -1325,13 +1325,13 @@
                         <span>${hosp.name}${distText}${noteIndicator}</span>
                     </div>
                     <div style="display: flex; gap: 6px; flex-shrink: 0;">
-                        <button class="note-toggle-btn" onclick="toggleHospitalNotes('${hosp.id}')">📝 Notes</button>
+                        <button class="note-toggle-btn" onclick="toggleHospitalNotes('triage-${hosp.id}')">📝 Notes</button>
                         <button class="nav-link-btn" onclick="openNav(${hosp.lat}, ${hosp.lng})">🗺️ Nav</button>
                     </div>
                 </div>
-                <div id="hosp-notes-${hosp.id}" class="notes-section">
-                    <input type="text" id="hosp-note-input-${hosp.id}" value="${existingNote}" placeholder="Add shared crew note (e.g. ambulance entrance tips)...">
-                    <button class="web-link-btn" onclick="saveHospitalNote('${hosp.id}', document.getElementById('hosp-note-input-${hosp.id}').value)">💾 Save Note to Cloud</button>
+                <div id="hosp-notes-triage-${hosp.id}" class="notes-section">
+                    <input type="text" id="hosp-note-input-triage-${hosp.id}" value="${existingNote}" placeholder="Add shared crew note (e.g. ambulance entrance tips)...">
+                    <button class="web-link-btn" onclick="saveHospitalNote('${hosp.id}', document.getElementById('hosp-note-input-triage-${hosp.id}').value)">💾 Save Note to Cloud</button>
                 </div>
             `;
             hospContainer.appendChild(card);
@@ -1518,8 +1518,8 @@
         if (panel) panel.classList.toggle('active');
     }
 
-    function toggleHospitalNotes(id) {
-        const panel = document.getElementById(`hosp-notes-${id}`);
+    function toggleHospitalNotes(compoundId) {
+        const panel = document.getElementById(`hosp-notes-${compoundId}`);
         if (panel) panel.classList.toggle('active');
     }
 
