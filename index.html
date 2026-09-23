@@ -262,9 +262,7 @@
             box-shadow: 0 2px 4px rgba(197, 48, 48, 0.2);
             transition: background 0.2s;
         }
-        .bc-call-btn:hover {
-            background-color: #9b2c2c;
-        }
+        .bc-call-btn:hover { background-color: #9b2c2c; }
 
         #status { 
             display: none; 
@@ -293,9 +291,7 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.15);
             transition: background 0.2s;
         }
-        .dir-btn-inline:hover {
-            background-color: #002244;
-        }
+        .dir-btn-inline:hover { background-color: #002244; }
 
         #mapWrapper { width: 100%; }
         #map { 
@@ -369,9 +365,7 @@
             background-color: #edf2f7;
             border: 1px solid #cbd5e0;
         }
-        .result-panel.active {
-            display: block;
-        }
+        .result-panel.active { display: block; }
         .protocol-note {
             font-size: 12px;
             color: #4a5568;
@@ -412,15 +406,8 @@
             margin-bottom: 20px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
-        .eats-hero h3 {
-            margin: 0 0 8px 0;
-            font-size: 17px;
-        }
-        .eats-hero p {
-            color: #e2e8f0;
-            font-size: 13px;
-            margin: 0 0 15px 0;
-        }
+        .eats-hero h3 { margin: 0 0 8px 0; font-size: 17px; }
+        .eats-hero p { color: #e2e8f0; font-size: 13px; margin: 0 0 15px 0; }
         .spin-btn {
             background-color: #dd6b20;
             color: white;
@@ -433,10 +420,7 @@
             transition: all 0.2s;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
-        .spin-btn:hover {
-            background-color: #c05621;
-            transform: translateY(-1px);
-        }
+        .spin-btn:hover { background-color: #c05621; transform: translateY(-1px); }
         .result-card {
             background-color: white;
             color: #2d3748;
@@ -448,18 +432,8 @@
             border: 2px solid #feebc8;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
-        .result-name {
-            font-size: 18px;
-            font-weight: 800;
-            color: #003366;
-            margin-bottom: 12px;
-        }
-        .result-actions {
-            display: flex;
-            gap: 8px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
+        .result-name { font-size: 18px; font-weight: 800; color: #003366; margin-bottom: 12px; }
+        .result-actions { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
         .nav-link-btn {
             display: inline-block;
             background-color: #003366;
@@ -497,11 +471,7 @@
             flex-direction: column;
             gap: 8px;
         }
-        .restaurant-name {
-            font-size: 14px;
-            font-weight: 700;
-            color: #1a202c;
-        }
+        .restaurant-name { font-size: 14px; font-weight: 700; color: #1a202c; }
         .restaurant-card input {
             width: 100%;
             padding: 8px 10px;
@@ -511,12 +481,7 @@
             background: #fff;
         }
 
-        .category-pills {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-            margin-bottom: 15px;
-        }
+        .category-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 15px; }
         .pill-btn {
             background-color: #edf2f7;
             color: #4a5568;
@@ -528,11 +493,7 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-        .pill-btn.active, .pill-btn:hover {
-            background-color: #003366;
-            color: white;
-            border-color: #003366;
-        }
+        .pill-btn.active, .pill-btn:hover { background-color: #003366; color: white; border-color: #003366; }
         .suggest-food-btn {
             display: flex;
             align-items: center;
@@ -592,13 +553,8 @@
             color: #4a5568;
             margin-top: 15px;
         }
-        .share-steps ol {
-            margin: 5px 0 0 20px;
-            padding: 0;
-        }
-        .share-steps li {
-            margin-bottom: 4px;
-        }
+        .share-steps ol { margin: 5px 0 0 20px; padding: 0; }
+        .share-steps li { margin-bottom: 4px; }
 
         /* Footer Feedback Section */
         .feedback-section {
@@ -615,12 +571,7 @@
             letter-spacing: 0.5px;
             margin-bottom: 8px;
         }
-        .feedback-links {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
+        .feedback-links { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
         .feedback-btn {
             font-size: 12px;
             font-weight: 600;
@@ -880,7 +831,7 @@
             });
             const data = await response.json();
             window.sharedFoodNotes = data.record.notes || {};
-            filterRestaurants(); // Refresh list with loaded notes
+            filterRestaurants();
         } catch (err) {
             console.error('Failed to load shared notes', err);
         }
@@ -931,6 +882,7 @@
         });
     }
 
+    // Cleaned up GeoJSON boundary data with rogue outlier vertices removed
     const geojsonData = {
         "type": "FeatureCollection",
         "features": [
@@ -1011,9 +963,9 @@
                             [-85.5788215, 38.287619], [-85.5776413, 38.2861284], [-85.5775179, 38.2859389], [-85.5767884, 38.28596],
                             [-85.5760964, 38.2860905], [-85.575458, 38.2862884], [-85.5749377, 38.2864526], [-85.5744817, 38.2865958],
                             [-85.5729206, 38.2871642], [-85.5723145, 38.2873706], [-85.5714025, 38.2861663], [-85.57063, 38.2854084],
-                            [-85.65697503, 38.2845241], [-85.5673577, 38.2813155], [-85.5668213, 38.2804311], [-85.5664887, 38.279749],
+                            [-85.5697503, 38.2845241], [-85.5673577, 38.2813155], [-85.5668213, 38.2804311], [-85.5664887, 38.279749],
                             [-85.5662634, 38.2792015], [-85.5638279, 38.2739628], [-85.563398, 38.2742368], [-85.5610484, 38.2749612],
-                            [-85.5606192, 38.274818], [-85.5605334, 38.2745063], [-85.6000291, 38.2734956], [-85.559557, 38.2723501],
+                            [-85.5606192, 38.274818], [-85.5605334, 38.2745063], [-85.559557, 38.2723501],
                             [-85.5589455, 38.2709687], [-85.5589509, 38.2708045], [-85.5598199, 38.2708297], [-85.561794, 38.2708634],
                             [-85.5668151, 38.270775], [-85.56441, 38.2656852], [-85.5638199, 38.2643037], [-85.5635302, 38.2636298],
                             [-85.5638199, 38.2633349], [-85.5643456, 38.2630317], [-85.5651395, 38.2628042], [-85.567081, 38.2625094],
@@ -1517,7 +1469,7 @@
             mapWrapper.style.display = 'none';
             historyContainer.style.display = 'none';
             if (marker) marker.setMap(null);
-            loadSharedNotes(); // Refresh notes when opening tab
+            loadSharedNotes();
         } else if (tab === 'share') {
             document.querySelectorAll('.tab-btn')[5].classList.add('active');
             document.getElementById('shareTab').classList.add('active');
@@ -1697,7 +1649,7 @@
 
     renderRoutingHospitals();
     loadGoogleMaps();
-    loadSharedNotes(); // Load notes on initial page boot
+    loadSharedNotes();
 </script>
 
 </body>
