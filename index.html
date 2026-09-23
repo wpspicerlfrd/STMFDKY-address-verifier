@@ -452,21 +452,39 @@
             font-size: 18px;
             font-weight: 800;
             color: #003366;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+        }
+        .result-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
         }
         .nav-link-btn {
             display: inline-block;
             background-color: #003366;
             color: white;
-            padding: 8px 16px;
+            padding: 8px 14px;
             border-radius: 4px;
             text-decoration: none;
             font-weight: 600;
-            font-size: 13px;
-            margin-top: 5px;
+            font-size: 12px;
         }
         .nav-link-btn:hover {
             background-color: #002244;
+        }
+        .web-link-btn {
+            display: inline-block;
+            background-color: #dd6b20;
+            color: white;
+            padding: 8px 14px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        .web-link-btn:hover {
+            background-color: #c05621;
         }
         .category-pills {
             display: flex;
@@ -487,6 +505,47 @@
         }
         .pill-btn.active, .pill-btn:hover {
             background-color: #003366;
+            color: white;
+            border-color: #003366;
+        }
+        .restaurant-item {
+            background-color: #f8fafc;
+            color: #2d3748;
+            border: 1px solid #cbd5e0;
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+        .restaurant-name {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .restaurant-actions {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        .mini-btn {
+            background: #edf2f7;
+            color: #003366;
+            border: 1px solid #cbd5e0;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .mini-btn:hover {
+            background: #003366;
             color: white;
             border-color: #003366;
         }
@@ -597,7 +656,7 @@
         <button class="tab-btn" onclick="switchTab('routing')">Hospitals</button>
         <button class="tab-btn" onclick="switchTab('home')">Stations</button>
         <button class="tab-btn" onclick="switchTab('eats')">Food</button>
-        <button class="tab-btn" onclick="switchTab('share')">Share App</button>
+        <button class="tab-btn" onclick="switchTab('share')">📲 Share App</button>
     </div>
 
     <!-- TAB 1: District Verifier -->
@@ -721,7 +780,10 @@
             <div id="randomResult" class="result-card">
                 <div style="font-size: 11px; font-weight: 700; color: #718096; text-transform: uppercase;">Selected Spot</div>
                 <div id="randomName" class="result-name">--</div>
-                <button id="randomNavBtn" class="nav-link-btn" onclick="">🗺️ Navigate to Spot</button>
+                <div class="result-actions">
+                    <button id="randomNavBtn" class="nav-link-btn" onclick="">🗺️ Navigate</button>
+                    <button id="randomWebBtn" class="web-link-btn" onclick="">🌐 Google / Order</button>
+                </div>
             </div>
         </div>
 
@@ -759,7 +821,7 @@
             
             <div style="display: flex; gap: 10px; justify-content: center;">
                 <button class="action-btn" onclick="copyAppUrl()">📋 Copy Link</button>
-                <a id="smsShareBtn" href="" class="action-btn" style="background-color: #3182ce; text-decoration: none; display: inline-flex; align-items: center;">💬 Text Link</a>
+                <a id="smsShareBtn" href="" class="action-btn" style="background-color: #3182ce; text-decoration: none; display: inline-flex; align-items: center;">Text Link</a>
             </div>
 
             <div class="share-steps">
@@ -907,7 +969,7 @@
                             [-85.5668151, 38.270775], [-85.56441, 38.2656852], [-85.5638199, 38.2643037], [-85.5635302, 38.2636298],
                             [-85.5638199, 38.2633349], [-85.5643456, 38.2630317], [-85.5651395, 38.2628042], [-85.567081, 38.2625094],
                             [-85.5664162, 38.2621977], [-85.5672209, 38.2617933], [-85.5677895, 38.2614816], [-85.5686371, 38.2614732],
-                            [-85.5689161, 38.2615237], [-85.5693559, 38.2617596], [-85.5696134, 38.2619281], [-85.5701928, 38.2621808],
+                            [-85.5689161, 38.2615237], [-85.5693559, 38.2617596], [-85.696134, 38.2659148], [-85.5701928, 38.2621808],
                             [-85.5707614, 38.2622651], [-85.5716412, 38.262164], [-85.5727892, 38.2618439], [-85.5734544, 38.2615574],
                             [-85.5740874, 38.2613131], [-85.5747633, 38.2611194], [-85.5767696, 38.2602096], [-85.5771344, 38.2600663],
                             [-85.5784218, 38.2602517], [-85.5835395, 38.2611868], [-85.5868118, 38.2566123], [-85.5873375, 38.2562416],
@@ -1315,6 +1377,7 @@
         const resultCard = document.getElementById('randomResult');
         const nameEl = document.getElementById('randomName');
         const navBtn = document.getElementById('randomNavBtn');
+        const webBtn = document.getElementById('randomWebBtn');
 
         resultCard.style.display = 'block';
         nameEl.innerText = 'Spinning... 🎲';
@@ -1330,6 +1393,7 @@
                 const picked = restaurantList[finalIdx];
                 nameEl.innerText = picked;
                 navBtn.onclick = () => openNavAddress(picked + ', Louisville, KY');
+                webBtn.onclick = () => openWebSearch(picked + ' Louisville KY');
             }
         }, 80);
     }
@@ -1371,11 +1435,23 @@
             return;
         }
 
-        grid.innerHTML = filtered.map(name => `
-            <button class="er-btn" onclick="openNavAddress('${name.replace(/'/g, "\\'")}, Louisville, KY')">
-                <span>${name}</span>
-            </button>
-        `).join('');
+        grid.innerHTML = filtered.map(name => {
+            const safeName = name.replace(/'/g, "\\'");
+            return `
+                <div class="restaurant-item">
+                    <span class="restaurant-name" title="${name}">${name}</span>
+                    <div class="restaurant-actions">
+                        <button class="mini-btn" onclick="openNavAddress('${safeName}, Louisville, KY')">🗺️ Nav</button>
+                        <button class="mini-btn" onclick="openWebSearch('${safeName} Louisville KY')">🌐 Web</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function openWebSearch(query) {
+        const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+        window.open(searchUrl, '_blank');
     }
 
     function switchTab(tab) {
