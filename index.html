@@ -271,6 +271,24 @@
         #status.outside { background-color: #fed7d7; color: #742a2a; border: 1px solid #feb2b2; display: block !important; }
         #status.loading { background-color: #e2e8f0; color: #4a5568; border: 1px solid #cbd5e0; display: block !important; }
         
+        .dir-btn-inline {
+            display: inline-block;
+            margin-top: 10px;
+            background-color: #003366;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+            transition: background 0.2s;
+        }
+        .dir-btn-inline:hover {
+            background-color: #002244;
+        }
+
         #mapWrapper { width: 100%; }
         #map { 
             width: 100%; 
@@ -820,9 +838,9 @@
                     "name": "STMFD Service Area",
                     "styleUrl": "#line-E65100-9525-nodesc",
                     "stroke-opacity": 1,
-                    "stroke": "#CE2029",
-                    "stroke-width": 1,
-                    "fill": "#CE2029",
+                    "stroke": "#0000FF",
+                    "stroke-width": 2,
+                    "fill": "#0000FF",
                     "fill-opacity": 0.25
                 }
             }
@@ -1400,7 +1418,7 @@
             return {
                 fillColor: feature.getProperty('fill') || '#0000FF',
                 fillOpacity: feature.getProperty('fill-opacity') || 0.25,
-                strokeColor: feature.getProperty('stroke') || '#001f3f',
+                strokeColor: feature.getProperty('stroke') || '#0000FF',
                 strokeWeight: feature.getProperty('stroke-width') || 2,
                 strokeOpacity: feature.getProperty('stroke-opacity') || 1
             };
@@ -1442,15 +1460,17 @@
                 const formattedAddress = results[0].formatted_address;
                 const isInside = google.maps.geometry.poly.containsLocation(location, boundaryPolygon);
 
+                const dirBtnHtml = `<br><button class="dir-btn-inline" onclick="openNav(${location.lat()}, ${location.lng()})">🗺️ Get Directions to Address</button>`;
+
                 if (isInside) {
                     statusDiv.className = 'inside';
                     statusDiv.style.display = 'block';
-                    statusDiv.innerHTML = '✅ IN DISTRICT: Address is WITHIN the STMFDKY service area.';
+                    statusDiv.innerHTML = '✅ IN DISTRICT: Address is WITHIN the STMFDKY service area.' + dirBtnHtml;
                     addHistoryEntry(formattedAddress, 'in-district', 'In District');
                 } else {
                     statusDiv.className = 'outside';
                     statusDiv.style.display = 'block';
-                    statusDiv.innerHTML = '❌ OUT OF DISTRICT: Address is OUTSIDE the STMFDKY service area.';
+                    statusDiv.innerHTML = '❌ OUT OF DISTRICT: Address is OUTSIDE the STMFDKY service area.' + dirBtnHtml;
                     addHistoryEntry(formattedAddress, 'out-district', 'Out of District');
                 }
 
