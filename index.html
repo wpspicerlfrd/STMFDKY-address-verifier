@@ -12,48 +12,55 @@
         body { 
             background-color: #f4f6f8; 
             margin: 0; 
-            padding: 20px; 
+            padding: 12px; 
             display: flex; 
             justify-content: center; 
         }
         .card { 
             background: #ffffff; 
-            padding: 25px; 
+            padding: 20px 15px; 
             border-radius: 10px; 
             box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
             width: 100%; 
             max-width: 750px; 
         }
         .app-header {
-            margin-bottom: 20px;
-            padding-bottom: 12px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
             border-bottom: 2px solid #003366;
         }
         .app-title {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 800;
             color: #003366;
             margin: 0 0 2px 0;
             letter-spacing: -0.5px;
         }
         .app-subtitle {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             color: #718096;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             margin: 0;
         }
+        /* Mobile Horizontal Scroll Nav */
         .tab-nav {
             display: flex;
+            gap: 4px;
             border-bottom: 2px solid #e2e8f0;
             margin-bottom: 20px;
             overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .tab-nav::-webkit-scrollbar {
+            display: none;
         }
         .tab-btn {
-            flex: 1;
-            min-width: 90px;
-            padding: 10px 6px;
+            flex: 0 0 auto;
+            padding: 10px 14px;
             background: none;
             border: none;
             font-size: 13px;
@@ -63,7 +70,6 @@
             border-bottom: 3px solid transparent;
             transition: all 0.2s;
             text-align: center;
-            white-space: nowrap;
         }
         .tab-btn.active {
             color: #003366;
@@ -78,7 +84,7 @@
         h2 { 
             margin-top: 0; 
             color: #1a202c; 
-            font-size: 20px; 
+            font-size: 18px; 
         }
         p { 
             color: #4a5568; 
@@ -86,7 +92,7 @@
             margin-bottom: 15px; 
         }
         .section-header {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 700;
             color: #003366;
             text-transform: uppercase;
@@ -218,12 +224,13 @@
             background-color: #003366; 
             color: white; 
             border: none; 
-            padding: 12px 20px; 
-            font-size: 15px; 
+            padding: 12px 16px; 
+            font-size: 14px; 
             font-weight: 600; 
             border-radius: 6px; 
             cursor: pointer; 
             transition: background 0.2s; 
+            white-space: nowrap;
         }
         button.action-btn:hover { background-color: #002244; }
 
@@ -256,13 +263,14 @@
             padding: 12px 15px; 
             border-radius: 6px; 
             font-weight: 600; 
-            font-size: 15px; 
+            font-size: 14px; 
             margin-bottom: 15px; 
             text-align: center; 
         }
-        #status.inside { background-color: #c6f6d5; color: #22543d; border: 1px solid #9ae6b4; display: block; }
-        #status.outside { background-color: #fed7d7; color: #742a2a; border: 1px solid #feb2b2; display: block; }
-        #status.loading { background-color: #e2e8f0; color: #4a5568; border: 1px solid #cbd5e0; display: block; }
+        #status.inside { background-color: #c6f6d5; color: #22543d; border: 1px solid #9ae6b4; display: block !important; }
+        #status.outside { background-color: #fed7d7; color: #742a2a; border: 1px solid #feb2b2; display: block !important; }
+        #status.loading { background-color: #e2e8f0; color: #4a5568; border: 1px solid #cbd5e0; display: block !important; }
+        
         #mapWrapper { width: 100%; }
         #map { 
             width: 100%; 
@@ -282,8 +290,8 @@
             align-items: center;
             margin-bottom: 12px;
         }
-        .history-header h3 { margin: 0; font-size: 16px; color: #2d3748; }
-        .clear-history-btn { background: none; border: none; color: #e53e3e; font-size: 13px; font-weight: 600; cursor: pointer; }
+        .history-header h3 { margin: 0; font-size: 15px; color: #2d3748; }
+        .clear-history-btn { background: none; border: none; color: #e53e3e; font-size: 12px; font-weight: 600; cursor: pointer; }
         .clear-history-btn:hover { text-decoration: underline; }
         .history-list { 
             list-style: none; 
@@ -301,10 +309,10 @@
             background-color: #f8fafc;
             border: 1px solid #edf2f7;
             margin-bottom: 8px;
-            font-size: 14px;
+            font-size: 13px;
         }
-        .history-address { color: #2d3748; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 380px; }
-        .badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 700; text-transform: uppercase; }
+        .history-address { color: #2d3748; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 240px; }
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
         .badge.in-district { background-color: #c6f6d5; color: #22543d; }
         .badge.out-district { background-color: #fed7d7; color: #742a2a; }
         .badge.not-found { background-color: #e2e8f0; color: #4a5568; }
@@ -322,7 +330,7 @@
         }
         .selector-group label {
             display: block;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 700;
             color: #4a5568;
             margin-bottom: 5px;
@@ -380,7 +388,7 @@
         }
         .eats-hero h3 {
             margin: 0 0 8px 0;
-            font-size: 18px;
+            font-size: 17px;
         }
         .eats-hero p {
             color: #e2e8f0;
@@ -391,8 +399,8 @@
             background-color: #dd6b20;
             color: white;
             border: none;
-            padding: 12px 24px;
-            font-size: 15px;
+            padding: 12px 20px;
+            font-size: 14px;
             font-weight: 700;
             border-radius: 6px;
             cursor: pointer;
@@ -415,7 +423,7 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         .result-name {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 800;
             color: #003366;
             margin-bottom: 10px;
@@ -459,13 +467,13 @@
 
         /* Footer Feedback Section */
         .feedback-section {
-            margin-top: 30px;
+            margin-top: 25px;
             padding-top: 15px;
             border-top: 1px solid #e2e8f0;
             text-align: center;
         }
         .feedback-title {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 700;
             color: #718096;
             text-transform: uppercase;
@@ -475,15 +483,15 @@
         .feedback-links {
             display: flex;
             justify-content: center;
-            gap: 15px;
+            gap: 10px;
             flex-wrap: wrap;
         }
         .feedback-btn {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             color: #003366;
             text-decoration: none;
-            padding: 6px 12px;
+            padding: 6px 10px;
             border-radius: 4px;
             background-color: #edf2f7;
             transition: background 0.2s;
@@ -563,8 +571,8 @@
         </div>
 
         <div id="guidelineResult" class="result-panel">
-            <div style="font-size: 12px; font-weight: 700; color: #718096; text-transform: uppercase;" id="resultCategory">Category</div>
-            <div style="font-size: 18px; font-weight: 700; color: #1a202c; margin-top: 2px;" id="resultTitle">Condition Title</div>
+            <div style="font-size: 11px; font-weight: 700; color: #718096; text-transform: uppercase;" id="resultCategory">Category</div>
+            <div style="font-size: 17px; font-weight: 700; color: #1a202c; margin-top: 2px;" id="resultTitle">Condition Title</div>
             <div style="font-size: 13px; color: #4a5568; margin-top: 6px;" id="resultDef">Definition description</div>
             
             <div id="protocolNote" class="protocol-note" style="display:none;"></div>
@@ -1005,7 +1013,6 @@
     let boundaryBounds;
     let geocoder;
     let autocomplete;
-    let autoClearTimer;
     let searchHistory = [];
     let userLocation = null;
     let currentEatsCategory = 'all';
@@ -1017,6 +1024,13 @@
     const mapWrapper = document.getElementById('mapWrapper');
     const historyContainer = document.getElementById('historyContainer');
     const historyList = document.getElementById('historyList');
+
+    // Auto-clear input and status when user taps or clicks into the address field
+    inputEl.addEventListener('focus', function() {
+        if (this.value) {
+            resetForm();
+        }
+    });
 
     inputEl.addEventListener('input', function() {
         clearBtn.style.display = this.value ? 'block' : 'none';
@@ -1259,7 +1273,6 @@
             document.getElementById('guidelinesTab').classList.add('active');
             mapWrapper.style.display = 'none';
             historyContainer.style.display = 'none';
-            statusDiv.style.display = 'none';
             if (marker) marker.setMap(null);
             if (!userLocation) getUserGeolocation();
             updateEmergencyOptions();
@@ -1268,7 +1281,6 @@
             document.getElementById('routingTab').classList.add('active');
             mapWrapper.style.display = 'none';
             historyContainer.style.display = 'none';
-            statusDiv.style.display = 'none';
             if (marker) marker.setMap(null);
             if (!userLocation) getUserGeolocation();
             renderRoutingHospitals();
@@ -1277,21 +1289,18 @@
             document.getElementById('homeTab').classList.add('active');
             mapWrapper.style.display = 'none';
             historyContainer.style.display = 'none';
-            statusDiv.style.display = 'none';
             if (marker) marker.setMap(null);
         } else if (tab === 'eats') {
             document.querySelectorAll('.tab-btn')[4].classList.add('active');
             document.getElementById('eatsTab').classList.add('active');
             mapWrapper.style.display = 'none';
             historyContainer.style.display = 'none';
-            statusDiv.style.display = 'none';
             if (marker) marker.setMap(null);
             filterRestaurants();
         }
     }
 
     function resetForm() {
-        if (autoClearTimer) clearTimeout(autoClearTimer);
         inputEl.value = '';
         clearBtn.style.display = 'none';
         statusDiv.className = '';
@@ -1299,7 +1308,6 @@
         statusDiv.innerHTML = '';
         if (marker) { marker.setMap(null); marker = null; }
         if (map && boundaryBounds) map.fitBounds(boundaryBounds);
-        inputEl.focus();
     }
 
     function addHistoryEntry(address, statusClass, badgeText) {
@@ -1390,7 +1398,7 @@
         map.data.addGeoJson(geojsonData);
         map.data.setStyle(function(feature) {
             return {
-                fillColor: feature.getProperty('fill') || '#003366',
+                fillColor: feature.getProperty('fill') || '#0000FF',
                 fillOpacity: feature.getProperty('fill-opacity') || 0.25,
                 strokeColor: feature.getProperty('stroke') || '#001f3f',
                 strokeWeight: feature.getProperty('stroke-width') || 2,
@@ -1408,17 +1416,18 @@
     };
 
     function verifyAddress() {
-        if (autoClearTimer) clearTimeout(autoClearTimer);
         const address = inputEl.value.trim();
 
         if (!address) {
             statusDiv.className = 'outside';
+            statusDiv.style.display = 'block';
             statusDiv.innerHTML = '⚠️ Please enter an address to verify.';
             return;
         }
 
         verifyBtn.disabled = true;
         statusDiv.className = 'loading';
+        statusDiv.style.display = 'block';
         statusDiv.innerHTML = '🔍 Checking address...';
 
         const searchAddress = address.toLowerCase().includes('ky') || address.toLowerCase().includes('kentucky') 
@@ -1435,10 +1444,12 @@
 
                 if (isInside) {
                     statusDiv.className = 'inside';
+                    statusDiv.style.display = 'block';
                     statusDiv.innerHTML = '✅ IN DISTRICT: Address is WITHIN the STMFDKY service area.';
                     addHistoryEntry(formattedAddress, 'in-district', 'In District');
                 } else {
                     statusDiv.className = 'outside';
+                    statusDiv.style.display = 'block';
                     statusDiv.innerHTML = '❌ OUT OF DISTRICT: Address is OUTSIDE the STMFDKY service area.';
                     addHistoryEntry(formattedAddress, 'out-district', 'Out of District');
                 }
@@ -1449,11 +1460,10 @@
                 map.setZoom(15);
             } else {
                 statusDiv.className = 'outside';
+                statusDiv.style.display = 'block';
                 statusDiv.innerHTML = '❌ Address not found. Check spelling or street number.';
                 addHistoryEntry(address, 'not-found', 'Not Found');
             }
-
-            autoClearTimer = setTimeout(resetForm, 15000);
         });
     }
 
