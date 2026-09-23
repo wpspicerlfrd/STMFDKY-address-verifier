@@ -491,6 +491,53 @@
             border-color: #003366;
         }
 
+        /* Share & QR Code Tab Styling */
+        .share-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .qr-image {
+            width: 200px;
+            height: 200px;
+            margin: 15px auto;
+            display: block;
+            border-radius: 6px;
+            border: 4px solid white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .share-url-box {
+            background: white;
+            border: 1px solid #cbd5e0;
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #2d3748;
+            word-break: break-all;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        .share-steps {
+            text-align: left;
+            background: #fffaf0;
+            border-left: 4px solid #dd6b20;
+            padding: 12px 15px;
+            border-radius: 0 6px 6px 0;
+            font-size: 13px;
+            color: #4a5568;
+            margin-top: 15px;
+        }
+        .share-steps ol {
+            margin: 5px 0 0 20px;
+            padding: 0;
+        }
+        .share-steps li {
+            margin-bottom: 4px;
+        }
+
         /* Footer Feedback Section */
         .feedback-section {
             margin-top: 25px;
@@ -550,6 +597,7 @@
         <button class="tab-btn" onclick="switchTab('routing')">Hospitals</button>
         <button class="tab-btn" onclick="switchTab('home')">Stations</button>
         <button class="tab-btn" onclick="switchTab('eats')">Food</button>
+        <button class="tab-btn" onclick="switchTab('share')">Share App</button>
     </div>
 
     <!-- TAB 1: District Verifier -->
@@ -663,7 +711,7 @@
     <!-- TAB 5: Shift Eats (Restaurant Directory & Chooser) -->
     <div id="eatsTab" class="tab-content">
         <h2>Shift Eats Chooser</h2>
-        <p>Can'decide on lunch or dinner for the crew? Spin the chooser or search from 190 local options.</p>
+        <p>Can't decide on lunch or dinner for the crew? Spin the chooser or search from 190 local options.</p>
 
         <div class="eats-hero">
             <h3>🎲 Crew Meal Randomizer</h3>
@@ -698,6 +746,33 @@
         <div id="restaurantGrid" class="er-grid"></div>
     </div>
 
+    <!-- TAB 6: Share App & QR Code -->
+    <div id="shareTab" class="tab-content">
+        <h2>Share App With Crew Members</h2>
+        <p>Have another medic, firefighter, or officer scan this QR code with their phone camera to instantly install the app on their device.</p>
+
+        <div class="share-card">
+            <div style="font-size: 12px; font-weight: 700; color: #003366; text-transform: uppercase; margin-bottom: 5px;">Scan to Open &amp; Install</div>
+            <img id="qrCodeImg" class="qr-image" alt="App QR Code" src="">
+            
+            <div class="share-url-box" id="appUrlText">https://wpspicerlfrd.github.io/STMFDKY-address-verifier/</div>
+            
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button class="action-btn" onclick="copyAppUrl()">📋 Copy Link</button>
+                <a id="smsShareBtn" href="" class="action-btn" style="background-color: #3182ce; text-decoration: none; display: inline-flex; align-items: center;">💬 Text Link</a>
+            </div>
+
+            <div class="share-steps">
+                <strong>How crew members install it:</strong>
+                <ol>
+                    <li>Scan the QR code with their smartphone camera.</li>
+                    <li>Tap the notification banner that pops up.</li>
+                    <li>Tap the browser menu (⋮) and select <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong>.</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
     <!-- Map Display (Visible only in District Verifier tab) -->
     <div id="mapWrapper">
         <div id="map"></div>
@@ -730,6 +805,18 @@
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW registration failed: ', err));
+        });
+    }
+
+    // Set up QR Code and Share link dynamically
+    const currentAppUrl = window.location.href.split('?')[0];
+    document.getElementById('appUrlText').innerText = currentAppUrl;
+    document.getElementById('qrCodeImg').src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(currentAppUrl)}`;
+    document.getElementById('smsShareBtn').href = `sms:?body=${encodeURIComponent("Check out the STMFD SMART EMS App: " + currentAppUrl)}`;
+
+    function copyAppUrl() {
+        navigator.clipboard.writeText(currentAppUrl).then(() => {
+            alert('App link copied to clipboard!');
         });
     }
 
@@ -1113,8 +1200,8 @@
         } else {
             userLocation = { lat: 38.2520, lng: -85.6441 };
             updateStatusText(`<span>📍 Distance sorted from St. Matthews St. 46</span>`);
-            evaluateDestination();
-            renderRoutingHospitals();
+                    evaluateDestination();
+                    renderRoutingHospitals();
         }
     }
 
@@ -1330,6 +1417,12 @@
             historyContainer.style.display = 'none';
             if (marker) marker.setMap(null);
             filterRestaurants();
+        } else if (tab === 'share') {
+            document.querySelectorAll('.tab-btn')[5].classList.add('active');
+            document.getElementById('shareTab').classList.add('active');
+            mapWrapper.style.display = 'none';
+            historyContainer.style.display = 'none';
+            if (marker) marker.setMap(null);
         }
     }
 
