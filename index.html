@@ -508,46 +508,26 @@
             color: white;
             border-color: #003366;
         }
-        .restaurant-item {
-            background-color: #f8fafc;
-            color: #2d3748;
-            border: 1px solid #cbd5e0;
-            padding: 10px 12px;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 600;
+        .suggest-food-btn {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center;
             gap: 8px;
-        }
-        .restaurant-name {
-            flex: 1;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        .restaurant-actions {
-            display: flex;
-            gap: 6px;
-            flex-shrink: 0;
-        }
-        .mini-btn {
-            background: #edf2f7;
-            color: #003366;
-            border: 1px solid #cbd5e0;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 11px;
+            width: 100%;
+            background-color: #2b6cb0;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 14px;
             font-weight: 700;
             text-decoration: none;
-            cursor: pointer;
-            transition: all 0.2s;
+            margin-top: 20px;
+            box-shadow: 0 2px 4px rgba(43, 108, 176, 0.2);
+            transition: background 0.2s;
         }
-        .mini-btn:hover {
-            background: #003366;
-            color: white;
-            border-color: #003366;
+        .suggest-food-btn:hover {
+            background-color: #2c5282;
         }
 
         /* Share & QR Code Tab Styling */
@@ -806,6 +786,10 @@
         </div>
 
         <div id="restaurantGrid" class="er-grid"></div>
+
+        <a href="sms:15022241865?body=STMFD%20SMART%20EMS%20Food%20Suggestion:%20" class="suggest-food-btn">
+            ✏️ Suggest Food Add / Change (Text to Chief)
+        </a>
     </div>
 
     <!-- TAB 6: Share App & QR Code -->
@@ -1438,13 +1422,9 @@
         grid.innerHTML = filtered.map(name => {
             const safeName = name.replace(/'/g, "\\'");
             return `
-                <div class="restaurant-item">
-                    <span class="restaurant-name" title="${name}">${name}</span>
-                    <div class="restaurant-actions">
-                        <button class="mini-btn" onclick="openNavAddress('${safeName}, Louisville, KY')">🗺️ Nav</button>
-                        <button class="mini-btn" onclick="openWebSearch('${safeName} Louisville KY')">🌐 Web</button>
-                    </div>
-                </div>
+                <button class="er-btn" onclick="openNavAddress('${safeName}, Louisville, KY')">
+                    <span>${name}</span>
+                </button>
             `;
         }).join('');
     }
