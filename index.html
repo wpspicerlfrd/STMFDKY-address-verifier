@@ -48,10 +48,12 @@
             display: flex;
             border-bottom: 2px solid #e2e8f0;
             margin-bottom: 20px;
+            overflow-x: auto;
         }
         .tab-btn {
             flex: 1;
-            padding: 10px 8px;
+            min-width: 100px;
+            padding: 10px 6px;
             background: none;
             border: none;
             font-size: 12px;
@@ -61,6 +63,7 @@
             border-bottom: 3px solid transparent;
             transition: all 0.2s;
             text-align: center;
+            white-space: nowrap;
         }
         .tab-btn.active {
             color: #003366;
@@ -358,6 +361,95 @@
             margin-left: 4px;
         }
 
+        /* Shift Eats / Restaurant Chooser Styling */
+        .eats-hero {
+            background: linear-gradient(135deg, #003366 0%, #1a365d 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .eats-hero h3 {
+            margin: 0 0 8px 0;
+            font-size: 18px;
+        }
+        .eats-hero p {
+            color: #e2e8f0;
+            font-size: 13px;
+            margin: 0 0 15px 0;
+        }
+        .spin-btn {
+            background-color: #dd6b20;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 15px;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .spin-btn:hover {
+            background-color: #c05621;
+            transform: translateY(-1px);
+        }
+        .result-card {
+            background-color: white;
+            color: #2d3748;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 15px;
+            display: none;
+            text-align: center;
+            border: 2px solid #feebc8;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .result-name {
+            font-size: 20px;
+            font-weight: 800;
+            color: #003366;
+            margin-bottom: 10px;
+        }
+        .nav-link-btn {
+            display: inline-block;
+            background-color: #003366;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+        .nav-link-btn:hover {
+            background-color: #002244;
+        }
+        .category-pills {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        .pill-btn {
+            background-color: #edf2f7;
+            color: #4a5568;
+            border: 1px solid #cbd5e0;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .pill-btn.active, .pill-btn:hover {
+            background-color: #003366;
+            color: white;
+            border-color: #003366;
+        }
+
         /* Footer Feedback Section */
         .feedback-section {
             margin-top: 30px;
@@ -407,6 +499,7 @@
         <button class="tab-btn" onclick="switchTab('guidelines')">Destination Wizard</button>
         <button class="tab-btn" onclick="switchTab('routing')">Hospital Nav</button>
         <button class="tab-btn" onclick="switchTab('home')">Take Me Home</button>
+        <button class="tab-btn" onclick="switchTab('eats')">Shift Eats</button>
     </div>
 
     <!-- TAB 1: District Verifier -->
@@ -515,6 +608,44 @@
                 </div>
             </button>
         </div>
+    </div>
+
+    <!-- TAB 5: Shift Eats (Restaurant Directory & Chooser) -->
+    <div id="eatsTab" class="tab-content">
+        <h2>Shift Eats Chooser</h2>
+        <p>Can't decide on lunch or dinner for the crew? Spin the chooser or search from 190 local options.</p>
+
+        <div class="eats-hero">
+            <h3>🎲 Crew Meal Randomizer</h3>
+            <p>Let the app choose today's shift food spot!</p>
+            <button class="spin-btn" onclick="pickRandomRestaurant()">🎲 Pick Somewhere to Eat!</button>
+
+            <div id="randomResult" class="result-card">
+                <div style="font-size: 11px; font-weight: 700; color: #718096; text-transform: uppercase;">Selected Spot</div>
+                <div id="randomName" class="result-name">--</div>
+                <button id="randomNavBtn" class="nav-link-btn" onclick="">🗺️ Navigate to Spot</button>
+            </div>
+        </div>
+
+        <div class="section-header">Search &amp; Filter Directory</div>
+
+        <div class="form-group">
+            <div class="input-wrapper">
+                <input type="text" id="eatsSearchInput" placeholder="Search by name or cuisine (e.g. Pizza, Tacos, BBQ)..." oninput="filterRestaurants()">
+            </div>
+        </div>
+
+        <div class="category-pills">
+            <button class="pill-btn active" onclick="setCategoryFilter('all', this)">All (190)</button>
+            <button class="pill-btn" onclick="setCategoryFilter('pizza', this)">🍕 Pizza</button>
+            <button class="pill-btn" onclick="setCategoryFilter('mexican', this)">🌮 Mexican</button>
+            <button class="pill-btn" onclick="setCategoryFilter('bbq', this)">🍖 BBQ</button>
+            <button class="pill-btn" onclick="setCategoryFilter('burgers', this)">🍔 Burgers</button>
+            <button class="pill-btn" onclick="setCategoryFilter('asian', this)">🥢 Asian / Sushi</button>
+            <button class="pill-btn" onclick="setCategoryFilter('breakfast', this)">☕ Breakfast &amp; Bakery</button>
+        </div>
+
+        <div id="restaurantGrid" class="er-grid"></div>
     </div>
 
     <!-- Map Display (Visible only in District Verifier tab) -->
@@ -829,6 +960,29 @@
         }
     ];
 
+    // Full 190 Directory List from Louisville_Restaurants_and_Stores.xlsx
+    const restaurantList = [
+        "211 Clover Lane", "Abol Cafe (Coffee + Kitchen)", "AJ Subs LLC", "Ala Eh Eats Filipino Food and Sushi", "ALDI", "All Thai’d Up", "Arby's", "Asahi Japanese Restaurant", "Bandido Taqueria Mexicana", "Barry Bagels", 
+        "Basilico Cafe", "Bearnos Pizza", "Better Blend - Louisville", "Biscuit Belly: Louisville - St. Matthews", "BJ's Restaurant & Brewhouse", "Blaze Pizza", "BOMBAY GRILL - INDIAN RESTAURANT", "Bonefish Grill", "BoomBozz Pizza & Watch Bar", "Bourbon & Burger", 
+        "Brasserie Provence", "Brick House Tavern + Tap", "Bristol Bar & Grille | East", "Bruegger's Bagels", "Buffalo Wild Wings", "Burger Girl", "California Pizza Kitchen at Oxmoor", "Carrabba's Italian Grill", "CASK Southern Kitchen & Bar", "Cheddar Box Too", 
+        "Cheddar's Scratch Kitchen", "Chef's Cut Pizzeria", "Chicken Salad Chick", "Chick-fil-A", "Chili's Grill & Bar", "China 1", "China 1 - Lyndon", "China Star", "Chipotle", "Chuy's", 
+        "Cinnaholic", "Circle K", "City Barbeque", "Coals Artisan Pizza", "Cold Stone Creamery", "Con Huevos! - Breakfast & Brunch", "Condado Tacos", "Connors Steak & Seafood", "Currito Louisville", "Dave & Buster's Louisville", 
+        "Dave's Hot Chicken", "Del Frisco's", "DiOrio's Pizza & Pub", "District 6", "Domino's Pizza", "Drake's - St. Matthews", "Drake's Hurstbourne", "Dunkin Donuts", "Eat A Pita", "Ehrler's Ice Cream", 
+        "El Nopal - Mall St. Matthews", "El Nopal Mexican Food | Westport Rd", "El Tarasco", "Fazoli's", "Felipe's Mexican Kitchen, Dutchmans Ln", "Fire House subs", "First Watch", "Fishery", "Five Guys", "Food Court @ Mall St. Matthews", 
+        "Ginza Asian Bistro", "Grassa Gramma", "Green District Salads - St. Matthews", "Gus's World Famous Fried Chicken", "Gustavo's Mexican Grill, Hurstbourne", "Heine Brothers' Coffee - Chenoweth Lane", "Heitzman Traditional Bakery and Deli", "Highland Morning St. Matthews", "Hillcrest Tavern", "Hooters", 
+        "IHOP", "J. Alexander's Restaurant", "Jack in the Box", "Jade Palace", "Jaggers", "Jason's Deli", "Jeff's Donuts", "Jersey Mike's Subs", "Jet's Pizza", "Jimmy John's Gourmet Sandwiches", 
+        "Joe’s Older Than Dirt", "Joella's Hot Chicken - St. Matthews", "JOJO GYROS 2", "KFC", "King Donuts Lyndon", "King Gyros - St. Matthew’s Mall", "Kingfish", "Kroger", "La Cocina de Mama", "La Rosita Sol", 
+        "Las Maria", "Lee's Famous Recipe Chicken", "Lemongrass Cafe and Market", "Limón y Sal Mexican Kitchen", "Little Greek Fresh Grill", "Los Aztecas Mexican Restaurant", "Lotsa Pasta", "Lou Lou Food & Drink", "Lyndon Taco Trailer @ BP", "Maira Mediterranean Grill", 
+        "McAlister's Deli", "McDonald's", "Mesh Louisville", "MISSION BBQ", "Mojito in Havana", "Mojito Tapas Restaurant", "Momma's Mustard, Pickles & BBQ - St Matthews", "Nam Nam Café", "Noosh Nosh", "Olive Garden", 
+        "Oriental House", "Osteria Del Mar", "Osteria Italian Seafood", "P.F. Chang's", "Panda Express", "Panera Bread", "Papa Johns", "Paris Baguette", "Penn Station", "Pho Phi Louisville", 
+        "Pizza Hut", "Pizza Jones", "Pizzaville", "Playa Bowls", "Plehn's Bakery", "QDOBA Mexican Eats", "R Place Pub", "Rafferty's Restaurant & Bar", "Raising Cane's", "Ramsi's Cafe On The World", 
+        "Raymi Peruvian and Mexican Cuisine", "Red Lobster", "Red Robin Gourmet Burgers and Brews", "RedBrick Pizza", "River House Restaurant and Raw Bar", "Saints Pizza Pub & SkyBar", "Sakura Blue", "Salsarita's Fresh Mexican Grill", "Selena's at Willow Lake Tavern", "Shady Lane Cafe", 
+        "Shawarma Shack", "Shiraz Mediterranean Grill", "Silvio's Italian Restaurant", "Simply Thai", "Skyline Chili", "Smashburger", "Speedway", "Squeeze The Day", "Subway", "Taco Bell", 
+        "Taco Choza", "Taco Luchador", "Taco N Madres", "Taziki's Mediterranean Cafe - St. Matthews", "Ten Pin Strike & Spare", "Texas Roadhouse", "The Charcoal Restaurant", "The Cheesecake Factory", "The Eagle Oxmoor", "The Fresh Market", 
+        "The Goose Eatery & Hangout", "The Honey Baked Ham Company", "The Lyndon Station Bar and Grill", "Thorntons", "TIKKA HOUSE INDIAN RESTAURANT", "Tin Roof", "ToGo Sushi", "Tokyo Japanese Restaurant", "Topgolf Louisville", "Trader Joe's", 
+        "Tres Amigos Of Louisville", "Twin Peaks", "W W Cousins Restaurant", "Waffle House", "Walmart Neighborhood Market", "Wendy's", "White Castle", "Whole Foods Market", "Wild Eggs", "Wingstop"
+    ];
+
     let map;
     let marker;
     let boundaryPolygon;
@@ -837,6 +991,7 @@
     let autoClearTimer;
     let searchHistory = [];
     let userLocation = null;
+    let currentEatsCategory = 'all';
 
     const inputEl = document.getElementById('addressInput');
     const clearBtn = document.getElementById('clearBtn');
@@ -1004,6 +1159,74 @@
         });
     }
 
+    /* Shift Eats Functions */
+    function pickRandomRestaurant() {
+        const resultCard = document.getElementById('randomResult');
+        const nameEl = document.getElementById('randomName');
+        const navBtn = document.getElementById('randomNavBtn');
+
+        resultCard.style.display = 'block';
+        nameEl.innerText = 'Spinning... 🎲';
+
+        let counter = 0;
+        const interval = setInterval(() => {
+            const tempIdx = Math.floor(Math.random() * restaurantList.length);
+            nameEl.innerText = restaurantList[tempIdx];
+            counter++;
+            if (counter > 12) {
+                clearInterval(interval);
+                const finalIdx = Math.floor(Math.random() * restaurantList.length);
+                const picked = restaurantList[finalIdx];
+                nameEl.innerText = picked;
+                navBtn.onclick = () => openNavAddress(picked + ', Louisville, KY');
+            }
+        }, 80);
+    }
+
+    function setCategoryFilter(cat, btnEl) {
+        currentEatsCategory = cat;
+        document.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+        if (btnEl) btnEl.classList.add('active');
+        filterRestaurants();
+    }
+
+    function filterRestaurants() {
+        const grid = document.getElementById('restaurantGrid');
+        const query = (document.getElementById('eatsSearchInput').value || '').toLowerCase();
+
+        const categoryKeywords = {
+            'pizza': ['pizza', 'bearnos', 'boombozz', 'diorio', 'jet', 'papa john', 'pizzaville', 'redbrick', 'coals', 'blaze', 'saints'],
+            'mexican': ['mexican', 'taco', 'nopal', 'tarasco', 'condado', 'aztecas', 'cocina', 'tres amigos', 'limón', 'limon', 'bandido', 'chuy', 'felipe', 'las maria', 'salsarita', 'qdoba', 'chipotle'],
+            'bbq': ['barbeque', 'bbq', 'momma', 'city barbeque', 'mission bbq', 'charcoal'],
+            'burgers': ['burger', 'smashburger', 'white castle', 'wendy', 'mcdonald', 'five guys', 'red robin', 'cousins', 'drake', 'jack in the box', 'jaggers'],
+            'asian': ['thai', 'asahi', 'china', 'ginza', 'jade palace', 'lemongrass', 'nam nam', 'oriental house', 'p.f. chang', 'panda express', 'pho', 'sakura', 'simply thai', 'tokyo', 'togo sushi'],
+            'breakfast': ['cafe', 'coffee', 'bagel', 'biscuit belly', 'bruegger', 'con huevos', 'dunkin', 'first watch', 'heine', 'highland morning', 'ihop', 'wild eggs', 'waffle house', 'cinnaholic', 'donut', 'plehn', 'bakery', 'eats', 'paris baguette']
+        };
+
+        const filtered = restaurantList.filter(name => {
+            const lowerName = name.toLowerCase();
+            const matchesQuery = lowerName.includes(query);
+
+            if (!matchesQuery) return false;
+
+            if (currentEatsCategory === 'all') return true;
+
+            const keywords = categoryKeywords[currentEatsCategory] || [];
+            return keywords.some(kw => lowerName.includes(kw));
+        });
+
+        if (filtered.length === 0) {
+            grid.innerHTML = `<div style="grid-column: 1 / -1; color: #718096; text-align: center; padding: 15px;">No matching places found. Try another search!</div>`;
+            return;
+        }
+
+        grid.innerHTML = filtered.map(name => `
+            <button class="er-btn" onclick="openNavAddress('${name.replace(/'/g, "\\'")}, Louisville, KY')">
+                <span>${name}</span>
+            </button>
+        `).join('');
+    }
+
     function switchTab(tab) {
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
@@ -1039,6 +1262,14 @@
             historyContainer.style.display = 'none';
             statusDiv.style.display = 'none';
             if (marker) marker.setMap(null);
+        } else if (tab === 'eats') {
+            document.querySelectorAll('.tab-btn')[4].classList.add('active');
+            document.getElementById('eatsTab').classList.add('active');
+            mapWrapper.style.display = 'none';
+            historyContainer.style.display = 'none';
+            statusDiv.style.display = 'none';
+            if (marker) marker.setMap(null);
+            filterRestaurants();
         }
     }
 
