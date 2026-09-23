@@ -347,9 +347,7 @@
             border-radius: 8px;
             margin-bottom: 20px;
         }
-        .selector-group {
-            margin-bottom: 12px;
-        }
+        .selector-group { margin-bottom: 12px; }
         .selector-group label {
             display: block;
             font-size: 11px;
@@ -389,12 +387,7 @@
             align-items: center;
             gap: 6px;
         }
-        .dist-tag {
-            font-size: 11px;
-            opacity: 0.85;
-            font-weight: normal;
-            margin-left: 4px;
-        }
+        .dist-tag { font-size: 11px; opacity: 0.85; font-weight: normal; margin-left: 4px; }
 
         /* Shift Eats / Restaurant Card Styling */
         .eats-hero {
@@ -460,6 +453,17 @@
             cursor: pointer;
         }
         .web-link-btn:hover { background-color: #c05621; }
+        .note-toggle-btn {
+            background-color: #edf2f7;
+            color: #4a5568;
+            border: 1px solid #cbd5e0;
+            padding: 8px 14px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .note-toggle-btn:hover { background-color: #e2e8f0; }
         
         .restaurant-card {
             background: #f8fafc;
@@ -471,7 +475,21 @@
             flex-direction: column;
             gap: 8px;
         }
+        .restaurant-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
         .restaurant-name { font-size: 14px; font-weight: 700; color: #1a202c; }
+        .notes-section {
+            display: none;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 4px;
+        }
+        .notes-section.active { display: flex; flex-direction: column; gap: 8px; }
         .restaurant-card input {
             width: 100%;
             padding: 8px 10px;
@@ -721,7 +739,7 @@
     <!-- TAB 5: Shift Eats (Restaurant Directory & Chooser) -->
     <div id="eatsTab" class="tab-content">
         <h2>Shift Eats Chooser</h2>
-        <p>Can't decide on food for the crew? Spin the chooser, search options, and leave shared notes for other shifts.</p>
+        <p>Can't decide on food for the crew? Spin the chooser, search options, and toggle notes on demand.</p>
 
         <div class="eats-hero">
             <h3>Random Food</h3>
@@ -860,6 +878,14 @@
         } catch (err) {
             console.error('Failed to save note', err);
             alert('Network error while saving.');
+        }
+    }
+
+    // Toggle Notes Drawer on Demand
+    function toggleNotes(id) {
+        const panel = document.getElementById(`notes-panel-${id}`);
+        if (panel) {
+            panel.classList.toggle('active');
         }
     }
 
@@ -1351,7 +1377,7 @@
         });
     }
 
-    /* Shift Eats Functions with Cloud Notes */
+    /* Shift Eats Functions with Cloud Notes & On-Demand Toggle */
     function pickRandomRestaurant() {
         const resultCard = document.getElementById('randomResult');
         const nameEl = document.getElementById('randomName');
@@ -1412,15 +1438,22 @@
         }
 
         grid.innerHTML = filtered.map(name => {
-            const safeName = name.replace(/'/g, "\\'");
+            const safeName = name.replace(/[^a-zA-Z0-9]/g, '_'); // Unique safe CSS/DOM ID string
             const existingNote = (window.sharedFoodNotes && window.sharedFoodNotes[name]) || '';
+            const noteIndicator = existingNote ? ' 📝 (Note)' : '';
+            
             return `
                 <div class="restaurant-card">
-                    <div class="restaurant-name">${name}</div>
-                    <input type="text" id="note-${safeName}" value="${existingNote}" placeholder="Add shared crew note (e.g. fast delivery, parking tip)...">
-                    <div style="display: flex; gap: 6px;">
-                        <button class="nav-link-btn" onclick="openNavAddress('${safeName}, Louisville, KY')">🗺️ Navigate</button>
-                        <button class="web-link-btn" onclick="saveSharedNote('${safeName}', document.getElementById('note-${safeName}').value)">💾 Save Note</button>
+                    <div class="restaurant-header-row">
+                        <div class="restaurant-name">${name}${noteIndicator}</div>
+                        <div style="display: flex; gap: 6px;">
+                            <button class="note-toggle-btn" onclick="toggleNotes('${safeName}')">📝 Notes</button>
+                            <button class="nav-link-btn" onclick="openNavAddress('${name.replace(/'/g, "\\'")}, Louisville, KY')">🗺️ Nav</button>
+                        </div>
+                    </div>
+                    <div id="notes-panel-${safeName}" class="notes-section">
+                        <input type="text" id="note-input-${safeName}" value="${existingNote}" placeholder="Add shared crew note (e.g. fast delivery, parking tip)...">
+                        <button class="web-link-btn" onclick="saveSharedNote('${name.replace(/'/g, "\\'")}', document.getElementById('note-input-${safeName}').value)">💾 Save Note to Cloud</button>
                     </div>
                 </div>
             `;
