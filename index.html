@@ -211,6 +211,7 @@
             display: none;
             padding: 0 4px;
             line-height: 1;
+            z-index: 10;
         }
         .clear-btn:hover { color: #4a5568; }
         button.action-btn { 
@@ -490,6 +491,15 @@
         .feedback-btn:hover {
             background-color: #e2e8f0;
         }
+
+        /* Style fix for Google Places Autocomplete dropdown */
+        .pac-container {
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border: 1px solid #cbd5e0;
+            font-family: inherit;
+            z-index: 10000 !important;
+        }
     </style>
 </head>
 <body>
@@ -502,10 +512,10 @@
 
     <div class="tab-nav">
         <button class="tab-btn active" onclick="switchTab('verifier')">District Verifier</button>
-        <button class="tab-btn" onclick="switchTab('guidelines')">Destinations</button>
-        <button class="tab-btn" onclick="switchTab('routing')">Hospitals</button>
-        <button class="tab-btn" onclick="switchTab('home')">Stations</button>
-        <button class="tab-btn" onclick="switchTab('eats')">Food</button>
+        <button class="tab-btn" onclick="switchTab('guidelines')">Destination Wizard</button>
+        <button class="tab-btn" onclick="switchTab('routing')">Hospital Nav</button>
+        <button class="tab-btn" onclick="switchTab('home')">Take Me Home</button>
+        <button class="tab-btn" onclick="switchTab('eats')">Shift Eats 🍕</button>
     </div>
 
     <!-- TAB 1: District Verifier -->
@@ -994,6 +1004,7 @@
     let boundaryPolygon;
     let boundaryBounds;
     let geocoder;
+    let autocomplete;
     let autoClearTimer;
     let searchHistory = [];
     let userLocation = null;
@@ -1337,7 +1348,7 @@
 
     function loadGoogleMaps() {
         const script = document.createElement("script");
-        script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyBCnFOrSS9cHJjJOKQ8Nsp0unHZs_IsYu0&libraries=geometry&callback=initMap";
+        script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyBCnFOrSS9cHJjJOKQ8Nsp0unHZs_IsYu0&libraries=geometry,places&callback=initMap";
         script.async = true;
         script.defer = true;
         document.head.appendChild(script);
@@ -1353,6 +1364,28 @@
         });
 
         geocoder = new google.maps.Geocoder();
+
+        // Initialize Places Autocomplete biased to Greater Louisville area
+        const louisvilleBounds = new google.maps.LatLngBounds(
+            new google.maps.LatLng(38.0000, -85.9500), // SW Bound
+            new google.maps.LatLng(38.4500, -85.3500)  // NE Bound
+        );
+
+        autocomplete = new google.maps.places.Autocomplete(inputEl, {
+            bounds: louisvilleBounds,
+            strictBounds: false,
+            componentRestrictions: { country: 'us' },
+            fields: ['formatted_address', 'geometry']
+        });
+
+        autocomplete.addListener('place_changed', function() {
+            const place = autocomplete.getPlace();
+            if (place && place.formatted_address) {
+                inputEl.value = place.formatted_address;
+                clearBtn.style.display = 'block';
+                verifyAddress();
+            }
+        });
 
         map.data.addGeoJson(geojsonData);
         map.data.setStyle(function(feature) {
