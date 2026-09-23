@@ -148,6 +148,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 10px;
         }
         .er-title-area {
             font-weight: 600;
@@ -155,6 +156,8 @@
             align-items: center;
             gap: 6px;
             flex-wrap: wrap;
+            flex: 1;
+            min-width: 0;
         }
         .station-subtitle {
             font-size: 11px;
@@ -411,19 +414,37 @@
             text-align: left;
         }
         .result-actions { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
-        .nav-link-btn {
-            display: inline-block;
-            background-color: #003366;
-            color: white;
-            padding: 8px 14px;
+        
+        /* Standardized Action Buttons */
+        .nav-link-btn, .note-toggle-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 75px;
+            height: 34px;
+            padding: 0;
             border-radius: 4px;
-            text-decoration: none;
             font-weight: 600;
             font-size: 12px;
-            border: none;
             cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            white-space: nowrap;
+        }
+        .nav-link-btn {
+            background-color: #003366;
+            color: white;
+            border: none;
         }
         .nav-link-btn:hover { background-color: #002244; }
+        
+        .note-toggle-btn {
+            background-color: #edf2f7;
+            color: #4a5568;
+            border: 1px solid #cbd5e0;
+        }
+        .note-toggle-btn:hover { background-color: #e2e8f0; }
+
         .web-link-btn {
             display: inline-block;
             background-color: #dd6b20;
@@ -437,17 +458,6 @@
             cursor: pointer;
         }
         .web-link-btn:hover { background-color: #c05621; }
-        .note-toggle-btn {
-            background-color: #edf2f7;
-            color: #4a5568;
-            border: 1px solid #cbd5e0;
-            padding: 8px 14px;
-            border-radius: 4px;
-            font-weight: 600;
-            font-size: 12px;
-            cursor: pointer;
-        }
-        .note-toggle-btn:hover { background-color: #e2e8f0; }
         
         .notes-section {
             display: none;
@@ -731,7 +741,7 @@
                 <div id="randomName" class="result-name">--</div>
                 <div id="randomNote" class="result-note"></div>
                 <div class="result-actions">
-                    <button id="randomNavBtn" class="nav-link-btn" onclick="">🗺️ Navigate</button>
+                    <button id="randomNavBtn" class="nav-link-btn" onclick="">🗺️ Nav</button>
                     <button id="randomWebBtn" class="web-link-btn" onclick="">🌐 Google / Order</button>
                 </div>
             </div>
@@ -1113,7 +1123,7 @@
                             [-85.5788215, 38.287619], [-85.5776413, 38.2861284], [-85.5775179, 38.2859389], [-85.5767884, 38.28596],
                             [-85.5760964, 38.2860905], [-85.575458, 38.2862884], [-85.5749377, 38.2864526], [-85.5744817, 38.2865958],
                             [-85.5729206, 38.2871642], [-85.5723145, 38.2873706], [-85.5714025, 38.2861663], [-85.57063, 38.2854084],
-                            [-85.5697503, 38.2845241], [-85.5673577, 38.2813155], [-85.5668213, 38.2804311], [-85.5664887, 38.279749],
+                            [-85.5697503, 38.2845241], [-85.5673577, 38.2813155], [-85.6668213, 38.2804311], [-85.5664887, 38.279749],
                             [-85.5662634, 38.2792015], [-85.5638279, 38.2739628], [-85.563398, 38.2742368], [-85.5610484, 38.2749612],
                             [-85.5606192, 38.274818], [-85.5605334, 38.2745063], [-85.559557, 38.2723501],
                             [-85.5589455, 38.2709687], [-85.5589509, 38.2708045], [-85.5598199, 38.2708297], [-85.561794, 38.2708634],
@@ -1221,7 +1231,7 @@
             
             const distText = hosp.distance !== null ? `<span class="dist-tag">(${hosp.distance.toFixed(1)} mi)</span>` : '';
             const existingNote = (window.sharedHospitalNotes && window.sharedHospitalNotes[hosp.id]) || '';
-            const noteIndicator = existingNote ? ' 📝 (Note)' : '';
+            const noteIndicator = existingNote ? ' 📝' : '';
 
             return `
                 <div class="${cardClass}">
@@ -1229,7 +1239,7 @@
                         <div class="er-title-area">
                             <span>${hosp.name}${distText}${noteIndicator}</span>
                         </div>
-                        <div style="display: flex; gap: 6px;">
+                        <div style="display: flex; gap: 6px; flex-shrink: 0;">
                             <button class="note-toggle-btn" onclick="toggleHospitalNotes('${hosp.id}')">📝 Notes</button>
                             <button class="nav-link-btn" onclick="openNav(${hosp.lat}, ${hosp.lng})">🗺️ Nav</button>
                         </div>
@@ -1305,7 +1315,7 @@
             
             const distText = hosp.distance !== null ? `<span class="dist-tag">(${hosp.distance.toFixed(1)} mi)</span>` : '';
             const existingNote = (window.sharedHospitalNotes && window.sharedHospitalNotes[hosp.id]) || '';
-            const noteIndicator = existingNote ? ' 📝 (Note)' : '';
+            const noteIndicator = existingNote ? ' 📝' : '';
 
             const card = document.createElement('div');
             card.className = cardClass;
@@ -1314,7 +1324,7 @@
                     <div class="er-title-area">
                         <span>${hosp.name}${distText}${noteIndicator}</span>
                     </div>
-                    <div style="display: flex; gap: 6px;">
+                    <div style="display: flex; gap: 6px; flex-shrink: 0;">
                         <button class="note-toggle-btn" onclick="toggleHospitalNotes('${hosp.id}')">📝 Notes</button>
                         <button class="nav-link-btn" onclick="openNav(${hosp.lat}, ${hosp.lng})">🗺️ Nav</button>
                     </div>
@@ -1406,7 +1416,7 @@
         grid.innerHTML = filtered.map(name => {
             const safeName = name.replace(/[^a-zA-Z0-9]/g, '_');
             const existingNote = (window.sharedFoodNotes && window.sharedFoodNotes[name]) || '';
-            const noteIndicator = existingNote ? ' 📝 (Note)' : '';
+            const noteIndicator = existingNote ? ' 📝' : '';
             
             return `
                 <div class="er-card">
@@ -1414,7 +1424,7 @@
                         <div class="er-title-area">
                             <span>${name}${noteIndicator}</span>
                         </div>
-                        <div style="display: flex; gap: 6px;">
+                        <div style="display: flex; gap: 6px; flex-shrink: 0;">
                             <button class="note-toggle-btn" onclick="toggleFoodNotes('${safeName}')">📝 Notes</button>
                             <button class="nav-link-btn" onclick="openNavAddress('${name.replace(/'/g, "\\'")}, Louisville, KY')">🗺️ Nav</button>
                         </div>
