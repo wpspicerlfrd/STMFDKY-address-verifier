@@ -425,7 +425,18 @@
             border: 2px solid #feebc8;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
-        .result-name { font-size: 18px; font-weight: 800; color: #003366; margin-bottom: 12px; }
+        .result-name { font-size: 18px; font-weight: 800; color: #003366; margin-bottom: 6px; }
+        .result-note {
+            font-size: 12px;
+            color: #744210;
+            background-color: #fffaf0;
+            border: 1px solid #feebc8;
+            padding: 8px 10px;
+            border-radius: 4px;
+            margin-bottom: 12px;
+            display: none;
+            text-align: left;
+        }
         .result-actions { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
         .nav-link-btn {
             display: inline-block;
@@ -749,6 +760,7 @@
             <div id="randomResult" class="result-card">
                 <div style="font-size: 11px; font-weight: 700; color: #718096; text-transform: uppercase;">Selected Spot</div>
                 <div id="randomName" class="result-name">--</div>
+                <div id="randomNote" class="result-note"></div>
                 <div class="result-actions">
                     <button id="randomNavBtn" class="nav-link-btn" onclick="">🗺️ Navigate</button>
                     <button id="randomWebBtn" class="web-link-btn" onclick="">🌐 Google / Order</button>
@@ -1050,7 +1062,7 @@
         "Tres Amigos Of Louisville", "Twin Peaks", "W W Cousins Restaurant", "Waffle House", "Walmart Neighborhood Market", "Wendy's", "White Castle", "Whole Foods Market", "Wild Eggs", "Wingstop"
     ];
 
-    // Cleaned up GeoJSON boundary data (Spike/artifact removed)
+    // Cleaned up GeoJSON boundary data
     const geojsonData = {
         "type": "FeatureCollection",
         "features": [
@@ -1317,11 +1329,14 @@
     function pickRandomRestaurant() {
         const resultCard = document.getElementById('randomResult');
         const nameEl = document.getElementById('randomName');
+        const noteEl = document.getElementById('randomNote');
         const navBtn = document.getElementById('randomNavBtn');
         const webBtn = document.getElementById('randomWebBtn');
 
         resultCard.style.display = 'block';
         nameEl.innerText = 'Spinning... 🎲';
+        noteEl.style.display = 'none';
+        noteEl.innerText = '';
 
         let counter = 0;
         const interval = setInterval(() => {
@@ -1333,6 +1348,16 @@
                 const finalIdx = Math.floor(Math.random() * restaurantList.length);
                 const picked = restaurantList[finalIdx];
                 nameEl.innerText = picked;
+                
+                // Check if there is a shared crew note for this spot
+                const noteText = window.sharedFoodNotes && window.sharedFoodNotes[picked];
+                if (noteText) {
+                    noteEl.style.display = 'block';
+                    noteEl.innerText = '📝 Note: ' + noteText;
+                } else {
+                    noteEl.style.display = 'none';
+                }
+
                 navBtn.onclick = () => openNavAddress(picked + ', Louisville, KY');
                 webBtn.onclick = () => openWebSearch(picked + ' Louisville KY');
             }
