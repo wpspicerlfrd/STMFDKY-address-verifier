@@ -284,7 +284,13 @@
         .history-header h3 { margin: 0; font-size: 16px; color: #2d3748; }
         .clear-history-btn { background: none; border: none; color: #e53e3e; font-size: 13px; font-weight: 600; cursor: pointer; }
         .clear-history-btn:hover { text-decoration: underline; }
-        .history-list { list-style: none; padding: 0; margin: 0; }
+        .history-list { 
+            list-style: none; 
+            padding: 0; 
+            margin: 0; 
+            max-height: 280px; 
+            overflow-y: auto; 
+        }
         .history-item {
             display: flex;
             justify-content: space-between;
@@ -1288,7 +1294,7 @@
     function addHistoryEntry(address, statusClass, badgeText) {
         searchHistory = searchHistory.filter(item => item.address.toLowerCase() !== address.toLowerCase());
         searchHistory.unshift({ address, statusClass, badgeText });
-        if (searchHistory.length > 5) searchHistory.pop();
+        if (searchHistory.length > 10) searchHistory.pop();
         renderHistory();
     }
 
