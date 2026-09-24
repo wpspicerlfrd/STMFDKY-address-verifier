@@ -1029,29 +1029,31 @@
         }
     ];
 
-    // Complete Restaurant Directory
+    // Complete Expanded Restaurant Directory including new locations
     const restaurantList = [
-        "211 Clover Lane", "Abol Cafe (Coffee + Kitchen)", "AJ Subs LLC", "Ala Eh Eats Filipino Food and Sushi", "ALDI", "All Thai’d Up", "Arby's", "Asahi Japanese Restaurant", "Bandido Taqueria Mexicana", "Barry Bagels", 
-        "Basilico Cafe", "Bearnos Pizza", "Better Blend - Louisville", "Biscuit Belly: Louisville - St. Matthews", "BJ's Restaurant & Brewhouse", "Blaze Pizza", "BOMBAY GRILL - INDIAN RESTAURANT", "Bonefish Grill", "BoomBozz Pizza & Watch Bar", "Bourbon & Burger", 
-        "Brasserie Provence", "Brick House Tavern + Tap", "Bristol Bar & Grille | East", "Bruegger's Bagels", "Buffalo Wild Wings", "Burger Girl", "California Pizza Kitchen at Oxmoor", "Carrabba's Italian Grill", "CASK Southern Kitchen & Bar", "Cheddar Box Too", 
-        "Cheddar's Scratch Kitchen", "Chef's Cut Pizzeria", "Chicken Salad Chick", "Chick-fil-A", "Chili's Grill & Bar", "China 1", "China 1 - Lyndon", "China Star", "Chipotle", "Chuy's", 
-        "Cinnaholic", "Circle K", "City Barbeque", "Coals Artisan Pizza", "Cold Stone Creamery", "Con Huevos! - Breakfast & Brunch", "Condado Tacos", "Connors Steak & Seafood", "Currito Louisville", "Dave & Buster's Louisville", 
-        "Dave's Hot Chicken", "Del Frisco's", "DiOrio's Pizza & Pub", "District 6", "Domino's Pizza", "Drake's - St. Matthews", "Drake's Hurstbourne", "Dunkin Donuts", "Dutchmans Ln", "Eat A Pita", 
-        "Ehrler's Ice Cream", "El Nopal - Mall St. Matthews", "El Nopal Mexican Food | Westport Rd", "El Tarasco", "Fazoli's", "Felipe's Mexican Kitchen", "Fire House subs", "First Watch", "Fishery", "Five Guys", 
-        "Food Court @ Mall St. Matthews", "Ginza Asian Bistro", "Grassa Gramma", "Green District Salads - St. Matthews", "Gus's World Famous Fried Chicken", "Gustavo's Mexican Grill", "Heine Brothers' Coffee - Chenoweth Lane", "Heitzman Traditional Bakery and Deli", "Highland Morning St. Matthews", "Hillcrest Tavern", 
-        "Hooters", "Hurstbourne", "IHOP", "J. Alexander's Restaurant", "Jack in the Box", "Jade Palace", "Jaggers", "Jason's Deli", "Jeff's Donuts", "Jersey Mike's Subs", 
-        "Jet's Pizza", "Jimmy John's Gourmet Sandwiches", "Joe’s Older Than Dirt", "Joella's Hot Chicken - St. Matthews", "JOJO GYROS 2", "KFC", "King Donuts Lyndon", "King Gyros - St. Matthew’s Mall", "Kingfish", "Kroger", 
-        "La Cocina de Mama", "La Rosita Sol", "Las Maria", "Lee's Famous Recipe Chicken", "Lemongrass Cafe and Market", "Limón y Sal Mexican Kitchen", "Little Greek Fresh Grill", "Los Aztecas Mexican Restaurant", "Lotsa Pasta", "Lou Lou Food & Drink", 
-        "Maira Mediterranean Grill", "McAlister's Deli", "McDonald's", "Mesh Louisville", "MISSION BBQ", "Mojito in Havana", "Mojito Tapas Restaurant", "Momma's Mustard", "Nam Nam Café", "Noodles and Company", 
-        "Noosh Nosh", "North Lime Coffee & Donuts", "Olive Garden", "Oriental House", "Osteria Del Mar", "Osteria Italian Seafood", "P.F. Chang's", "Panda Express", "Panera Bread", "Papa Johns", 
-        "Paris Baguette", "Penn Station", "Pho Phi Louisville", "Pickles & BBQ - St Matthews", "Pizza Hut", "Pizza Jones", "Pizzaville", "Playa Bowls", "Plehn's Bakery", "QDOBA Mexican Eats", 
-        "R Place Pub", "Rafferty's Restaurant & Bar", "Raising Cane's", "Ramsi's Cafe On The World", "Raymi Peruvian and Mexican Cuisine", "Red Lobster", "Red Robin Gourmet Burgers and Brews", "RedBrick Pizza", "River House Restaurant and Raw Bar", "Saints Pizza Pub & SkyBar", 
-        "Sakura Blue", "Salsarita's Fresh Mexican Grill", "Selena's at Willow Lake Tavern", "Shady Lane Cafe", "Shawarma Shack", "Shiraz Mediterranean Grill", "Silvio's Italian Restaurant", "Simply Thai", "Skyline Chili", "Smashburger", 
-        "Speedway", "Squeeze The Day", "Starving Artists Cafe & Deli", "Subway", "Taco Bell", "Taco Choza", "Taco Luchador", "Taco N Madres", "Taco Stand", "Taziki's Mediterranean Cafe - St. Matthews", 
-        "Ten Pin Strike & Spare", "Texas Roadhouse", "The Charcoal Restaurant", "The Cheesecake Factory", "The Eagle Oxmoor", "The Fresh Market", "The Goose Eatery & Hangout", "The Honey Baked Ham Company", "The Lyndon Station Bar and Grill", "The Pie Kitchen", 
-        "Thorntons", "TIKKA HOUSE INDIAN RESTAURANT", "Tin Roof", "ToGo Sushi", "Tokyo Japanese Restaurant", "Topgolf Louisville", "Trader Joe's", "Tres Amigos Of Louisville", 
-        "Twin Peaks", "W W Cousins Restaurant", "Waffle House", "Walmart Neighborhood Market", "Wasabi Louisville", "Wendy's", "Which Wich Superior Sandwiches @ Hurstbourne Parkway", "White Castle", "Whole Foods Market", "Wild Eggs", 
-        "Wingstop"
+        "211 Clover Lane", "Abol Cafe (Coffee + Kitchen)", "AJ Subs LLC", "Ala Eh Eats Filipino Food and Sushi", "ALDI", "All Thai’d Up", "Anar Food Mart", "Arby's", "Asahi Japanese Restaurant", "Bahn Thai & M", 
+        "Bamboo Coffee & Donuts", "Bandido Taqueria Mexicana", "Barry Bagels", "Basilico Cafe", "Bearnos Pizza", "Better Blend - Louisville", "Biscuit Belly: Louisville - St. Matthews", "BJ's Restaurant & Brewhouse", "Blaze Pizza", "BOMBAY GRILL - INDIAN RESTAURANT", 
+        "Bonefish Grill", "BoomBozz Pizza & Watch Bar", "Bourbon & Burger", "Brasserie Provence", "Brick House Tavern + Tap", "Bristol Bar & Grille | East", "Bruegger's Bagels", "Buffalo Wild Wings", "Burger Girl", "California Pizza Kitchen at Oxmoor", 
+        "Carniceria Butcher Shop", "Carrabba's Italian Grill", "CASK Southern Kitchen & Bar", "Charleys Cheesesteaks", "Cheddar Box Too", "Cheddar's Scratch Kitchen", "Chef's Cut Pizzeria", "Chicken Salad Chick", "Chick-fil-A", "Chili's Grill & Bar", 
+        "China 1", "China 1 - Lyndon", "China Star", "Choi's Asian Food Market", "Chipotle", "Chuy's", "Cinnaholic", "Cinnabon", "Circle K", "City Barbeque", 
+        "Coals Artisan Pizza", "Cold Stone Creamery", "Con Huevos! - Breakfast & Brunch", "Condado Tacos", "Connors Steak & Seafood", "Craft House Pizza - Westport", "Crumbl Cookies", "Currito Louisville", "Dave & Buster's Louisville", "Dave's Hot Chicken", 
+        "Del Frisco's", "DiOrio's Pizza & Pub", "District 6", "Domino's Pizza", "Drake's - St. Matthews", "Drake's Hurstbourne", "Dunkin Donuts", "Dutchmans Ln", "Eat A Pita", "Ehrler's Ice Cream", 
+        "Elderberry Provisions", "El Mariachi Mexican Restaurant", "El Nopal - Mall St. Matthews", "El Nopal Mexican Food | Westport Rd", "El Tarasco", "Fazoli's", "Felipe's Mexican Kitchen", "Fire House subs", "First Watch", "Fishery", 
+        "Five Guys", "Food Court @ Mall St. Matthews", "Ginza Asian Bistro", "Graeter's Ice Cream", "Grassa Gramma", "Green District Salads - St. Matthews", "Gus's World Famous Fried Chicken", "Gustavo's Mexican Grill", "Half-Peach Bakery & Cafe", "Heine Brothers' Coffee - Chenoweth Lane", 
+        "Heitzman Traditional Bakery and Deli", "Highland Morning St. Matthews", "hiko-A-mon", "Hillcrest Tavern", "Hooters", "Hurstbourne", "IHOP", "Impellizzeri's Pizza", "J. Alexander's Restaurant", "Jack in the Box", 
+        "Jade Palace", "Jaggers", "Jasmine Asian Bistro", "Jason's Deli", "Jeff's Donuts", "Jersey Mike's Subs", "Jet's Pizza", "Jimmy John's Gourmet Sandwiches", "Joe’s Older Than Dirt", "Joella's Hot Chicken - St. Matthews", 
+        "JOJO GYROS 2", "KFC", "King Donuts Lyndon", "King Gyros - St. Matthew’s Mall", "Kingfish", "Kroger", "Kupbop Korean Bbq", "La Cocina de Mama", "La Rosita Sol", "Las Maria", 
+        "Lee's Famous Recipe Chicken", "Lemongrass Cafe and Market", "Limón y Sal Mexican Kitchen", "Little Greek Fresh Grill", "Los Aztecas Mexican Restaurant", "Lotsa Pasta", "Lou Lou Food & Drink", "Maira Mediterranean Grill", "McAlister's Deli", "McDonald's", 
+        "Mesh Louisville", "MISSION BBQ", "Mojito in Havana", "Mojito Tapas Restaurant", "Momma's Mustard", "Nam Nam Café", "Noodles and Company", "Noosh Nosh", "North Lime Coffee & Donuts", "Nothing Bundt Cakes", 
+        "Olive Garden", "Oriental House", "Osteria Del Mar", "Osteria Italian Seafood", "P.F. Chang's", "Panda Express", "Panaderia Bakery", "Panera Bread", "Papa Johns", "Paris Baguette", 
+        "Paul's Fruit Market", "Penn Station", "Pho Phi Louisville", "Pickles & BBQ - St Matthews", "Pizza Hut", "Pizza Jones", "Pizzaville", "Playa Bowls", "Plehn's Bakery", "QDOBA Mexican Eats", 
+        "R Place Pub", "Rafferty's Restaurant & Bar", "Raising Cane's", "Rainbow Blossom St Matthews", "Ramsi's Cafe On The World", "Raymi Peruvian and Mexican Cuisine", "Red Lobster", "RedBrick Pizza", "Red Robin Gourmet Burgers and Brews", "River House Restaurant and Raw Bar", 
+        "Ruby Thai Kitchen - St. Matthews Mall", "Saints Pizza Pub & SkyBar", "Sakura Blue", "Salsarita's Fresh Mexican Grill", "Selena's at Willow Lake Tavern", "Shady Lane Cafe", "Shawarma Shack", "Shiraz Mediterranean Grill", "Silvio's Italian Restaurant", "Simply Thai", 
+        "Skyline Chili", "Smashburger", "Speedway", "Squeeze The Day", "Starving Artists Cafe & Deli", "Subway", "Sunergos Coffee", "Supermercado Guanajuato #1", "Taco Bell", "Taco Choza", 
+        "Taco Luchador", "Taco N Madres", "Taco Stand", "Taziki's Mediterranean Cafe - St. Matthews", "Ten Pin Strike & Spare", "Texas Roadhouse", "The Charcoal Restaurant", "The Cheesecake Factory", "The Comfy Cow", "The Deli - Willis Ave", 
+        "The Eagle Oxmoor", "The Fresh Market", "The Goose Eatery & Hangout", "The Honey Baked Ham Company", "The Lyndon Station Bar and Grill", "The Pie Kitchen", "Thorntons", "TIKKA HOUSE INDIAN RESTAURANT", "Tin Roof", "ToGo Sushi", 
+        "Tokyo Japanese Restaurant", "Topgolf Louisville", "Tortilleria GuanaJuato", "Trader Joe's", "Tres Amigos Of Louisville", "Twin Peaks", "W W Cousins Restaurant", "Waffle House", "Walmart Neighborhood Market", "Wasabi Louisville", 
+        "Wendy's", "Which Wich Superior Sandwiches @ Hurstbourne Parkway", "White Castle", "Whole Foods Market", "Wild Eggs", "Wingstop"
     ];
 
     // Cleaned GeoJSON boundary data with self-intersecting stray coordinate removed
@@ -1135,7 +1137,7 @@
                             [-85.5788215, 38.287619], [-85.5776413, 38.2861284], [-85.5775179, 38.2859389], [-85.5767884, 38.28596],
                             [-85.5760964, 38.2860905], [-85.57458, 38.2862884], [-85.5749377, 38.2864526], [-85.5744817, 38.2865958],
                             [-85.5729206, 38.2871642], [-85.5723145, 38.2873706], [-85.5714025, 38.2861663], [-85.57063, 38.2854084],
-                            [-85.5697503, 38.2845241], [-85.5673577, 38.2813155], [-85.5668213, 38.2804311], [-85.5664887, 38.279749],
+                            [-85.5697503, 38.2845241], [-85.5673577, 38.2813155], [-85.668213, 38.2804311], [-85.6664887, 38.279749],
                             [-85.5662634, 38.2792015], [-85.5638279, 38.2739628], [-85.563398, 38.2742368], [-85.5610484, 38.2749612],
                             [-85.5606192, 38.274818], [-85.5605334, 38.2745063], [-85.559557, 38.2723501],
                             [-85.5589455, 38.2709687], [-85.5589509, 38.2708045], [-85.5598199, 38.2708297], [-85.561794, 38.2708634],
@@ -1408,12 +1410,12 @@
         const query = (searchInputEl.value || '').toLowerCase();
 
         const categoryKeywords = {
-            'pizza': ['pizza', 'bearnos', 'boombozz', 'diorio', 'jet', 'papa json', 'pizzaville', 'redbrick', 'coals', 'blaze', 'saints'],
-            'mexican': ['mexican', 'taco', 'nopal', 'tarasco', 'condado', 'aztecas', 'cocina', 'tres amigos', 'limón', 'limon', 'bandido', 'chuy', 'felipe', 'las maria', 'salsarita', 'qdoba', 'chipotle'],
-            'bbq': ['barbeque', 'bbq', 'momma', 'city barbeque', 'mission bbq', 'charcoal', 'pickles & bbq'],
-            'burgers': ['burger', 'smashburger', 'white castle', 'wendy', 'mcdonald', 'five guys', 'red robin', 'cousins', 'drake', 'jack in the box', 'jaggers'],
-            'asian': ['thai', 'asahi', 'china', 'ginza', 'jade palace', 'lemongrass', 'nam nam', 'oriental house', 'p.f. chang', 'panda express', 'pho', 'sakura', 'simply thai', 'tokyo', 'togo sushi', 'wasabi'],
-            'breakfast': ['cafe', 'coffee', 'bagel', 'biscuit belly', 'bruegger', 'con huevos', 'dunkin', 'first watch', 'heine', 'highland morning', 'ihop', 'wild eggs', 'waffle house', 'cinnaholic', 'donut', 'plehn', 'bakery', 'eats', 'paris baguette', 'north lime', 'starving artists']
+            'pizza': ['pizza', 'bearnos', 'boombozz', 'diorio', 'jet', 'papa json', 'pizzaville', 'redbrick', 'coals', 'blaze', 'saints', 'impellizzeri', 'craft house'],
+            'mexican': ['mexican', 'taco', 'nopal', 'tarasco', 'condado', 'aztecas', 'cocina', 'tres amigos', 'limón', 'limon', 'bandido', 'chuy', 'felipe', 'las maria', 'salsarita', 'qdoba', 'chipotle', 'mariachi', 'guanajuato', 'guanajuato'],
+            'bbq': ['barbeque', 'bbq', 'momma', 'city barbeque', 'mission bbq', 'charcoal', 'pickles & bbq', 'kupbop'],
+            'burgers': ['burger', 'smashburger', 'white castle', 'wendy', 'mcdonald', 'five guys', 'red robin', 'cousins', 'drake', 'jack in the box', 'jaggers', 'charleys'],
+            'asian': ['thai', 'asahi', 'china', 'ginza', 'jade palace', 'lemongrass', 'nam nam', 'oriental house', 'p.f. chang', 'panda express', 'pho', 'sakura', 'simply thai', 'tokyo', 'togo sushi', 'wasabi', 'bahn thai', 'jasmin', 'hiko-a-mon', 'choi', 'ruby thai'],
+            'breakfast': ['cafe', 'coffee', 'bagel', 'biscuit belly', 'bruegger', 'con huevos', 'dunkin', 'first watch', 'heine', 'highland morning', 'ihop', 'wild eggs', 'waffle house', 'cinnaholic', 'donut', 'plehn', 'bakery', 'eats', 'paris baguette', 'north lime', 'starving artists', 'bamboo', 'cinnabon', 'nothing bundt', 'sunergos', 'graeter', 'comfy cow', 'deli', 'fruit', 'blossom', 'elderberry', 'half-peach', 'crumbl', 'panaderia', 'tortilleria', 'supermercado', 'carniceria']
         };
 
         const filtered = restaurantList.filter(name => {
