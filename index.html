@@ -1029,7 +1029,7 @@
         }
     ];
 
-    // Updated Complete Restaurant Directory
+    // Complete Restaurant Directory
     const restaurantList = [
         "211 Clover Lane", "Abol Cafe (Coffee + Kitchen)", "AJ Subs LLC", "Ala Eh Eats Filipino Food and Sushi", "ALDI", "All Thai’d Up", "Arby's", "Asahi Japanese Restaurant", "Bandido Taqueria Mexicana", "Barry Bagels", 
         "Basilico Cafe", "Bearnos Pizza", "Better Blend - Louisville", "Biscuit Belly: Louisville - St. Matthews", "BJ's Restaurant & Brewhouse", "Blaze Pizza", "BOMBAY GRILL - INDIAN RESTAURANT", "Bonefish Grill", "BoomBozz Pizza & Watch Bar", "Bourbon & Burger", 
@@ -1054,7 +1054,7 @@
         "Wingstop"
     ];
 
-    // Cleaned GeoJSON boundary data with the interior stray line loop coordinate set completely removed
+    // Cleaned GeoJSON boundary data with self-intersecting stray coordinate removed
     const geojsonData = {
         "type": "FeatureCollection",
         "features": [
@@ -1140,7 +1140,7 @@
                             [-85.5606192, 38.274818], [-85.5605334, 38.2745063], [-85.559557, 38.2723501],
                             [-85.5589455, 38.2709687], [-85.5589509, 38.2708045], [-85.5598199, 38.2708297], [-85.561794, 38.2708634],
                             [-85.5668151, 38.270775], [-85.5635302, 38.2636298], [-85.5638199, 38.2633349], [-85.5643456, 38.2630317], 
-                            [-85.5651395, 38.2628042], [-85.67081, 38.2625094], [-85.5664162, 38.2621977], [-85.5672209, 38.2617933], 
+                            [-85.5651395, 38.2628042], [-85.5664162, 38.2621977], [-85.5672209, 38.2617933], 
                             [-85.5677895, 38.2614816], [-85.5686371, 38.2614732], [-85.5689161, 38.2615237], [-85.5693559, 38.2617596], 
                             [-85.5701928, 38.2621808], [-85.5707614, 38.2622651], [-85.5716412, 38.262164], [-85.5727892, 38.2618439], 
                             [-85.5734544, 38.2615574], [-85.5740874, 38.2613131], [-85.5747633, 38.2611194], [-85.5767696, 38.2602096], 
@@ -1765,7 +1765,6 @@
                     statusDiv.innerHTML = '✅ IN DISTRICT: Address is WITHIN the STMFDKY service area.' + dirBtnHtml;
                     addHistoryEntry(formattedAddress, 'in-district', 'In District');
                 } else {
-                    statusDiv.className = 'status outside';
                     statusDiv.className = 'outside';
                     statusDiv.style.display = 'block';
                     statusDiv.innerHTML = '❌ OUT OF DISTRICT: Address is OUTSIDE the STMFDKY service area.' + dirBtnHtml;
@@ -1785,7 +1784,6 @@
         });
     }
 
-    // Initialize initial views and async calls at the bottom after everything is defined
     renderRoutingHospitals();
     loadGoogleMaps();
     loadSharedNotes();
