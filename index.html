@@ -10,7 +10,1928 @@
     <meta name="theme-color" content="#003366">
     <link rel="apple-touch-icon" href="icon.png">
     <link rel="icon" type="image/png" sizes="192x192" href="icon.png">
+    <link rel="shortcut icon" href="icon.png"><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STMFD SMART EMS - Station Matrix, Allocation & Routing Tool</title>
+    
+    <!-- PWA Manifest & App Icons -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#003366">
+    <link rel="apple-touch-icon" href="icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon.png">
     <link rel="shortcut icon" href="icon.png">
+
+    <style>
+        * { 
+            box-sizing: border-box; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+        }
+        body { 
+            background-color: #f4f6f8; 
+            margin: 0; 
+            padding: 12px; 
+            display: flex; 
+            justify-content: center; 
+        }
+        .card { 
+            background: #ffffff; 
+            padding: 20px 15px; 
+            border-radius: 10px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
+            width: 100%; 
+            max-width: 750px; 
+        }
+        .app-header {
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #003366;
+        }
+        .app-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: #003366;
+            margin: 0 0 2px 0;
+            letter-spacing: -0.5px;
+        }
+        .app-subtitle {
+            font-size: 11px;
+            font-weight: 600;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 0;
+        }
+        /* Mobile Horizontal Scroll Nav */
+        .tab-nav {
+            display: flex;
+            gap: 4px;
+            border-bottom: 2px solid #e2e8f0;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .tab-nav::-webkit-scrollbar {
+            display: none;
+        }
+        .tab-btn {
+            flex: 0 0 auto;
+            padding: 10px 14px;
+            background: none;
+            border: none;
+            font-size: 13px;
+            font-weight: 600;
+            color: #718096;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .tab-btn.active {
+            color: #003366;
+            border-bottom-color: #003366;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        h2 { 
+            margin-top: 0; 
+            color: #1a202c; 
+            font-size: 18px; 
+        }
+        p { 
+            color: #4a5568; 
+            font-size: 14px; 
+            margin-bottom: 15px; 
+        }
+        .section-header {
+            font-size: 12px;
+            font-weight: 700;
+            color: #003366;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 18px 0 10px 0;
+            padding-bottom: 4px;
+            border-bottom: 2px solid #edf2f7;
+        }
+        .er-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .er-card {
+            background-color: #f8fafc;
+            color: #2d3748;
+            border: 1px solid #cbd5e0;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        .er-card.station-card {
+            background-color: #fffaf0;
+            border: 1px solid #feebc8;
+            border-left: 4px solid #dd6b20;
+            padding: 14px 12px;
+        }
+        .er-card.peds {
+            background-color: #fff5f7;
+            border: 1px solid #fbb6ce;
+            border-left: 4px solid #d53f8c;
+        }
+        .er-card.split-peds {
+            background: linear-gradient(90deg, #ebf8ff 50%, #fff5f7 50%);
+            border: 1px solid #cbd5e0;
+            border-left: 4px solid #3182ce;
+            border-right: 4px solid #d53f8c;
+        }
+        .er-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+        .er-title-area {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            flex: 1;
+            min-width: 0;
+        }
+        .station-subtitle {
+            font-size: 11px;
+            font-weight: 400;
+            opacity: 0.8;
+            margin-top: 2px;
+            display: block;
+        }
+        .form-group { 
+            display: flex; 
+            gap: 10px; 
+            margin-bottom: 15px; 
+        }
+        .input-wrapper {
+            position: relative;
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
+        input[type="text"], select { 
+            width: 100%; 
+            padding: 12px 15px; 
+            font-size: 15px; 
+            border: 1px solid #cbd5e0; 
+            border-radius: 6px; 
+            outline: none; 
+            background-color: #fff;
+        }
+        input[type="text"]:focus, select:focus { 
+            border-color: #3182ce; 
+            box-shadow: 0 0 0 3px rgba(49,130,206,0.2); 
+        }
+        .clear-btn {
+            position: absolute;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: #a0aec0;
+            cursor: pointer;
+            display: none;
+            padding: 0 4px;
+            line-height: 1;
+            z-index: 10;
+        }
+        .clear-btn:hover { color: #4a5568; }
+        button.action-btn { 
+            background-color: #003366; 
+            color: white; 
+            border: none; 
+            padding: 12px 16px; 
+            font-size: 14px; 
+            font-weight: 600; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            transition: background 0.2s; 
+            white-space: nowrap;
+        }
+        button.action-btn:hover { background-color: #002244; }
+
+        /* Battalion Chief Call Assistance Button */
+        .bc-call-btn {
+            width: 100%;
+            background-color: #c53030;
+            color: white;
+            border: none;
+            padding: 12px 16px;
+            font-size: 14px;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(197, 48, 48, 0.2);
+            transition: background 0.2s;
+        }
+        .bc-call-btn:hover { background-color: #9b2c2c; }
+
+        #status { 
+            display: none; 
+            padding: 12px 15px; 
+            border-radius: 6px; 
+            font-weight: 600; 
+            font-size: 14px; 
+            margin-bottom: 15px; 
+            text-align: center; 
+        }
+        #status.inside { background-color: #c6f6d5; color: #22543d; border: 1px solid #9ae6b4; display: block !important; }
+        #status.outside { background-color: #fed7d7; color: #742a2a; border: 1px solid #feb2b2; display: block !important; }
+        #status.loading { background-color: #e2e8f0; color: #4a5568; border: 1px solid #cbd5e0; display: block !important; }
+        
+        .dir-btn-inline {
+            display: inline-block;
+            margin-top: 10px;
+            background-color: #003366;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+            transition: background 0.2s;
+        }
+        .dir-btn-inline:hover { background-color: #002244; }
+
+        #mapWrapper { width: 100%; }
+        #map { 
+            width: 100%; 
+            height: 380px; 
+            border-radius: 6px; 
+            border: 1px solid #e2e8f0; 
+        }
+        .history-container {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            display: none;
+        }
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .history-header h3 { margin: 0; font-size: 15px; color: #2d3748; }
+        .clear-history-btn { background: none; border: none; color: #e53e3e; font-size: 12px; font-weight: 600; cursor: pointer; }
+        .clear-history-btn:hover { text-decoration: underline; }
+        .history-list { 
+            list-style: none; 
+            padding: 0; 
+            margin: 0; 
+            max-height: 280px; 
+            overflow-y: auto; 
+        }
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            border-radius: 6px;
+            background-color: #f8fafc;
+            border: 1px solid #edf2f7;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+        .history-address { color: #2d3748; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 240px; }
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+        .badge.in-district { background-color: #c6f6d5; color: #22543d; }
+        .badge.out-district { background-color: #fed7d7; color: #742a2a; }
+        .badge.not-found { background-color: #e2e8f0; color: #4a5568; }
+
+        /* Guideline Wizard Custom Styling */
+        .selector-box {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .selector-group { margin-bottom: 12px; }
+        .selector-group label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            color: #4a5568;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        .result-panel {
+            display: none;
+            border-radius: 8px;
+            padding: 15px;
+            background-color: #edf2f7;
+            border: 1px solid #cbd5e0;
+        }
+        .result-panel.active { display: block; }
+        .protocol-note {
+            font-size: 12px;
+            color: #4a5568;
+            background-color: #fffaf0;
+            border-left: 4px solid #dd6b20;
+            padding: 8px 12px;
+            margin-top: 10px;
+            border-radius: 0 4px 4px 0;
+        }
+        .hosp-list {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .location-status {
+            font-size: 12px;
+            color: #4a5568;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .dist-tag { font-size: 11px; opacity: 0.85; font-weight: normal; margin-left: 4px; }
+
+        /* Shift Eats / Restaurant Card Styling */
+        .eats-hero {
+            background: linear-gradient(135deg, #003366 0%, #1a365d 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .eats-hero h3 { margin: 0 0 8px 0; font-size: 17px; }
+        .eats-hero p { color: #e2e8f0; font-size: 13px; margin: 0 0 15px 0; }
+        .spin-btn {
+            background-color: #dd6b20;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .spin-btn:hover { background-color: #c05621; transform: translateY(-1px); }
+        .result-card {
+            background-color: white;
+            color: #2d3748;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 15px;
+            display: none;
+            text-align: center;
+            border: 2px solid #feebc8;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .result-name { font-size: 18px; font-weight: 800; color: #003366; margin-bottom: 6px; }
+        .result-note {
+            font-size: 12px;
+            color: #744210;
+            background-color: #fffaf0;
+            border: 1px solid #feebc8;
+            padding: 8px 10px;
+            border-radius: 4px;
+            margin-bottom: 12px;
+            display: none;
+            text-align: left;
+        }
+        .result-actions { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+        
+        /* Standardized Action Buttons */
+        .nav-link-btn, .note-toggle-btn, .google-link-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 34px;
+            padding: 0 10px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            white-space: nowrap;
+        }
+        .nav-link-btn {
+            background-color: #003366;
+            color: white;
+            border: none;
+            width: 70px;
+        }
+        .nav-link-btn:hover { background-color: #002244; }
+
+        .google-link-btn {
+            background-color: #2b6cb0;
+            color: white;
+            border: none;
+            width: 75px;
+        }
+        .google-link-btn:hover { background-color: #2c5282; }
+        
+        .note-toggle-btn {
+            background-color: #edf2f7;
+            color: #4a5568;
+            border: 1px solid #cbd5e0;
+            width: 65px;
+        }
+        .note-toggle-btn:hover { background-color: #e2e8f0; }
+
+        .web-link-btn {
+            display: inline-block;
+            background-color: #dd6b20;
+            color: white;
+            padding: 8px 14px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 12px;
+            border: none;
+            cursor: pointer;
+        }
+        .web-link-btn:hover { background-color: #c05621; }
+        
+        .notes-section {
+            display: none;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 4px;
+        }
+        .notes-section.active { display: flex; flex-direction: column; gap: 8px; }
+        .notes-section input {
+            width: 100%;
+            padding: 8px 10px;
+            font-size: 12px;
+            border: 1px solid #cbd5e0;
+            border-radius: 4px;
+            background: #fff;
+        }
+
+        .category-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 15px; }
+        .pill-btn {
+            background-color: #edf2f7;
+            color: #4a5568;
+            border: 1px solid #cbd5e0;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .pill-btn.active, .pill-btn:hover { background-color: #003366; color: white; border-color: #003366; }
+        .suggest-food-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            background-color: #2b6cb0;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            margin-top: 20px;
+            box-shadow: 0 2px 4px rgba(43, 108, 176, 0.2);
+            transition: background 0.2s;
+        }
+        .suggest-food-btn:hover { background-color: #2c5282; }
+
+        /* Share & QR Code Tab Styling */
+        .share-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .qr-image {
+            width: 200px;
+            height: 200px;
+            margin: 15px auto;
+            display: block;
+            border-radius: 6px;
+            border: 4px solid white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .share-url-box {
+            background: white;
+            border: 1px solid #cbd5e0;
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #2d3748;
+            word-break: break-all;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        .share-steps {
+            text-align: left;
+            background: #fffaf0;
+            border-left: 4px solid #dd6b20;
+            padding: 12px 15px;
+            border-radius: 0 6px 6px 0;
+            font-size: 13px;
+            color: #4a5568;
+            margin-top: 15px;
+        }
+        .share-steps ol { margin: 5px 0 0 20px; padding: 0; }
+        .share-steps li { margin-bottom: 4px; }
+
+        /* Footer Feedback Section */
+        .feedback-section {
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+        }
+        .feedback-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        .feedback-links { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+        .feedback-btn {
+            font-size: 12px;
+            font-weight: 600;
+            color: #003366;
+            text-decoration: none;
+            padding: 6px 10px;
+            border-radius: 4px;
+            background-color: #edf2f7;
+            transition: background 0.2s;
+        }
+        .feedback-btn:hover { background-color: #e2e8f0; }
+
+        .pac-container {
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border: 1px solid #cbd5e0;
+            font-family: inherit;
+            z-index: 10000 !important;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="app-header">
+        <h1 class="app-title">STMFD SMART EMS</h1>
+        <div class="app-subtitle">Station Matrix, Allocation &amp; Routing Tool</div>
+    </div>
+
+    <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab('verifier')">District Verifier</button>
+        <button class="tab-btn" onclick="switchTab('guidelines')">Destinations</button>
+        <button class="tab-btn" onclick="switchTab('routing')">Hospitals</button>
+        <button class="tab-btn" onclick="switchTab('home')">Stations</button>
+        <button class="tab-btn" onclick="switchTab('eats')">Food</button>
+        <button class="tab-btn" onclick="switchTab('share')">Share App</button>
+    </div>
+
+    <!-- TAB 1: District Verifier -->
+    <div id="verifierTab" class="tab-content active">
+        <h2>District Boundary Check</h2>
+        <p>Enter an address to verify if it falls within the STMFDKY service area.</p>
+
+        <div class="form-group">
+            <div class="input-wrapper">
+                <input type="text" id="addressInput" placeholder="Enter street address (e.g. 4100 Shelbyville Rd)" autofocus>
+                <button id="clearBtn" class="clear-btn" onclick="resetForm()" title="Clear address">&times;</button>
+            </div>
+            <button id="verifyBtn" class="action-btn" onclick="verifyAddress()">Verify Address</button>
+        </div>
+        <div id="status"></div>
+    </div>
+
+    <!-- TAB 2: Destination Guidelines Wizard -->
+    <div id="guidelinesTab" class="tab-content">
+        <h2>Triage Destination Guidelines</h2>
+        
+        <a href="tel:5026897312" class="bc-call-btn">
+            📞 I still need more destination decision assistance
+        </a>
+
+        <p>Select patient demographic and condition criteria to evaluate capable facilities.</p>
+
+        <div id="locationStatus" class="location-status">
+            <span>📍 Requesting current location for distance sorting...</span>
+        </div>
+
+        <div class="selector-box">
+            <div class="selector-group">
+                <label>1. Patient Category</label>
+                <select id="patientCategory" onchange="updateEmergencyOptions()">
+                    <option value="adult">Adult Patient</option>
+                    <option value="pediatric">Pediatric Patient (&lt; 18 years)</option>
+                </select>
+            </div>
+
+            <div class="selector-group">
+                <label>2. Presenting Condition / Clinical Criteria</label>
+                <select id="conditionSelect" onchange="evaluateDestination()"></select>
+            </div>
+        </div>
+
+        <div id="guidelineResult" class="result-panel">
+            <div style="font-size: 11px; font-weight: 700; color: #718096; text-transform: uppercase;" id="resultCategory">Category</div>
+            <div style="font-size: 17px; font-weight: 700; color: #1a202c; margin-top: 2px;" id="resultTitle">Condition Title</div>
+            <div style="font-size: 13px; color: #4a5568; margin-top: 6px;" id="resultDef">Definition description</div>
+            
+            <div id="protocolNote" class="protocol-note" style="display:none;"></div>
+
+            <div class="section-header" style="margin-top: 15px;">Capable Facilities (Tap to Navigate &amp; View Notes)</div>
+            <div id="capableHospitals" class="hosp-list"></div>
+        </div>
+    </div>
+
+    <!-- TAB 3: Hospital Navigation Buttons -->
+    <div id="routingTab" class="tab-content">
+        <h2>Hospital Transport Destinations</h2>
+        <p>Tap any hospital below to launch direct navigation to the ER ambulance entrance. Facilities are sorted by proximity to your current location.</p>
+
+        <div id="routingLocationStatus" class="location-status">
+            <span>📍 Requesting current location for distance sorting...</span>
+        </div>
+
+        <!-- Jefferson County ER -->
+        <div class="section-header">Jefferson County, KY ER</div>
+        <div id="jeffersonErGrid" class="er-grid"></div>
+
+        <!-- Outside Jefferson County ER -->
+        <div class="section-header">Outside Jefferson County ER</div>
+        <div id="outsideErGrid" class="er-grid"></div>
+    </div>
+
+    <!-- TAB 4: Take Me Home (St. Matthews Fire & EMS Stations) -->
+    <div id="homeTab" class="tab-content">
+        <h2>St. Matthews Fire & EMS Stations</h2>
+        <p>Tap a station to launch direct navigation back to quarters.</p>
+
+        <div class="section-header">Fire & EMS Quarters</div>
+        <div class="er-grid">
+            <div class="er-card station-card">
+                <div class="er-header-row">
+                    <div class="er-title-area">
+                        <span>Station 46</span>
+                        <span class="station-subtitle">240 Sears Ave</span>
+                    </div>
+                    <button class="nav-link-btn" onclick="openNavAddress('240 Sears Ave, Louisville, KY 40207')">🗺️ Nav</button>
+                </div>
+            </div>
+            <div class="er-card station-card">
+                <div class="er-header-row">
+                    <div class="er-title-area">
+                        <span>Station 47</span>
+                        <span class="station-subtitle">4400 Brownsboro Rd</span>
+                    </div>
+                    <button class="nav-link-btn" onclick="openNavAddress('4400 Brownsboro Rd, Louisville, KY 40207')">🗺️ Nav</button>
+                </div>
+            </div>
+            <div class="er-card station-card">
+                <div class="er-header-row">
+                    <div class="er-title-area">
+                        <span>Station 48</span>
+                        <span class="station-subtitle">8126 New LaGrange Rd</span>
+                    </div>
+                    <button class="nav-link-btn" onclick="openNavAddress('8126 New LaGrange Rd, Louisville, KY 40222')">🗺️ Nav</button>
+                </div>
+            </div>
+            <div class="er-card station-card">
+                <div class="er-header-row">
+                    <div class="er-title-area">
+                        <span>Station 49</span>
+                        <span class="station-subtitle">8414 Westport Rd</span>
+                    </div>
+                    <button class="nav-link-btn" onclick="openNavAddress('8414 Westport Rd, Louisville, KY 40242')">🗺️ Nav</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 5: Shift Eats (Restaurant Directory & Chooser) -->
+    <div id="eatsTab" class="tab-content">
+        <h2>Shift Eats Chooser</h2>
+        <p>Can't decide on food for the crew? Spin the chooser, search options, and toggle notes on demand.</p>
+
+        <div class="eats-hero">
+            <h3>Random Food</h3>
+            <p>Let the app choose today's shift food spot!</p>
+            <button class="spin-btn" onclick="pickRandomRestaurant()">🎲 Pick Somewhere to Eat!</button>
+
+            <div id="randomResult" class="result-card">
+                <div style="font-size: 11px; font-weight: 700; color: #718096; text-transform: uppercase;">Selected Spot</div>
+                <div id="randomName" class="result-name">--</div>
+                <div id="randomNote" class="result-note"></div>
+                <div class="result-actions">
+                    <button id="randomNavBtn" class="nav-link-btn" onclick="">🗺️ Nav</button>
+                    <button id="randomGoogleBtn" class="google-link-btn" onclick="">🔍 Google</button>
+                    <button id="randomWebBtn" class="web-link-btn" onclick="">🌐 Order</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-header">Search &amp; Filter Directory</div>
+
+        <div class="form-group">
+            <div class="input-wrapper">
+                <input type="text" id="eatsSearchInput" placeholder="Search by name or cuisine (e.g. Pizza, Tacos, BBQ)..." oninput="filterRestaurants()">
+            </div>
+        </div>
+
+        <div class="category-pills">
+            <button class="pill-btn active" onclick="setCategoryFilter('all', this)">All (<span id="totalCount">0</span>)</button>
+            <button class="pill-btn" onclick="setCategoryFilter('pizza', this)">🍕 Pizza</button>
+            <button class="pill-btn" onclick="setCategoryFilter('mexican', this)">🌮 Mexican</button>
+            <button class="pill-btn" onclick="setCategoryFilter('bbq', this)">🍖 BBQ</button>
+            <button class="pill-btn" onclick="setCategoryFilter('burgers', this)">🍔 Burgers</button>
+            <button class="pill-btn" onclick="setCategoryFilter('asian', this)">🥢 Asian / Sushi</button>
+            <button class="pill-btn" onclick="setCategoryFilter('breakfast', this)">☕ Breakfast &amp; Bakery</button>
+        </div>
+
+        <div id="restaurantGrid" style="display: flex; flex-direction: column; gap: 8px;"></div>
+
+        <a href="sms:15022241865?body=STMFD%20SMART%20EMS%20Food%20Suggestion:%20" class="suggest-food-btn">
+            ✏️ Suggest Food Add / Change
+        </a>
+    </div>
+
+    <!-- TAB 6: Share App & QR Code -->
+    <div id="shareTab" class="tab-content">
+        <h2>Share App With Crew Members</h2>
+        <p>Have another EMT, Paramedic, or firefighter scan this QR code with their phone camera to instantly install the app on their device.</p>
+
+        <div class="share-card">
+            <div style="font-size: 12px; font-weight: 700; color: #003366; text-transform: uppercase; margin-bottom: 5px;">Scan to Open &amp; Install</div>
+            <img id="qrCodeImg" class="qr-image" alt="App QR Code" src="">
+            
+            <div class="share-url-box" id="appUrlText">https://wpspicerlfrd.github.io/STMFDKY-address-verifier/</div>
+            
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button class="action-btn" onclick="copyAppUrl()">📋 Copy Link</button>
+                <a id="smsShareBtn" href="" class="action-btn" style="background-color: #3182ce; text-decoration: none; display: inline-flex; align-items: center;">Text Link</a>
+            </div>
+
+            <div class="share-steps">
+                <strong>How crew members install it:</strong>
+                <ol>
+                    <li>Scan the QR code with their smartphone camera.</li>
+                    <li>Tap the notification banner that pops up.</li>
+                    <li>Tap the browser menu (⋮) and select <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong>.</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <!-- Map Display (Visible only in District Verifier tab) -->
+    <div id="mapWrapper">
+        <div id="map"></div>
+    </div>
+
+    <div id="historyContainer" class="history-container">
+        <div class="history-header">
+            <h3>Recent Boundary Searches</h3>
+            <button class="clear-history-btn" onclick="clearHistory()">Clear History</button>
+        </div>
+        <ul id="historyList" class="history-list"></ul>
+    </div>
+
+    <!-- Global App Feedback Section -->
+    <div class="feedback-section">
+        <div class="feedback-title">STMFD SMART EMS Testing Feedback</div>
+        <div class="feedback-links">
+            <a href="mailto:wspicer@stmfdky.gov?subject=STMFD%20SMART%20EMS%20Feedback&body=Please%20enter%20your%20suggestion%20or%20comment%20here:" class="feedback-btn">
+                ✉️ Email Feedback
+            </a>
+            <a href="sms:15022241865?body=STMFD%20SMART%20EMS%20Feedback:%20" class="feedback-btn">
+                💬 Text Feedback
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // JSONBin Cloud Credentials for Shared Notes
+    const JSONBIN_BIN_ID = '6ab427d6ac6210605aee3302';
+    const JSONBIN_MASTER_KEY = '$2a$10$XgDpmrhnhfLL7jfESauMyecOlpLRVHxHfk2ZU9GCFLf4/v6pEMJgq';
+    window.sharedFoodNotes = {};
+    window.sharedHospitalNotes = {};
+
+    // DOM Elements Definition
+    const inputEl = document.getElementById('addressInput');
+    const clearBtn = document.getElementById('clearBtn');
+    const verifyBtn = document.getElementById('verifyBtn');
+    const statusDiv = document.getElementById('status');
+    const mapWrapper = document.getElementById('mapWrapper');
+    const historyContainer = document.getElementById('historyContainer');
+    const historyList = document.getElementById('historyList');
+
+    let map;
+    let marker;
+    let boundaryPolygon;
+    let boundaryBounds;
+    let geocoder;
+    let autocomplete;
+    let searchHistory = [];
+    let userLocation = null;
+    let currentEatsCategory = 'all';
+
+    // Helper functions
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+        const R = 3958.8;
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                  Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    }
+
+    // Central Master List of Destination Facilities
+    const masterHospitals = [
+        { id: "baptist_louisville", name: "Baptist Health Louisville", lat: 38.23885368709200, lng: -85.63917771315160, type: "adult", region: "jefferson" },
+        { id: "norton_women_children", name: "Norton Women's & Children's (Suburban)", lat: 38.23558071531270, lng: -85.63158611445510, type: "split", region: "jefferson" },
+        { id: "uofl_mc_east", name: "UofL Health - MC East ER (Jewish East)", lat: 38.23114041993000, lng: -85.63694179169460, type: "adult", region: "jefferson" },
+        { id: "norton_brownsboro", name: "Norton Brownsboro", lat: 38.31634156358550, lng: -85.57558139921120, type: "adult", region: "jefferson" },
+        { id: "norton_children_brownsboro", name: "Norton Children's MC (Brownsboro)", lat: 38.31569198353950, lng: -85.56956072719920, type: "peds", region: "jefferson" },
+        { id: "baptist_blankenbaker", name: "Baptist Health ER (Blankenbaker)", lat: 38.21744177540010, lng: -85.53839801419970, type: "adult", region: "jefferson" },
+        { id: "norton_audubon", name: "Norton Audubon", lat: 38.21520796968180, lng: -85.72403667459940, type: "adult", region: "jefferson" },
+        { id: "norton_downtown", name: "Norton Hospital (Downtown)", lat: 38.24750719216270, lng: -85.75149999973130, type: "adult", region: "jefferson" },
+        { id: "norton_children_downtown", name: "Norton Children's (Downtown)", lat: 38.24818271556100, lng: -85.75017118854950, type: "peds", region: "jefferson" },
+        { id: "jewish_downtown", name: "Jewish Hospital (Downtown)", lat: 38.24839488506370, lng: -85.75157457164980, type: "adult", region: "jefferson" },
+        { id: "uofl_hospital", name: "UofL Health - UofL Hospital", lat: 38.24786926143180, lng: -85.74318088452280, type: "adult", region: "jefferson" },
+        { id: "norton_west_louisville", name: "Norton West Louisville ER", lat: 38.24720893353440, lng: -85.79873887144740, type: "adult", region: "jefferson" },
+        { id: "uofl_mary_elizabeth", name: "UofL Health - Mary & Elizabeth", lat: 38.17880867023050, lng: -85.79382665040330, type: "adult", region: "jefferson" },
+        { id: "baptist_glenmary", name: "Baptist Health Glenmary", lat: 38.136018474849024, lng: -85.58069320336894, type: "adult", region: "jefferson" },
+        { id: "uofl_mc_southwest", name: "UofL Health - MC Southwest ER", lat: 38.11322941906840, lng: -85.84092345934400, type: "adult", region: "jefferson" },
+        { id: "louisville_va", name: "Louisville VA Hospital", lat: 38.27017803622843, lng: -85.69673200715734, type: "adult", region: "jefferson" },
+        { id: "baptist_lagrange", name: "Baptist Health LaGrange", lat: 38.39436543175370, lng: -85.37700258407050, type: "adult", region: "outside" },
+        { id: "norton_clark", name: "Norton Clark Hospital (IN)", lat: 38.28185133304160, lng: -85.74788493093270, type: "adult", region: "outside" },
+        { id: "baptist_floyd", name: "Baptist Health Floyd (IN)", lat: 38.30038280115690, lng: -85.83484296507200, type: "adult", region: "outside" },
+        { id: "uofl_mc_south", name: "UofL Health - MC South (Brooks)", lat: 38.06108454853360, lng: -85.69721919213730, type: "adult", region: "outside" }
+    ];
+
+    // Adult Emergency Conditions Data
+    const adultConditions = [
+        {
+            id: "med1",
+            title: "Medical",
+            def: "Capable of accepting medical patients who do not fit the Acute Medical requiring admission category.",
+            hospitalIds: ["baptist_louisville", "baptist_lagrange", "uofl_mc_east", "uofl_mc_south", "uofl_mc_southwest", "uofl_mary_elizabeth", "norton_audubon", "norton_women_children", "norton_downtown", "norton_brownsboro", "uofl_hospital", "norton_clark", "baptist_floyd", "louisville_va"]
+        },
+        {
+            id: "med2",
+            title: "Acute Medical (Requiring Admission)",
+            def: "Capable of accepting patients in the ED whose medical condition would most likely require admission including: acute stroke with deficits, elderly with SOA and underlying medical conditions/abnormal vital signs, dialysis emergency, or acute coronary syndrome.",
+            hospitalIds: ["baptist_louisville", "baptist_lagrange", "uofl_mary_elizabeth", "norton_audubon", "norton_women_children", "norton_downtown", "norton_brownsboro", "uofl_hospital", "norton_clark", "baptist_floyd", "louisville_va"]
+        },
+        {
+            id: "stemi",
+            title: "STEMI",
+            def: "Capable of performing Percutaneous Coronary Intervention (PCI).",
+            hospitalIds: ["baptist_louisville", "baptist_lagrange", "uofl_mary_elizabeth", "norton_audubon", "norton_downtown", "norton_brownsboro", "uofl_hospital", "baptist_floyd", "norton_women_children"]
+        },
+        {
+            id: "stroke",
+            title: "Stroke",
+            def: "Any patient meeting stroke criteria who is NOT positive on a severity scale for ELVO (aka LVO), shall be transported to an accredited stroke center.",
+            hospitalIds: ["baptist_louisville", "baptist_lagrange", "uofl_mc_east", "uofl_mary_elizabeth", "norton_audubon", "norton_women_children", "norton_downtown", "norton_brownsboro", "uofl_hospital", "norton_clark", "baptist_floyd"]
+        },
+        {
+            id: "elvo",
+            title: "ELVO (aka LVO) Stroke",
+            def: "All patients who screen positive on a stroke severity scale should be transported to an accredited ELVO capable facility.",
+            hospitalIds: ["baptist_louisville", "norton_downtown", "norton_brownsboro", "uofl_hospital"]
+        },
+        {
+            id: "burn_center",
+            title: "Burn Center",
+            def: "Patients with major burns as defined by current protocol.",
+            note: "Protocol Triaging: Patients < 18 yo go to Kosair/Norton Children's Hospital (KCH). All adult burn patients not triaged to KCH go to UofL Hospital.",
+            hospitalIds: ["norton_children_downtown", "uofl_hospital"]
+        },
+        {
+            id: "burns",
+            title: "Burns (Non-Burn Center)",
+            def: "Capable of managing burns not triaged to a designated Burn Center.",
+            hospitalIds: ["baptist_louisville", "baptist_lagrange", "uofl_mc_east", "uofl_mc_south", "uofl_mc_southwest", "uofl_mary_elizabeth", "norton_audubon", "norton_women_children", "norton_downtown", "norton_brownsboro", "uofl_hospital", "norton_clark", "baptist_floyd"]
+        },
+        {
+            id: "hazmat_daily",
+            title: "HazMat Decon Non-Mass Casualty",
+            def: "Capable of technical decontamination for chemical, radiological or biological substance exposure with daily capability.",
+            hospitalIds: ["uofl_hospital"]
+        },
+        {
+            id: "hazmat_mass",
+            title: "HazMat Decon Mass Casualty",
+            def: "Capable of technical decontamination in a mass casualty situation (facilities with decon trailers/tents).",
+            hospitalIds: ["baptist_louisville", "baptist_lagrange", "uofl_mc_east", "uofl_mc_south", "uofl_mc_southwest", "uofl_mary_elizabeth", "norton_audubon", "norton_women_children", "norton_downtown", "norton_brownsboro", "uofl_hospital", "norton_clark", "baptist_floyd", "louisville_va"]
+        },
+        {
+            id: "poison",
+            title: "Poison & Drug Overdose",
+            def: "Facilities capable of managing acute toxicological and overdose presentations.",
+            hospitalIds: ["baptist_louisville", "baptist_lagrange", "uofl_mc_east", "uofl_mc_south", "uofl_mc_southwest", "uofl_mary_elizabeth", "norton_audubon", "norton_women_children", "norton_downtown", "norton_brownsboro", "uofl_hospital", "norton_clark", "baptist_floyd", "louisville_va"]
+        },
+        {
+            id: "psychiatric",
+            title: "Psychiatric",
+            def: "Facilities designated to accept and evaluate patients presenting with primary psychiatric emergencies or acute mental health crises.",
+            hospitalIds: ["baptist_louisville", "baptist_lagrange", "uofl_mary_elizabeth", "norton_audubon", "norton_women_children", "norton_downtown", "norton_brownsboro", "uofl_hospital", "norton_clark", "baptist_floyd", "louisville_va"]
+        },
+        {
+            id: "level1_trauma",
+            title: "Level 1 Trauma",
+            def: "Major acute trauma requiring Level 1 capability as defined by current protocol.",
+            note: "Triage Criteria: Patients ≥ 13 years of age with penetrating trauma AND ≥ 15 years of age with blunt trauma will be triaged to UofL Hospital. All Level 1 trauma patients not triaged to UofL will be taken to KCH/Norton Children's.",
+            hospitalIds: ["uofl_hospital", "norton_children_downtown"]
+        },
+        {
+            id: "gyn",
+            title: "Gynecological",
+            def: "Capable of treating patients whose gynecological condition may require rapid/emergent surgical intervention or admission (including severe vaginal bleeding in patients of childbearing age).",
+            hospitalIds: ["baptist_louisville", "baptist_lagrange", "norton_audubon", "norton_women_children", "norton_downtown", "norton_brownsboro", "uofl_hospital", "baptist_floyd"]
+        },
+        {
+            id: "ob",
+            title: "Obstetrical",
+            def: "Capable of providing complete care for mother and fetus, including emergent C-section.",
+            hospitalIds: ["baptist_louisville", "norton_women_children", "norton_downtown", "uofl_hospital", "norton_clark", "baptist_floyd"]
+        },
+        {
+            id: "newborn",
+            title: "Newborn",
+            def: "Capable of caring for infants less than 30 days old.",
+            hospitalIds: ["baptist_louisville", "norton_women_children", "norton_downtown", "uofl_hospital", "norton_clark", "baptist_floyd"]
+        }
+    ];
+
+    // Pediatric Emergency Conditions Data
+    const pedConditions = [
+        {
+            id: "ped_newborn",
+            title: "Newborn",
+            def: "Capable of caring for infants less than 30 days old.",
+            hospitalIds: ["norton_children_downtown", "norton_women_children", "uofl_hospital", "norton_clark", "baptist_floyd"]
+        },
+        {
+            id: "ped_icu",
+            title: "Pediatric ICU",
+            def: "Capable of providing comprehensive critical care services to patients < 18 years of age.",
+            hospitalIds: ["norton_children_downtown"]
+        },
+        {
+            id: "ped_adm",
+            title: "Pediatric Admission",
+            def: "Capable of treating all pediatric patients which may require emergent surgical intervention and/or admission to the hospital but are not triaged to Pediatric ICU.",
+            hospitalIds: ["norton_children_downtown", "norton_women_children", "norton_clark", "baptist_floyd"]
+        },
+        {
+            id: "ped_18",
+            title: "Pediatric < 18 yo",
+            def: "Capable of complete care in the Emergency Department for all patients less than 18 years of age.",
+            hospitalIds: ["norton_children_downtown", "norton_children_brownsboro", "baptist_louisville", "baptist_lagrange", "uofl_mc_east", "uofl_mc_south", "uofl_mc_southwest", "uofl_mary_elizabeth", "norton_audubon", "norton_women_children", "uofl_hospital", "norton_clark", "baptist_floyd"]
+        },
+        {
+            id: "ped_trauma",
+            title: "Pediatric Trauma",
+            def: "Level 1 Pediatric Trauma criteria.",
+            note: "Triage Criteria: Pediatric patients < 13 years of age with penetrating trauma AND < 15 years of age with blunt trauma will be triaged to NCH (Norton Children's Hospital). All Level 1 trauma patients not triaged to NCH will be taken to UofL Hospital.",
+            hospitalIds: ["norton_children_downtown", "uofl_hospital"]
+        }
+    ];
+
+    // Complete Expanded Restaurant Directory
+    const restaurantList = [
+        "211 Clover Lane", "Abol Cafe (Coffee + Kitchen)", "AJ Subs LLC", "Ala Eh Eats Filipino Food and Sushi", "ALDI", "All Thai’d Up", "Anar Food Mart", "Arby's", "Asahi Japanese Restaurant", "Bahn Thai & M", 
+        "Bamboo Coffee & Donuts", "Bandido Taqueria Mexicana", "Barry Bagels", "Basilico Cafe", "Baskin-Robbins", "Bearnos Pizza", "Better Blend - Louisville", "Biscuit Belly: Louisville - St. Matthews", "BJ's Restaurant & Brewhouse", "Blaze Pizza", "BOMBAY GRILL - INDIAN RESTAURANT", 
+        "Bonefish Grill", "BoomBozz Pizza & Watch Bar", "Bourbon & Burger", "Brasserie Provence", "Brick House Tavern + Tap", "Bristol Bar & Grille | East", "Bruegger's Bagels", "Buffalo Wild Wings", "Burger Girl", "California Pizza Kitchen at Oxmoor", 
+        "Carniceria Butcher Shop", "Carrabba's Italian Grill", "CASK Southern Kitchen & Bar", "Charleys Cheesesteaks", "Cheddar Box Too", "Cheddar's Scratch Kitchen", "Chef's Cut Pizzeria", "Chicken Salad Chick", "Chick-fil-A", "Chili's Grill & Bar", 
+        "China 1", "China 1 - Lyndon", "China Star", "Choi's Asian Food Market", "Chipotle", "Chuy's", "Cinnaholic", "Cinnabon", "Circle K", "City Barbeque", 
+        "Coals Artisan Pizza", "Cold Stone Creamery", "Con Huevos! - Breakfast & Brunch", "Condado Tacos", "Connors Steak & Seafood", "Craft House Pizza - Westport", "Crumbl Cookies", "Currito Louisville", "Dave & Buster's Louisville", "Dave's Hot Chicken", 
+        "Del Frisco's", "DiOrio's Pizza & Pub", "District 6", "Domino's Pizza", "Drake's - St. Matthews", "Drake's Hurstbourne", "Dunkin Donuts", "Eat A Pita", "Ehrler's Ice Cream", 
+        "Elderberry Provisions", "El Mariachi Mexican Restaurant", "El Nopal - Mall St. Matthews", "El Nopal Mexican Food | Westport Rd", "El Tarasco", "Fazoli's", "Felipe's Mexican Kitchen", "Fire House subs", "First Watch", "Fishery", 
+        "Five Guys", "Food Court @ Mall St. Matthews", "Ginza Asian Bistro", "Graeter's Ice Cream", "Grassa Gramma", "Green District Salads - St. Matthews", "Gus's World Famous Fried Chicken", "Gustavo's Mexican Grill", "Half-Peach Bakery & Cafe", "Heine Brothers' Coffee - Chenoweth Lane", 
+        "Heitzman Traditional Bakery and Deli", "Highland Morning St. Matthews", "hiko-A-mon", "Hillcrest Tavern", "Hooters", "Hurstbourne", "IHOP", "Impellizzeri's Pizza", "J. Alexander's Restaurant", "Jack in the Box", 
+        "Jade Palace", "Jaggers", "Jasmine Asian Bistro", "Jason's Deli", "Jeff's Donuts", "Jersey Mike's Subs", "Jet's Pizza", "Jimmy John's Gourmet Sandwiches", "Joe’s Older Than Dirt", "Joella's Hot Chicken - St. Matthews", 
+        "JOJO GYROS 2", "KFC", "King Donuts Lyndon", "King Gyros - St. Matthew’s Mall", "Kingfish", "Kroger", "Kupbop Korean Bbq", "La Cocina de Mama", "La Rosita Sol", "Las Maria", 
+        "Lee's Famous Recipe Chicken", "Lemongrass Cafe and Market", "Limón y Sal Mexican Kitchen", "Little Greek Fresh Grill", "Los Aztecas Mexican Restaurant", "Lotsa Pasta", "Lou Lou Food & Drink", "Maira Mediterranean Grill", "McAlister's Deli", "McDonald's", 
+        "Mesh Louisville", "MISSION BBQ", "Mojito in Havana", "Mojito Tapas Restaurant", "Momma's Mustard", "Nam Nam Café", "Noodles and Company", "Noosh Nosh", "North Lime Coffee & Donuts", "Nothing Bundt Cakes", 
+        "Olive Garden", "Oriental House", "Osteria Del Mar", "Osteria Italian Seafood", "P.F. Chang's", "Panda Express", "Panaderia Bakery", "Panera Bread", "Papa Johns", "Paris Baguette", 
+        "Paul's Fruit Market", "Penn Station", "Pho Phi Louisville", "Pickles & BBQ - St Matthews", "Pizza Hut", "Pizza Jones", "Pizzaville", "Playa Bowls", "Plehn's Bakery", "QDOBA Mexican Eats", 
+        "R Place Pub", "Rafferty's Restaurant & Bar", "Raising Cane's", "Rainbow Blossom St Matthews", "Ramsi's Cafe On The World", "Raymi Peruvian and Mexican Cuisine", "Red Lobster", "RedBrick Pizza", "Red Robin Gourmet Burgers and Brews", "River House Restaurant and Raw Bar", 
+        "Ruby Thai Kitchen - St. Matthews Mall", "Saints Pizza Pub & SkyBar", "Sakura Blue", "Salsarita's Fresh Mexican Grill", "Selena's at Willow Lake Tavern", "Shady Lane Cafe", "Shawarma Shack", "Shiraz Mediterranean Grill", "Silvio's Italian Restaurant", "Simply Thai", 
+        "Skyline Chili", "Smashburger", "Speedway", "Squeeze The Day", "Starving Artists Cafe & Deli", "Subway", "Sunergos Coffee", "Supermercado Guanajuato #1", "Taco Bell", "Taco Choza", 
+        "Taco Luchador", "Taco N Madres", "Taco Stand", "Taziki's Mediterranean Cafe - St. Matthews", "Ten Pin Strike & Spare", "Texas Roadhouse", "The Charcoal Restaurant", "The Cheesecake Factory", "The Comfy Cow", "The Deli - Willis Ave", 
+        "The Eagle Oxmoor", "The Fresh Market", "The Goose Eatery & Hangout", "The Honey Baked Ham Company", "The Lyndon Station Bar and Grill", "The Pie Kitchen", "Thorntons", "TIKKA HOUSE INDIAN RESTAURANT", "Tin Roof", "ToGo Sushi", 
+        "Tokyo Japanese Restaurant", "Topgolf Louisville", "Tortilleria GuanaJuato", "Trader Joe's", "Tres Amigos Of Louisville", "Twin Peaks", "W W Cousins Restaurant", "Waffle House", "Walmart Neighborhood Market", "Wasabi Louisville", 
+        "Wendy's", "Which Wich Superior Sandwiches @ Hurstbourne Parkway", "White Castle", "Whole Foods Market", "Wild Eggs", "Wingstop"
+    ];
+
+    // Updated GeoJSON boundary data
+    const geojsonData = {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [-85.6520743, 38.2216666],
+                [-85.6491047, 38.2228118],
+                [-85.651228, 38.2256351],
+                [-85.6505518, 38.2259534],
+                [-85.6518607, 38.2276643],
+                [-85.6549965, 38.2314104],
+                [-85.6571637, 38.2340398],
+                [-85.6587087, 38.2361972],
+                [-85.6589308, 38.2366675],
+                [-85.6591668, 38.2374343],
+                [-85.6594565, 38.2385804],
+                [-85.659832, 38.2399961],
+                [-85.6600788, 38.2407461],
+                [-85.6602719, 38.2411253],
+                [-85.6611302, 38.2422376],
+                [-85.6620958, 38.2434678],
+                [-85.6625887, 38.244063],
+                [-85.6632941, 38.2449604],
+                [-85.6638225, 38.2456471],
+                [-85.6643627, 38.2462888],
+                [-85.6653708, 38.2475895],
+                [-85.6663949, 38.2488678],
+                [-85.6695808, 38.2528832],
+                [-85.6701445, 38.2536283],
+                [-85.6708846, 38.2545871],
+                [-85.6722787, 38.2562865],
+                [-85.6733524, 38.2576533],
+                [-85.6736989, 38.2580882],
+                [-85.6739808, 38.2583609],
+                [-85.6743384, 38.2587848],
+                [-85.6774017, 38.2631954],
+                [-85.6826136, 38.2615286],
+                [-85.6858425, 38.2605698],
+                [-85.687779, 38.263017],
+                [-85.690134, 38.2659148],
+                [-85.693741, 38.2704815],
+                [-85.6960875, 38.2734886],
+                [-85.6971051, 38.2743886],
+                [-85.6944924, 38.2764946],
+                [-85.6925366, 38.2776486],
+                [-85.6793171, 38.2859073],
+                [-85.6784942, 38.2848067],
+                [-85.6775377, 38.2841419],
+                [-85.676938, 38.2838156],
+                [-85.6765352, 38.2833621],
+                [-85.676231, 38.2826505],
+                [-85.6759975, 38.281714],
+                [-85.6757794, 38.2812364],
+                [-85.6750531, 38.2807203],
+                [-85.6745229, 38.2807901],
+                [-85.6738094, 38.2810975],
+                [-85.6731938, 38.2813196],
+                [-85.6719647, 38.2806295],
+                [-85.67179, 38.2803098],
+                [-85.67181, 38.2795603],
+                [-85.671149, 38.2792425],
+                [-85.6697231, 38.2793188],
+                [-85.6689955, 38.2791996],
+                [-85.6680748, 38.2802763],
+                [-85.6672648, 38.2806385],
+                [-85.6668276, 38.2806721],
+                [-85.6664977, 38.2805711],
+                [-85.6662724, 38.2806806],
+                [-85.6662241, 38.2808364],
+                [-85.6658245, 38.2809059],
+                [-85.6655965, 38.2808743],
+                [-85.6654677, 38.2804574],
+                [-85.6647704, 38.2796699],
+                [-85.6651834, 38.2790341],
+                [-85.6650681, 38.2788256],
+                [-85.6647744, 38.2788393],
+                [-85.6644592, 38.2792236],
+                [-85.6636465, 38.279472],
+                [-85.6629893, 38.2787435],
+                [-85.6617757, 38.2786557],
+                [-85.6612488, 38.2787532],
+                [-85.6606104, 38.2791491],
+                [-85.6602697, 38.2795491],
+                [-85.6598956, 38.2794628],
+                [-85.6596226, 38.2788553],
+                [-85.6591274, 38.2787166],
+                [-85.6585435, 38.2787577],
+                [-85.6582661, 38.2789722],
+                [-85.6573354, 38.2784984],
+                [-85.657377, 38.2781583],
+                [-85.6581964, 38.2773298],
+                [-85.6581776, 38.2771445],
+                [-85.6577297, 38.2769424],
+                [-85.6571718, 38.2766897],
+                [-85.6562879, 38.2779415],
+                [-85.6560546, 38.2780709],
+                [-85.6552553, 38.2785584],
+                [-85.6552606, 38.278929],
+                [-85.6556683, 38.280028],
+                [-85.6566328, 38.2798936],
+                [-85.6580027, 38.2800524],
+                [-85.6589957, 38.281817],
+                [-85.6593839, 38.2818002],
+                [-85.6595356, 38.2823054],
+                [-85.659283, 38.2826529],
+                [-85.6573792, 38.2841108],
+                [-85.6542588, 38.2865251],
+                [-85.6542195, 38.2875003],
+                [-85.6549316, 38.2873401],
+                [-85.6549664, 38.2880644],
+                [-85.6553876, 38.2882654],
+                [-85.6557601, 38.2891708],
+                [-85.6563542, 38.2896802],
+                [-85.6561153, 38.2932273],
+                [-85.652966, 38.2923977],
+                [-85.651182, 38.2915416],
+                [-85.649737, 38.2903432],
+                [-85.648251, 38.288819],
+                [-85.6466578, 38.2873158],
+                [-85.6423609, 38.2848399],
+                [-85.6396572, 38.2824735],
+                [-85.6383268, 38.2809912],
+                [-85.637372, 38.2795763],
+                [-85.6357776, 38.2808693],
+                [-85.6352948, 38.2805072],
+                [-85.634018, 38.2819726],
+                [-85.6320869, 38.284297],
+                [-85.6312822, 38.2855013],
+                [-85.6304346, 38.2869834],
+                [-85.6297117, 38.2886591],
+                [-85.6292802, 38.2886842],
+                [-85.6278579, 38.2894769],
+                [-85.6275804, 38.2896629],
+                [-85.6264761, 38.2902802],
+                [-85.6268963, 38.290875],
+                [-85.6255634, 38.291507],
+                [-85.6250377, 38.2909428],
+                [-85.6241043, 38.2914902],
+                [-85.6236537, 38.2922396],
+                [-85.6225593, 38.2918523],
+                [-85.622334, 38.2920494],
+                [-85.6222589, 38.2937806],
+                [-85.6218298, 38.2939827],
+                [-85.6210787, 38.2948752],
+                [-85.620435, 38.2950521],
+                [-85.6190832, 38.2960457],
+                [-85.6166741, 38.2981622],
+                [-85.6161725, 38.2976645],
+                [-85.6164564, 38.2948481],
+                [-85.6169021, 38.2940148],
+                [-85.6175066, 38.2934282],
+                [-85.6179015, 38.2918968],
+                [-85.6171784, 38.29152],
+                [-85.6162711, 38.2905259],
+                [-85.6179218, 38.2895889],
+                [-85.6144864, 38.2852981],
+                [-85.6136005, 38.2857068],
+                [-85.6130533, 38.286431],
+                [-85.6120853, 38.2867138],
+                [-85.6106288, 38.2875855],
+                [-85.6089913, 38.2858315],
+                [-85.5972616, 38.2886755],
+                [-85.5941485, 38.2849537],
+                [-85.5893044, 38.287194],
+                [-85.5922557, 38.2909618],
+                [-85.5891006, 38.2924082],
+                [-85.5880982, 38.292848],
+                [-85.5874706, 38.2929027],
+                [-85.5868986, 38.2933389],
+                [-85.5865442, 38.2932065],
+                [-85.586156, 38.2931137],
+                [-85.5854359, 38.2930453],
+                [-85.5838325, 38.2929526],
+                [-85.5833631, 38.2928439],
+                [-85.5831156, 38.2927468],
+                [-85.5826515, 38.2924752],
+                [-85.5823812, 38.2922531],
+                [-85.5775379, 38.286001],
+                [-85.5765572, 38.2860219],
+                [-85.5757133, 38.2862248],
+                [-85.5749454, 38.2865112],
+                [-85.5723145, 38.2873706],
+                [-85.5714025, 38.2861663],
+                [-85.5697903, 38.2847279],
+                [-85.5666942, 38.2806822],
+                [-85.5638279, 38.2739628],
+                [-85.5608135, 38.2750195],
+                [-85.5590416, 38.2708399],
+                [-85.5668089, 38.2708305],
+                [-85.5635302, 38.2636298],
+                [-85.5686371, 38.2614732],
+                [-85.5707413, 38.262525],
+                [-85.5772756, 38.2599751],
+                [-85.5835395, 38.2611868],
+                [-85.587148, 38.2562966],
+                [-85.5849142, 38.247008],
+                [-85.5770824, 38.2463592],
+                [-85.5771842, 38.2381109],
+                [-85.5771933, 38.2355671],
+                [-85.5772057, 38.2330462],
+                [-85.5774875, 38.2299679],
+                [-85.5776555, 38.228616],
+                [-85.5778906, 38.2267492],
+                [-85.5783631, 38.2250197],
+                [-85.5794447, 38.2246957],
+                [-85.5809951, 38.2246017],
+                [-85.6030847, 38.2313857],
+                [-85.618776, 38.2368118],
+                [-85.6211258, 38.2361671],
+                [-85.6190872, 38.2338854],
+                [-85.6182974, 38.2329478],
+                [-85.6177341, 38.2332512],
+                [-85.6167953, 38.2339001],
+                [-85.6164842, 38.2341951],
+                [-85.6158714, 38.2338273],
+                [-85.6153522, 38.233303],
+                [-85.6151753, 38.2327456],
+                [-85.6166076, 38.2319534],
+                [-85.6177341, 38.2332512],
+                [-85.6182974, 38.2329478],
+                [-85.6167323, 38.2311928],
+                [-85.6229056, 38.2280123],
+                [-85.6221798, 38.2271482],
+                [-85.6253001, 38.2254377],
+                [-85.6222779, 38.2218055],
+                [-85.6213552, 38.2222986],
+                [-85.6203225, 38.2225704],
+                [-85.6199765, 38.2209732],
+                [-85.6210552, 38.2203838],
+                [-85.620615, 38.2197957],
+                [-85.6206186, 38.2197077],
+                [-85.6363685, 38.2205264],
+                [-85.6442657, 38.221063],
+                [-85.6520743, 38.2216666]
+              ]
+            ]
+          },
+          "properties": {
+            "name": "STMFD Service Area",
+            "styleUrl": "#line-E65100-9525-nodesc",
+            "stroke-opacity": 1,
+            "stroke": "#0000FF",
+            "stroke-width": 2,
+            "fill": "#0000FF",
+            "fill-opacity": 0.25
+          }
+        }
+      ]
+    };
+
+    // Event Listeners setup
+    inputEl.addEventListener('focus', function() { if (this.value) resetForm(); });
+    inputEl.addEventListener('input', function() { clearBtn.style.display = this.value ? 'block' : 'none'; });
+    inputEl.addEventListener('keydown', e => { if (e.key === 'Enter') verifyAddress(); });
+
+    // Core application functions
+    function getUserGeolocation() {
+        const locStatus = document.getElementById('locationStatus');
+        const routingLocStatus = document.getElementById('routingLocationStatus');
+        
+        const updateStatusText = (html) => {
+            if (locStatus) locStatus.innerHTML = html;
+            if (routingLocStatus) routingLocStatus.innerHTML = html;
+        };
+
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    userLocation = { lat: position.coords.latitude, lng: position.coords.longitude };
+                    updateStatusText(`<span>📍 Distance sorted from current GPS position</span>`);
+                    evaluateDestination();
+                    renderRoutingHospitals();
+                },
+                (error) => {
+                    userLocation = { lat: 38.2520, lng: -85.6441 };
+                    updateStatusText(`<span>📍 GPS unavailable. Distance sorted from St. Matthews St. 46</span>`);
+                    evaluateDestination();
+                    renderRoutingHospitals();
+                },
+                { enableHighAccuracy: true, timeout: 5000, maximumAge: 60000 }
+            );
+        } else {
+            userLocation = { lat: 38.2520, lng: -85.6441 };
+            updateStatusText(`<span>📍 Distance sorted from St. Matthews St. 46</span>`);
+            evaluateDestination();
+            renderRoutingHospitals();
+        }
+    }
+
+    function renderRoutingHospitals() {
+        const jeffersonGrid = document.getElementById('jeffersonErGrid');
+        const outsideGrid = document.getElementById('outsideErGrid');
+        if (!jeffersonGrid || !outsideGrid) return;
+
+        let sortedHospitals = masterHospitals.map(hosp => {
+            let dist = userLocation ? calculateDistance(userLocation.lat, userLocation.lng, hosp.lat, hosp.lng) : null;
+            return { ...hosp, distance: dist };
+        });
+
+        if (userLocation) sortedHospitals.sort((a, b) => a.distance - b.distance);
+
+        const jeffersonList = sortedHospitals.filter(h => h.region === 'jefferson');
+        const outsideList = sortedHospitals.filter(h => h.region === 'outside');
+
+        const createCardHtml = (hosp) => {
+            let cardClass = "er-card";
+            if (hosp.type === "peds") cardClass += " peds";
+            if (hosp.type === "split") cardClass += " split-peds";
+            
+            const distText = hosp.distance !== null ? `<span class="dist-tag">(${hosp.distance.toFixed(1)} mi)</span>` : '';
+            const existingNote = (window.sharedHospitalNotes && window.sharedHospitalNotes[hosp.id]) || '';
+            const noteIndicator = existingNote ? ' 📝' : '';
+
+            return `
+                <div class="${cardClass}">
+                    <div class="er-header-row">
+                        <div class="er-title-area">
+                            <span>${hosp.name}${distText}${noteIndicator}</span>
+                        </div>
+                        <div style="display: flex; gap: 6px; flex-shrink: 0;">
+                            <button class="note-toggle-btn" onclick="toggleHospitalNotes('hosp-${hosp.id}')">📝 Notes</button>
+                            <button class="nav-link-btn" onclick="openNav(${hosp.lat}, ${hosp.lng})">🗺️ Nav</button>
+                        </div>
+                    </div>
+                    <div id="hosp-notes-hosp-${hosp.id}" class="notes-section">
+                        <input type="text" id="hosp-note-input-hosp-${hosp.id}" value="${existingNote}" placeholder="Add shared crew note (e.g. ambulance entrance tips)...">
+                        <button class="web-link-btn" onclick="saveHospitalNote('${hosp.id}', document.getElementById('hosp-note-input-hosp-${hosp.id}').value)">💾 Save Note to Cloud</button>
+                    </div>
+                </div>
+            `;
+        };
+
+        jeffersonGrid.innerHTML = jeffersonList.map(createCardHtml).join('');
+        outsideGrid.innerHTML = outsideList.map(createCardHtml).join('');
+    }
+
+    function updateEmergencyOptions() {
+        const cat = document.getElementById('patientCategory').value;
+        const select = document.getElementById('conditionSelect');
+        select.innerHTML = '';
+
+        const list = cat === 'adult' ? adultConditions : pedConditions;
+        list.forEach(item => {
+            const opt = document.createElement('option');
+            opt.value = item.id;
+            opt.innerText = item.title;
+            select.appendChild(opt);
+        });
+
+        evaluateDestination();
+    }
+
+    function evaluateDestination() {
+        const cat = document.getElementById('patientCategory').value;
+        const condId = document.getElementById('conditionSelect').value;
+        const list = cat === 'adult' ? adultConditions : pedConditions;
+        const selected = list.find(x => x.id === condId);
+
+        const resultPanel = document.getElementById('guidelineResult');
+        if (!selected) {
+            resultPanel.classList.remove('active');
+            return;
+        }
+
+        resultPanel.classList.add('active');
+        document.getElementById('resultCategory').innerText = cat === 'adult' ? 'Adult Emergency Category' : 'Pediatric Emergency Category';
+        document.getElementById('resultTitle').innerText = selected.title;
+        document.getElementById('resultDef').innerText = selected.def;
+
+        const noteEl = document.getElementById('protocolNote');
+        if (selected.note) {
+            noteEl.style.display = 'block';
+            noteEl.innerText = selected.note;
+        } else {
+            noteEl.style.display = 'none';
+        }
+
+        let capableList = selected.hospitalIds.map(id => {
+            const hosp = masterHospitals.find(h => h.id === id);
+            let dist = (hosp && userLocation) ? calculateDistance(userLocation.lat, userLocation.lng, hosp.lat, hosp.lng) : null;
+            return { ...hosp, distance: dist };
+        }).filter(h => h.name);
+
+        if (userLocation) capableList.sort((a, b) => a.distance - b.distance);
+
+        const hospContainer = document.getElementById('capableHospitals');
+        hospContainer.innerHTML = '';
+        
+        capableList.forEach(hosp => {
+            let cardClass = "er-card";
+            if (hosp.type === "peds") cardClass += " peds";
+            if (hosp.type === "split") cardClass += " split-peds";
+            
+            const distText = hosp.distance !== null ? `<span class="dist-tag">(${hosp.distance.toFixed(1)} mi)</span>` : '';
+            const existingNote = (window.sharedHospitalNotes && window.sharedHospitalNotes[hosp.id]) || '';
+            const noteIndicator = existingNote ? ' 📝' : '';
+
+            const card = document.createElement('div');
+            card.className = cardClass;
+            card.innerHTML = `
+                <div class="er-header-row">
+                    <div class="er-title-area">
+                        <span>${hosp.name}${distText}${noteIndicator}</span>
+                    </div>
+                    <div style="display: flex; gap: 6px; flex-shrink: 0;">
+                        <button class="note-toggle-btn" onclick="toggleHospitalNotes('triage-${hosp.id}')">📝 Notes</button>
+                        <button class="nav-link-btn" onclick="openNav(${hosp.lat}, ${hosp.lng})">🗺️ Nav</button>
+                    </div>
+                </div>
+                <div id="hosp-notes-triage-${hosp.id}" class="notes-section">
+                    <input type="text" id="hosp-note-input-triage-${hosp.id}" value="${existingNote}" placeholder="Add shared crew note (e.g. ambulance entrance tips)...">
+                    <button class="web-link-btn" onclick="saveHospitalNote('${hosp.id}', document.getElementById('hosp-note-input-triage-${hosp.id}').value)">💾 Save Note to Cloud</button>
+                </div>
+            `;
+            hospContainer.appendChild(card);
+        });
+    }
+
+    // Shift Eats Functions
+    function pickRandomRestaurant() {
+        const resultCard = document.getElementById('randomResult');
+        const nameEl = document.getElementById('randomName');
+        const noteEl = document.getElementById('randomNote');
+        const navBtn = document.getElementById('randomNavBtn');
+        const googleBtn = document.getElementById('randomGoogleBtn');
+        const webBtn = document.getElementById('randomWebBtn');
+
+        resultCard.style.display = 'block';
+        nameEl.innerText = 'Spinning... 🎲';
+        noteEl.style.display = 'none';
+        noteEl.innerText = '';
+
+        let counter = 0;
+        const interval = setInterval(() => {
+            const tempIdx = Math.floor(Math.random() * restaurantList.length);
+            nameEl.innerText = restaurantList[tempIdx];
+            counter++;
+            if (counter > 12) {
+                clearInterval(interval);
+                const finalIdx = Math.floor(Math.random() * restaurantList.length);
+                const picked = restaurantList[finalIdx];
+                nameEl.innerText = picked;
+                
+                const noteText = window.sharedFoodNotes && window.sharedFoodNotes[picked];
+                if (noteText) {
+                    noteEl.style.display = 'block';
+                    noteEl.innerText = '📝 Note: ' + noteText;
+                } else {
+                    noteEl.style.display = 'none';
+                }
+
+                navBtn.onclick = () => openNavAddress(picked + ', Louisville, KY');
+                googleBtn.onclick = () => openWebSearch(picked + ' Louisville KY');
+                webBtn.onclick = () => openWebSearch(picked + ' Louisville KY order menu');
+            }
+        }, 80);
+    }
+
+    function setCategoryFilter(cat, btnEl) {
+        currentEatsCategory = cat;
+        document.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+        if (btnEl) btnEl.classList.add('active');
+        filterRestaurants();
+    }
+
+    function filterRestaurants() {
+        const grid = document.getElementById('restaurantGrid');
+        const searchInputEl = document.getElementById('eatsSearchInput');
+        const totalCountEl = document.getElementById('totalCount');
+        if (totalCountEl) totalCountEl.innerText = restaurantList.length;
+
+        if (!grid || !searchInputEl) return;
+        
+        const query = (searchInputEl.value || '').toLowerCase();
+
+        const categoryKeywords = {
+            'pizza': ['pizza', 'bearnos', 'boombozz', 'diorio', 'jet', 'papa json', 'pizzaville', 'redbrick', 'coals', 'blaze', 'saints', 'impellizzeri', 'craft house'],
+            'mexican': ['mexican', 'taco', 'nopal', 'tarasco', 'condado', 'aztecas', 'cocina', 'tres amigos', 'limón', 'limon', 'bandido', 'chuy', 'felipe', 'las maria', 'salsarita', 'qdoba', 'chipotle', 'mariachi', 'guanajuato', 'guanajuato'],
+            'bbq': ['barbeque', 'bbq', 'momma', 'city barbeque', 'mission bbq', 'charcoal', 'pickles & bbq', 'kupbop'],
+            'burgers': ['burger', 'smashburger', 'white castle', 'wendy', 'mcdonald', 'five guys', 'red robin', 'cousins', 'drake', 'jack in the box', 'jaggers', 'charleys'],
+            'asian': ['thai', 'asahi', 'china', 'ginza', 'jade palace', 'lemongrass', 'nam nam', 'oriental house', 'p.f. chang', 'panda express', 'pho', 'sakura', 'simply thai', 'tokyo', 'togo sushi', 'wasabi', 'bahn thai', 'jasmin', 'hiko-A-mon', 'choi', 'ruby thai'],
+            'breakfast': ['cafe', 'coffee', 'bagel', 'biscuit belly', 'bruegger', 'con huevos', 'dunkin', 'first watch', 'heine', 'highland morning', 'ihop', 'wild eggs', 'waffle house', 'cinnaholic', 'donut', 'plehn', 'bakery', 'eats', 'paris baguette', 'north lime', 'starving artists', 'bamboo', 'cinnabon', 'nothing bundt', 'sunergos', 'graeter', 'comfy cow', 'deli', 'fruit', 'blossom', 'elderberry', 'half-peach', 'crumbl', 'panaderia', 'tortilleria', 'supermercado', 'carniceria', 'baskin-robbins']
+        };
+
+        const filtered = restaurantList.filter(name => {
+            const lowerName = name.toLowerCase();
+            const matchesQuery = lowerName.includes(query);
+            if (!matchesQuery) return false;
+            if (currentEatsCategory === 'all') return true;
+            const keywords = categoryKeywords[currentEatsCategory] || [];
+            return keywords.some(kw => lowerName.includes(kw));
+        });
+
+        if (filtered.length === 0) {
+            grid.innerHTML = `<div style="color: #718096; text-align: center; padding: 15px;">No matching places found. Try another search!</div>`;
+            return;
+        }
+
+        grid.innerHTML = filtered.map(name => {
+            const safeName = name.replace(/[^a-zA-Z0-9]/g, '_');
+            const existingNote = (window.sharedFoodNotes && window.sharedFoodNotes[name]) || '';
+            const noteIndicator = existingNote ? ' 📝' : '';
+            
+            return `
+                <div class="er-card">
+                    <div class="er-header-row">
+                        <div class="er-title-area">
+                            <span>${name}${noteIndicator}</span>
+                        </div>
+                        <div style="display: flex; gap: 4px; flex-shrink: 0;">
+                            <button class="note-toggle-btn" onclick="toggleFoodNotes('${safeName}')">📝 Notes</button>
+                            <button class="google-link-btn" onclick="openWebSearch('${name.replace(/'/g, "\\'")}, Louisville KY')">🔍 Google</button>
+                            <button class="nav-link-btn" onclick="openNavAddress('${name.replace(/'/g, "\\'")}, Louisville, KY')">🗺️ Nav</button>
+                        </div>
+                    </div>
+                    <div id="food-notes-${safeName}" class="notes-section">
+                        <input type="text" id="food-note-input-${safeName}" value="${existingNote}" placeholder="Add shared crew note (e.g. fast delivery, parking tip)...">
+                        <button class="web-link-btn" onclick="saveFoodNote('${name.replace(/'/g, "\\'")}', document.getElementById('food-note-input-${safeName}').value)">💾 Save Note to Cloud</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // Cloud syncing for notes
+    async function loadSharedNotes() {
+        try {
+            const response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+                headers: { 'X-Master-Key': JSONBIN_MASTER_KEY }
+            });
+            const data = await response.json();
+            window.sharedFoodNotes = data.record.notes || {};
+            window.sharedHospitalNotes = data.record.hospitalNotes || {};
+            filterRestaurants();
+            renderRoutingHospitals();
+        } catch (err) {
+            console.error('Failed to load shared notes', err);
+        }
+    }
+
+    async function saveFoodNote(restaurantName, noteText) {
+        if (!window.sharedFoodNotes) window.sharedFoodNotes = {};
+        window.sharedFoodNotes[restaurantName] = noteText;
+
+        try {
+            const response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': JSONBIN_MASTER_KEY
+                },
+                body: JSON.stringify({ 
+                    notes: window.sharedFoodNotes, 
+                    hospitalNotes: window.sharedHospitalNotes 
+                })
+            });
+            
+            if (response.ok) {
+                alert('Food note saved to cloud!');
+            } else {
+                alert('Error saving note.');
+            }
+        } catch (err) {
+            console.error('Failed to save food note', err);
+        }
+    }
+
+    async function saveHospitalNote(hospId, noteText) {
+        if (!window.sharedHospitalNotes) window.sharedHospitalNotes = {};
+        window.sharedHospitalNotes[hospId] = noteText;
+
+        try {
+            const response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': JSONBIN_MASTER_KEY
+                },
+                body: JSON.stringify({ 
+                    notes: window.sharedFoodNotes, 
+                    hospitalNotes: window.sharedHospitalNotes 
+                })
+            });
+            
+            if (response.ok) {
+                alert('Hospital note saved and shared with the crew!');
+                renderRoutingHospitals();
+                if (document.getElementById('guidelinesTab').classList.contains('active')) {
+                    evaluateDestination();
+                }
+            } else {
+                alert('Error saving hospital note to cloud.');
+            }
+        } catch (err) {
+            console.error('Failed to save hospital note', err);
+            alert('Network error while saving.');
+        }
+    }
+
+    function toggleFoodNotes(id) {
+        const panel = document.getElementById(`food-notes-${id}`);
+        if (panel) panel.classList.toggle('active');
+    }
+
+    function toggleHospitalNotes(compoundId) {
+        const panel = document.getElementById(`hosp-notes-${compoundId}`);
+        if (panel) panel.classList.toggle('active');
+    }
+
+    // Register Service Worker for PWA installation
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW registration failed: ', err));
+        });
+    }
+
+    // Set up QR Code and Share link dynamically
+    const currentAppUrl = window.location.href.split('?')[0];
+    const appUrlTextEl = document.getElementById('appUrlText');
+    const qrCodeImgEl = document.getElementById('qrCodeImg');
+    const smsShareBtnEl = document.getElementById('smsShareBtn');
+
+    if (appUrlTextEl) appUrlTextEl.innerText = currentAppUrl;
+    if (qrCodeImgEl) qrCodeImgEl.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(currentAppUrl)}`;
+    if (smsShareBtnEl) smsShareBtnEl.href = `sms:?body=${encodeURIComponent("Check out the STMFD SMART EMS App: " + currentAppUrl)}`;
+
+    function copyAppUrl() {
+        navigator.clipboard.writeText(currentAppUrl).then(() => {
+            alert('App link copied to clipboard!');
+        });
+    }
+
+    function switchTab(tab) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+        if (tab === 'verifier') {
+            document.querySelectorAll('.tab-btn')[0].classList.add('active');
+            document.getElementById('verifierTab').classList.add('active');
+            mapWrapper.style.display = 'block';
+            historyContainer.style.display = searchHistory.length > 0 ? 'block' : 'none';
+            if (map && boundaryBounds) map.fitBounds(boundaryBounds);
+        } else if (tab === 'guidelines') {
+            document.querySelectorAll('.tab-btn')[1].classList.add('active');
+            document.getElementById('guidelinesTab').classList.add('active');
+            mapWrapper.style.display = 'none';
+            historyContainer.style.display = 'none';
+            if (marker) marker.setMap(null);
+            if (!userLocation) getUserGeolocation();
+            updateEmergencyOptions();
+        } else if (tab === 'routing') {
+            document.querySelectorAll('.tab-btn')[2].classList.add('active');
+            document.getElementById('routingTab').classList.add('active');
+            mapWrapper.style.display = 'none';
+            historyContainer.style.display = 'none';
+            if (marker) marker.setMap(null);
+            if (!userLocation) getUserGeolocation();
+            renderRoutingHospitals();
+        } else if (tab === 'home') {
+            document.querySelectorAll('.tab-btn')[3].classList.add('active');
+            document.getElementById('homeTab').classList.add('active');
+            mapWrapper.style.display = 'none';
+            historyContainer.style.display = 'none';
+            if (marker) marker.setMap(null);
+        } else if (tab === 'eats') {
+            document.querySelectorAll('.tab-btn')[4].classList.add('active');
+            document.getElementById('eatsTab').classList.add('active');
+            mapWrapper.style.display = 'none';
+            historyContainer.style.display = 'none';
+            if (marker) marker.setMap(null);
+            loadSharedNotes();
+        } else if (tab === 'share') {
+            document.querySelectorAll('.tab-btn')[5].classList.add('active');
+            document.getElementById('shareTab').classList.add('active');
+            mapWrapper.style.display = 'none';
+            historyContainer.style.display = 'none';
+            if (marker) marker.setMap(null);
+        }
+    }
+
+    function resetForm() {
+        inputEl.value = '';
+        clearBtn.style.display = 'none';
+        statusDiv.className = '';
+        statusDiv.style.display = 'none';
+        statusDiv.innerHTML = '';
+        if (marker) { marker.setMap(null); marker = null; }
+        if (map && boundaryBounds) map.fitBounds(boundaryBounds);
+    }
+
+    function addHistoryEntry(address, statusClass, badgeText) {
+        searchHistory = searchHistory.filter(item => item.address.toLowerCase() !== address.toLowerCase());
+        searchHistory.unshift({ address, statusClass, badgeText });
+        if (searchHistory.length > 10) searchHistory.pop();
+        renderHistory();
+    }
+
+    function renderHistory() {
+        if (searchHistory.length === 0) {
+            historyContainer.style.display = 'none';
+            historyList.innerHTML = '';
+            return;
+        }
+        if (document.getElementById('verifierTab').classList.contains('active')) {
+            historyContainer.style.display = 'block';
+        }
+        historyList.innerHTML = searchHistory.map(item => `
+            <li class="history-item">
+                <span class="history-address" title="${item.address}">${item.address}</span>
+                <span class="badge ${item.statusClass}">${item.badgeText}</span>
+            </li>
+        `).join('');
+    }
+
+    function clearHistory() {
+        searchHistory = [];
+        renderHistory();
+    }
+
+    function openNav(lat, lng) {
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        let navUrl = isIOS ? `maps://maps.apple.com/?daddr=${lat},${lng}&dirflg=d` : `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=driving`;
+        window.open(navUrl, '_blank');
+    }
+
+    function openNavAddress(address) {
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        const encodedAddress = encodeURIComponent(address);
+        let navUrl = isIOS ? `maps://maps.apple.com/?daddr=${encodedAddress}&dirflg=d` : `https://www.google.com/maps/dir/?api=1&destination=${encodedAddress}&travelmode=driving`;
+        window.open(navUrl, '_blank');
+    }
+
+    function openWebSearch(query) {
+        window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, '_blank');
+    }
+
+    function loadGoogleMaps() {
+        const script = document.createElement("script");
+        script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyBCnFOrSS9cHJjJOKQ8Nsp0unHZs_IsYu0&libraries=geometry,places&callback=initMap&loading=async";
+        script.async = true;
+        script.defer = true;
+        document.head.appendChild(script);
+    }
+
+    window.initMap = function() {
+        map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 12,
+            center: { lat: 38.2500, lng: -85.6500 },
+            disableDefaultUI: true,
+            zoomControl: true,
+            gestureHandling: 'greedy'
+        });
+
+        geocoder = new google.maps.Geocoder();
+
+        const louisvilleBounds = new google.maps.LatLngBounds(
+            new google.maps.LatLng(38.0000, -85.9500),
+            new google.maps.LatLng(38.4500, -85.3500)
+        );
+
+        autocomplete = new google.maps.places.Autocomplete(inputEl, {
+            bounds: louisvilleBounds,
+            strictBounds: false,
+            componentRestrictions: { country: 'us' },
+            fields: ['formatted_address', 'geometry']
+        });
+
+        autocomplete.addListener('place_changed', function() {
+            const place = autocomplete.getPlace();
+            if (place && place.formatted_address) {
+                inputEl.value = place.formatted_address;
+                clearBtn.style.display = 'block';
+                verifyAddress();
+            }
+        });
+
+        map.data.addGeoJson(geojsonData);
+        map.data.setStyle(function(feature) {
+            return {
+                fillColor: feature.getProperty('fill') || '#0000FF',
+                fillOpacity: feature.getProperty('fill-opacity') || 0.25,
+                strokeColor: feature.getProperty('stroke') || '#0000FF',
+                strokeWeight: feature.getProperty('stroke-width') || 2,
+                strokeOpacity: feature.getProperty('stroke-opacity') || 1
+            };
+        });
+
+        const ring = geojsonData.features[0].geometry.coordinates[0];
+        const path = ring.map(coord => ({ lat: coord[1], lng: coord[0] }));
+        boundaryPolygon = new google.maps.Polygon({ paths: path });
+
+        boundaryBounds = new google.maps.LatLngBounds();
+        path.forEach(pt => boundaryBounds.extend(pt));
+        map.fitBounds(boundaryBounds);
+    };
+
+    function verifyAddress() {
+        const address = inputEl.value.trim();
+
+        if (!address) {
+            statusDiv.className = 'outside';
+            statusDiv.style.display = 'block';
+            statusDiv.innerHTML = '⚠️ Please enter an address to verify.';
+            return;
+        }
+
+        verifyBtn.disabled = true;
+        statusDiv.className = 'loading';
+        statusDiv.style.display = 'block';
+        statusDiv.innerHTML = '🔍 Checking address...';
+
+        const searchAddress = address.toLowerCase().includes('ky') || address.toLowerCase().includes('kentucky') 
+            ? address 
+            : `${address}, Louisville, KY`;
+
+        geocoder.geocode({ address: searchAddress }, function(results, status) {
+            verifyBtn.disabled = false;
+
+            if (status === 'OK' && results[0]) {
+                const location = results[0].geometry.location;
+                const formattedAddress = results[0].formatted_address;
+                const isInside = google.maps.geometry.poly.containsLocation(location, boundaryPolygon);
+
+                const dirBtnHtml = `<br><button class="dir-btn-inline" onclick="openNav(${location.lat()}, ${location.lng()})">🗺️ Get Directions to Address</button>`;
+
+                if (isInside) {
+                    statusDiv.className = 'inside';
+                    statusDiv.style.display = 'block';
+                    statusDiv.innerHTML = '✅ IN DISTRICT: Address is WITHIN the STMFDKY service area.' + dirBtnHtml;
+                    addHistoryEntry(formattedAddress, 'in-district', 'In District');
+                } else {
+                    statusDiv.className = 'outside';
+                    statusDiv.style.display = 'block';
+                    statusDiv.innerHTML = '❌ OUT OF DISTRICT: Address is OUTSIDE the STMFDKY service area.' + dirBtnHtml;
+                    addHistoryEntry(formattedAddress, 'out-district', 'Out of District');
+                }
+
+                if (marker) marker.setMap(null);
+                marker = new google.maps.Marker({ position: location, map: map, title: address });
+                map.setCenter(location);
+                map.setZoom(15);
+            } else {
+                statusDiv.className = 'outside';
+                statusDiv.style.display = 'block';
+                statusDiv.innerHTML = '❌ Address not found. Check spelling or street number.';
+                addHistoryEntry(address, 'not-found', 'Not Found');
+            }
+        });
+    }
+
+    renderRoutingHospitals();
+    loadGoogleMaps();
+    loadSharedNotes();
+</script>
+
+</body>
+</html>
 
     <style>
         * { 
