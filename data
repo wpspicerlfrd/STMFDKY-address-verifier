@@ -1,0 +1,16 @@
+{
+  "version": "2026.1",
+  "categories": [
+    {
+      "id": "medical",
+      "title": "Adult Medical",
+      "protocols": [
+        {
+          "title": "Chest Pain / Acute Coronary Syndrome",
+          "page": 42,
+          "content": "Administer Aspirin 324mg PO. Obtain 12-lead ECG. Establish IV access..."
+        }
+      ]
+    }
+  ]
+}
