@@ -608,7 +608,7 @@
 
     <div class="tab-nav">
         <button class="tab-btn active" onclick="switchTab('verifier')">District Verifier</button>
-        <button class="tab-btn" onclick="switchTab('protocols')">State Protocols</button> <!-- NEW TAB -->
+        <button class="tab-btn" onclick="switchTab('protocols')">Protocols</button> <!-- NEW TAB -->
         <button class="tab-btn" onclick="switchTab('guidelines')">Destinations</button>
         <button class="tab-btn" onclick="switchTab('routing')">Hospitals</button>
         <button class="tab-btn" onclick="switchTab('home')">Stations</button>
@@ -631,7 +631,7 @@
         <div id="status"></div>
     </div>
 
-    <!-- TAB 2: State Protocols (NEW) -->
+    <!-- TAB 2: Protocols (NEW) -->
     <div id="protocolsTab" class="tab-content">
         <h2>KY EMS State Protocols</h2>
         <p>Search official Kentucky medical and trauma protocols instantly. Works offline in the field.</p>
@@ -863,7 +863,7 @@
     // ============================================
     // KENTUCKY PROTOCOLS LOGIC (New Feature)
     // ============================================
-    const GITHUB_PROTOCOLS_URL = 'https://raw.githubusercontent.com/wpspicerlfrd/STMFDKY-address-verifier/main/data/ky_protocols.json';
+    const GITHUB_PROTOCOLS_URL = 'https://github.com/wpspicerlfrd/STMFDKY-address-verifier/blob/f1b954b8fccaea708989600e9d18d15e215094c7/stmfd_protocols.json';
     const LOCAL_STORAGE_KEY = 'cached_ky_protocols';
     let cachedProtocolData = null;
 
