@@ -861,16 +861,23 @@
     window.sharedHospitalNotes = {};
 
     // ============================================
-    // ST. MATTHEWS PROTOCOLS LOGIC
+    // ST. MATTHEWS PROTOCOLS LOGIC (Auto-Refreshes)
     // ============================================
-    // Direct raw CDN path to the raw JSON file on GitHub
-    const GITHUB_PROTOCOLS_URL = 'https://raw.githubusercontent.com/wpspicerlfrd/STMFDKY-address-verifier/f1b954b8fccaea708989600e9d18d15e215094c7/stmfd_protocols.json';
+    const PROTOCOLS_BASE_URL = 'https://raw.githubusercontent.com/wpspicerlfrd/STMFDKY-address-verifier/main/stmfd_protocols.json';
     const LOCAL_STORAGE_KEY = 'cached_stmfd_protocols';
     let cachedProtocolData = null;
 
     async function loadProtocols() {
         try {
-            const response = await fetch(GITHUB_PROTOCOLS_URL);
+            // Append timestamp cache-buster so GitHub / browsers never serve an old cached version
+            const cacheBuster = Date.now();
+            const response = await fetch(`${PROTOCOLS_BASE_URL}?v=${cacheBuster}`, {
+                headers: {
+                    'Cache-Control': 'no-cache, no-store, must-revalidate',
+                    'Pragma': 'no-cache',
+                    'Expires': '0'
+                }
+            });
             if (!response.ok) throw new Error('Failed to fetch from GitHub');
             const data = await response.json();
             localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
@@ -913,7 +920,7 @@
                     matchedProtocols.push({
                         categoryTitle: category.title,
                         title: protocol.title,
-                        page: protocol.page,
+                        page: protocol.page || '',
                         content: protocol.content
                     });
                 }
@@ -930,13 +937,20 @@
                 <div class="er-header-row">
                     <div class="er-title-area">
                         <span style="font-weight: 700; color: #003366; font-size: 14px;">${p.title}</span>
-                        <span class="station-subtitle" style="color: #dd6b20;">Category: ${p.categoryTitle} | Section: ${p.page}</span>
+                        <span class="station-subtitle" style="color: #dd6b20;">Category: ${p.categoryTitle} ${p.page ? '| Section: ' + p.page : ''}</span>
                     </div>
                 </div>
                 <div style="font-size: 13px; color: #4a5568; margin-top: 6px; line-height: 1.5; white-space: pre-wrap;">${p.content}</div>
             </div>
         `).join('');
     }
+
+    // Automatically re-fetch protocols whenever the user switches back to this tab or app window
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+            initProtocols();
+        }
+    });
     // ============================================
 
     // DOM Elements Definition
@@ -1634,7 +1648,7 @@
 
         const categoryKeywords = {
             'pizza': ['pizza', 'bearnos', 'boombozz', 'diorio', 'jet', 'papa json', 'pizzaville', 'redbrick', 'coals', 'blaze', 'saints', 'impellizzeri', 'craft house'],
-            'mexican': ['mexican', 'taco', 'nopal', 'tarasco', 'condado', 'aztecas', 'cocina', 'tres amigos', 'limón', 'limon', 'bandido', 'chuy', 'felipe', 'las maria', 'salsarita', 'qdoba', 'chipotle', 'mariachi', 'guanajuato', 'guanajuato'],
+            'mexican': ['mexican', 'taco', 'nopal', 'tarasco', 'condado', 'aztecas', 'cocina', 'tres amigos', 'limón', 'limon', 'bandido', 'chuy', 'felipe', 'las maria', 'salsarita', 'qdoba', 'chipotle', 'mariachi', 'guanajuato'],
             'bbq': ['barbeque', 'bbq', 'momma', 'city barbeque', 'mission bbq', 'charcoal', 'pickles & bbq', 'kupbop'],
             'burgers': ['burger', 'smashburger', 'white castle', 'wendy', 'mcdonald', 'five guys', 'red robin', 'cousins', 'drake', 'jack in the box', 'jaggers', 'charleys'],
             'asian': ['thai', 'asahi', 'china', 'ginza', 'jade palace', 'lemongrass', 'nam nam', 'oriental house', 'p.f. chang', 'panda express', 'pho', 'sakura', 'simply thai', 'tokyo', 'togo sushi', 'wasabi', 'bahn thai', 'jasmin', 'hiko-A-mon', 'choi', 'ruby thai'],
@@ -1872,14 +1886,14 @@
 
     function openNav(lat, lng) {
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
-                      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+                    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
         let navUrl = isIOS ? `maps://maps.apple.com/?daddr=${lat},${lng}&dirflg=d` : `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=driving`;
         window.open(navUrl, '_blank');
     }
 
     function openNavAddress(address) {
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
-                      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+                    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
         const encodedAddress = encodeURIComponent(address);
         let navUrl = isIOS ? `maps://maps.apple.com/?daddr=${encodedAddress}&dirflg=d` : `https://www.google.com/maps/dir/?api=1&destination=${encodedAddress}&travelmode=driving`;
         window.open(navUrl, '_blank');
@@ -2006,6 +2020,7 @@
     renderRoutingHospitals();
     loadGoogleMaps();
     loadSharedNotes();
+    initProtocols(); // Initial fetch on app open
 </script>
 
 </body>
