@@ -608,7 +608,7 @@
 
     <div class="tab-nav">
         <button class="tab-btn active" onclick="switchTab('verifier')">District Verifier</button>
-        <button class="tab-btn" onclick="switchTab('protocols')">Protocols</button> <!-- NEW TAB -->
+        <button class="tab-btn" onclick="switchTab('protocols')">Protocols</button>
         <button class="tab-btn" onclick="switchTab('guidelines')">Destinations</button>
         <button class="tab-btn" onclick="switchTab('routing')">Hospitals</button>
         <button class="tab-btn" onclick="switchTab('home')">Stations</button>
@@ -631,10 +631,10 @@
         <div id="status"></div>
     </div>
 
-    <!-- TAB 2: Protocols (NEW) -->
+    <!-- TAB 2: Protocols -->
     <div id="protocolsTab" class="tab-content">
-        <h2>KY EMS State Protocols</h2>
-        <p>Search official Kentucky medical and trauma protocols instantly. Works offline in the field.</p>
+        <h2>St. Matthews Protocols</h2>
+        <p>Search official medical and trauma protocols instantly. Works offline in the field.</p>
 
         <div class="form-group">
             <div class="input-wrapper">
@@ -861,10 +861,11 @@
     window.sharedHospitalNotes = {};
 
     // ============================================
-    // KENTUCKY PROTOCOLS LOGIC (New Feature)
+    // ST. MATTHEWS PROTOCOLS LOGIC
     // ============================================
-    const GITHUB_PROTOCOLS_URL = 'https://github.com/wpspicerlfrd/STMFDKY-address-verifier/blob/f1b954b8fccaea708989600e9d18d15e215094c7/stmfd_protocols.json';
-    const LOCAL_STORAGE_KEY = 'cached_ky_protocols';
+    // Direct raw CDN path to the raw JSON file on GitHub
+    const GITHUB_PROTOCOLS_URL = 'https://raw.githubusercontent.com/wpspicerlfrd/STMFDKY-address-verifier/f1b954b8fccaea708989600e9d18d15e215094c7/stmfd_protocols.json';
+    const LOCAL_STORAGE_KEY = 'cached_stmfd_protocols';
     let cachedProtocolData = null;
 
     async function loadProtocols() {
@@ -929,7 +930,7 @@
                 <div class="er-header-row">
                     <div class="er-title-area">
                         <span style="font-weight: 700; color: #003366; font-size: 14px;">${p.title}</span>
-                        <span class="station-subtitle" style="color: #dd6b20;">Category: ${p.categoryTitle} | Page: ${p.page}</span>
+                        <span class="station-subtitle" style="color: #dd6b20;">Category: ${p.categoryTitle} | Section: ${p.page}</span>
                     </div>
                 </div>
                 <div style="font-size: 13px; color: #4a5568; margin-top: 6px; line-height: 1.5; white-space: pre-wrap;">${p.content}</div>
