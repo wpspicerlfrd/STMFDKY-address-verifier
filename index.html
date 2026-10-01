@@ -848,9 +848,9 @@
 </div>
 
 <script>
-    // JSONBin Cloud Credentials for Shared Notes
-    const JSONBIN_BIN_ID = '6ab427d6ac6210605aee3302';
-    const JSONBIN_MASTER_KEY = '$2a$10$XgDpmrhnhfLL7jfESauMyecOlpLRVHxHfk2ZU9GCFLf4/v6pEMJgq';
+    // Google Apps Script Secure Proxy URL (Replaces exposed JSONBin Master Key)
+    const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyzgar0fBEo35BdTn1UxGCGVWcYgC5jKbY9iRgnHVjI9usWlzYsqM8XZeMQQntEWN6Ojw/exec';
+    
     window.sharedFoodNotes = {};
     window.sharedHospitalNotes = {};
 
@@ -1596,12 +1596,10 @@
         }).join('');
     }
 
-    // Cloud syncing for notes
+    // Cloud syncing for notes via Google Apps Script Proxy
     async function loadSharedNotes() {
         try {
-            const response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
-                headers: { 'X-Master-Key': JSONBIN_MASTER_KEY }
-            });
+            const response = await fetch(GAS_WEB_APP_URL);
             const data = await response.json();
             window.sharedFoodNotes = data.record.notes || {};
             window.sharedHospitalNotes = data.record.hospitalNotes || {};
@@ -1617,11 +1615,10 @@
         window.sharedFoodNotes[restaurantName] = noteText;
 
         try {
-            const response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
-                method: 'PUT',
+            const response = await fetch(GAS_WEB_APP_URL, {
+                method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'X-Master-Key': JSONBIN_MASTER_KEY
+                    'Content-Type': 'text/plain;charset=utf-8'
                 },
                 body: JSON.stringify({ 
                     notes: window.sharedFoodNotes, 
@@ -1644,11 +1641,10 @@
         window.sharedHospitalNotes[hospId] = noteText;
 
         try {
-            const response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
-                method: 'PUT',
+            const response = await fetch(GAS_WEB_APP_URL, {
+                method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'X-Master-Key': JSONBIN_MASTER_KEY
+                    'Content-Type': 'text/plain;charset=utf-8'
                 },
                 body: JSON.stringify({ 
                     notes: window.sharedFoodNotes, 
