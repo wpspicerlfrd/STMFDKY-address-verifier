@@ -766,7 +766,7 @@
     <!-- TAB 6: Shift Eats (Restaurant Directory & Chooser) -->
     <div id="eatsTab" class="tab-content">
         <h2>Shift Eats Chooser</h2>
-        <p>Can't decide on food for the crew? Spin the chooser, search options, and toggle notes on demand.</p>
+        <p>Can'decide on food for the crew? Spin the chooser, search options, and toggle notes on demand.</p>
 
         <div class="eats-hero">
             <h3>Random Food</h3>
@@ -1160,7 +1160,7 @@
                 [-85.6662724, 38.2806806],
                 [-85.6662241, 38.2808364],
                 [-85.6658245, 38.2809059],
-                [-85.665965, 38.2808743],
+                [-85.6655965, 38.2808743],
                 [-85.6654677, 38.2804574],
                 [-85.6647704, 38.2796699],
                 [-85.6651834, 38.2790341],
@@ -1698,6 +1698,7 @@
         try {
             const response = await fetch(GAS_WEB_APP_URL, {
                 method: 'POST',
+                redirect: 'follow',
                 headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify({
                     action: 'log_run',
@@ -1707,15 +1708,16 @@
                 })
             });
 
-            if (response.ok) {
+            const result = await response.json();
+            if (result.status === 'success') {
                 alert(`Canceled run logged successfully for Unit ${selectedUnit}!`);
                 document.getElementById('logRunContainer').style.display = 'none';
             } else {
-                alert('Error logging run.');
+                alert('Error logging run: ' + (result.message || 'Unknown error'));
             }
         } catch (err) {
             console.error('Failed to log canceled run', err);
-            alert('Network error while logging run.');
+            alert('Network error while logging run. Verify Web App deployment settings.');
         } finally {
             logBtn.disabled = false;
             logBtn.innerText = '📋 Log Canceled Run to Cloud Sheet';
