@@ -934,18 +934,28 @@
         return R * c;
     }
 
-    function setNearestUnitDefault(locationLatLng) {
+    // Populates closest station based on USER'S CURRENT DEVICE LOCATION (or fallback search target)
+    function setNearestUnitDefault(fallbackLatLng) {
         const unitSelect = document.getElementById('unitSelect');
-        if (!unitSelect || !locationLatLng) return;
+        if (!unitSelect) return;
+
+        // Priority 1: Use actual user device coordinates if available
+        let referenceLat = userLocation ? userLocation.lat : null;
+        let referenceLng = userLocation ? userLocation.lng : null;
+
+        // Priority 2: Fallback to target address/pin location if device location unavailable
+        if (referenceLat === null && fallbackLatLng) {
+            referenceLat = typeof fallbackLatLng.lat === 'function' ? fallbackLatLng.lat() : fallbackLatLng.lat;
+            referenceLng = typeof fallbackLatLng.lng === 'function' ? fallbackLatLng.lng() : fallbackLatLng.lng;
+        }
+
+        if (referenceLat === null || referenceLng === null) return;
 
         let nearestUnit = "146";
         let shortestDistance = Infinity;
 
-        const lat = typeof locationLatLng.lat === 'function' ? locationLatLng.lat() : locationLatLng.lat;
-        const lng = typeof locationLatLng.lng === 'function' ? locationLatLng.lng() : locationLatLng.lng;
-
         stmfdStations.forEach(st => {
-            const dist = calculateDistance(lat, lng, st.lat, st.lng);
+            const dist = calculateDistance(referenceLat, referenceLng, st.lat, st.lng);
             if (dist < shortestDistance) {
                 shortestDistance = dist;
                 nearestUnit = st.unit;
@@ -1580,6 +1590,7 @@
         if (marker) marker.setMap(null);
 
         if (tab === 'verifier') {
+            if (!userLocation) getUserGeolocation();
             mapWrapper.style.display = 'block';
             historyContainer.style.display = searchHistory.length > 0 ? 'block' : 'none';
             if (map && boundaryBounds) map.fitBounds(boundaryBounds);
@@ -1766,7 +1777,7 @@
                 statusDiv.innerHTML = `❌ OUT OF DISTRICT: Dropped pin (${displayAddress}) is OUTSIDE the STMFDKY service area.${dirBtnHtml}`;
                 addHistoryEntry(displayAddress, 'out-district', 'Out of District');
                 
-                // Auto-select nearest station's Medic unit
+                // Auto-select station unit based on user's device location (or fallback to dropped pin)
                 setNearestUnitDefault(latLng);
                 if (logContainer) logContainer.style.display = 'block';
             }
@@ -1816,7 +1827,7 @@
                     statusDiv.innerHTML = '❌ OUT OF DISTRICT: Address is OUTSIDE the STMFDKY service area.' + dirBtnHtml;
                     addHistoryEntry(formattedAddress, 'out-district', 'Out of District');
                     
-                    // Auto-select nearest station's Medic unit
+                    // Auto-select station unit based on user's device location (or fallback to searched address)
                     setNearestUnitDefault(location);
                     if (logContainer) logContainer.style.display = 'block';
                 }
@@ -1834,6 +1845,7 @@
         });
     }
 
+    getUserGeolocation();
     renderRoutingHospitals();
     loadGoogleMaps();
     loadSharedNotes();
