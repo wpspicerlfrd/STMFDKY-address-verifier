@@ -657,10 +657,10 @@
             <div style="margin-bottom: 12px; text-align: left;">
                 <label for="unitSelect" style="font-size: 11px; font-weight: 700; color: #4a5568; text-transform: uppercase; display: block; margin-bottom: 4px;">Select Assigned Unit</label>
                 <select id="unitSelect" style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px; font-weight: 600; background-color: #fff;">
-                    <option value="146">Unit 146</option>
-                    <option value="147">Unit 147</option>
-                    <option value="148">Unit 148</option>
-                    <option value="149">Unit 149</option>
+                    <option value="146">Medic 146 (Station 46)</option>
+                    <option value="147">Medic 147 (Station 47)</option>
+                    <option value="148">Medic 148 (Station 48)</option>
+                    <option value="149">Medic 149 (Station 49)</option>
                 </select>
             </div>
 
@@ -914,6 +914,14 @@
     let currentEatsCategory = 'all';
     let currentSearchedAddress = '';
 
+    // St. Matthews Fire & EMS Station Coordinates
+    const stmfdStations = [
+        { unit: "146", lat: 38.2520, lng: -85.6441 }, // Station 46 (Sears Ave)
+        { unit: "147", lat: 38.2818, lng: -85.6322 }, // Station 47 (Brownsboro Rd)
+        { unit: "148", lat: 38.2611, lng: -85.5898 }, // Station 48 (New LaGrange Rd)
+        { unit: "149", lat: 38.2785, lng: -85.5841 }  // Station 49 (Westport Rd)
+    ];
+
     // Helper functions
     function calculateDistance(lat1, lon1, lat2, lon2) {
         const R = 3958.8;
@@ -924,6 +932,27 @@
                   Math.sin(dLon / 2) * Math.sin(dLon / 2);
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return R * c;
+    }
+
+    function setNearestUnitDefault(locationLatLng) {
+        const unitSelect = document.getElementById('unitSelect');
+        if (!unitSelect || !locationLatLng) return;
+
+        let nearestUnit = "146";
+        let shortestDistance = Infinity;
+
+        const lat = typeof locationLatLng.lat === 'function' ? locationLatLng.lat() : locationLatLng.lat;
+        const lng = typeof locationLatLng.lng === 'function' ? locationLatLng.lng() : locationLatLng.lng;
+
+        stmfdStations.forEach(st => {
+            const dist = calculateDistance(lat, lng, st.lat, st.lng);
+            if (dist < shortestDistance) {
+                shortestDistance = dist;
+                nearestUnit = st.unit;
+            }
+        });
+
+        unitSelect.value = nearestUnit;
     }
 
     // Master List of Destination Facilities
@@ -1478,7 +1507,7 @@
 
             const result = await response.json();
             if (result.status === 'success') {
-                alert(`Canceled run logged successfully for Unit ${selectedUnit}!`);
+                alert(`Canceled run logged successfully for Medic ${selectedUnit}!`);
                 document.getElementById('logRunContainer').style.display = 'none';
             } else {
                 alert('Error logging run: ' + (result.message || 'Unknown error'));
@@ -1736,6 +1765,9 @@
                 statusDiv.style.display = 'block';
                 statusDiv.innerHTML = `❌ OUT OF DISTRICT: Dropped pin (${displayAddress}) is OUTSIDE the STMFDKY service area.${dirBtnHtml}`;
                 addHistoryEntry(displayAddress, 'out-district', 'Out of District');
+                
+                // Auto-select nearest station's Medic unit
+                setNearestUnitDefault(latLng);
                 if (logContainer) logContainer.style.display = 'block';
             }
         });
@@ -1783,6 +1815,9 @@
                     statusDiv.style.display = 'block';
                     statusDiv.innerHTML = '❌ OUT OF DISTRICT: Address is OUTSIDE the STMFDKY service area.' + dirBtnHtml;
                     addHistoryEntry(formattedAddress, 'out-district', 'Out of District');
+                    
+                    // Auto-select nearest station's Medic unit
+                    setNearestUnitDefault(location);
                     if (logContainer) logContainer.style.display = 'block';
                 }
 
