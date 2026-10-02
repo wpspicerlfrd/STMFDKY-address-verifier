@@ -218,7 +218,6 @@
         }
         button.action-btn:hover { background-color: #002244; }
 
-        /* Battalion Chief Call Assistance Button */
         .bc-call-btn {
             width: 100%;
             background-color: #c53030;
@@ -621,6 +620,17 @@
         <h2>District Boundary Check</h2>
         <p>Enter an address to verify if it falls within the STMFDKY service area.</p>
 
+        <!-- Unit Selector Dropdown -->
+        <div style="margin-bottom: 12px;">
+            <label for="unitSelect" style="font-size: 11px; font-weight: 700; color: #4a5568; text-transform: uppercase; display: block; margin-bottom: 4px;">Assigned Unit</label>
+            <select id="unitSelect" style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px; font-weight: 600;">
+                <option value="146">Unit 146</option>
+                <option value="147">Unit 147</option>
+                <option value="148">Unit 148</option>
+                <option value="149">Unit 149</option>
+            </select>
+        </div>
+
         <div class="form-group">
             <div class="input-wrapper">
                 <input type="text" id="addressInput" placeholder="Enter street address (e.g. 4100 Shelbyville Rd)" autofocus>
@@ -628,7 +638,14 @@
             </div>
             <button id="verifyBtn" class="action-btn" onclick="verifyAddress()">Verify Address</button>
         </div>
+
         <div id="status"></div>
+
+        <!-- Canceled Run Logging Container -->
+        <div id="logRunContainer" style="display: none; margin-top: 15px; background-color: #fffaf0; border: 1px solid #feebc8; border-left: 4px solid #dd6b20; padding: 15px; border-radius: 6px; text-align: center;">
+            <div style="font-size: 13px; font-weight: 700; color: #744210; margin-bottom: 8px;">Canceled Run Due to Geofence Boundary?</div>
+            <button id="logRunBtn" class="action-btn" style="background-color: #dd6b20;" onclick="logCanceledRun()">📋 Log Canceled Run to Cloud Sheet</button>
+        </div>
     </div>
 
     <!-- TAB 2: Protocols (Under Construction) -->
@@ -848,7 +865,7 @@
 </div>
 
 <script>
-    // Google Apps Script Secure Proxy URL (Replaces exposed JSONBin Master Key)
+    // Google Apps Script Secure Proxy URL
     const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyzgar0fBEo35BdTn1UxGCGVWcYgC5jKbY9iRgnHVjI9usWlzYsqM8XZeMQQntEWN6Ojw/exec';
     
     window.sharedFoodNotes = {};
@@ -872,6 +889,7 @@
     let searchHistory = [];
     let userLocation = null;
     let currentEatsCategory = 'all';
+    let currentSearchedAddress = '';
 
     // Helper functions
     function calculateDistance(lat1, lon1, lat2, lon2) {
@@ -885,7 +903,7 @@
         return R * c;
     }
 
-    // Central Master List of Destination Facilities
+    // Master List of Destination Facilities
     const masterHospitals = [
         { id: "baptist_louisville", name: "Baptist Health Louisville", lat: 38.23885368709200, lng: -85.63917771315160, type: "adult", region: "jefferson" },
         { id: "norton_women_children", name: "Norton Women's & Children's (Suburban)", lat: 38.23558071531270, lng: -85.63158611445510, type: "split", region: "jefferson" },
@@ -1067,7 +1085,7 @@
         "Wendy's", "Which Wich Superior Sandwiches @ Hurstbourne Parkway", "White Castle", "Whole Foods Market", "Wild Eggs", "Wingstop"
     ];
 
-    // Updated GeoJSON boundary data
+    // GeoJSON Boundary Data
     const geojsonData = {
       "type": "FeatureCollection",
       "features": [
@@ -1142,7 +1160,7 @@
                 [-85.6662724, 38.2806806],
                 [-85.6662241, 38.2808364],
                 [-85.6658245, 38.2809059],
-                [-85.6655965, 38.2808743],
+                [-85.665965, 38.2808743],
                 [-85.6654677, 38.2804574],
                 [-85.6647704, 38.2796699],
                 [-85.6651834, 38.2790341],
@@ -1327,7 +1345,7 @@
     inputEl.addEventListener('input', function() { clearBtn.style.display = this.value ? 'block' : 'none'; });
     inputEl.addEventListener('keydown', e => { if (e.key === 'Enter') verifyAddress(); });
 
-    // Core application functions
+    // Core Application Functions
     function getUserGeolocation() {
         const locStatus = document.getElementById('locationStatus');
         const routingLocStatus = document.getElementById('routingLocationStatus');
@@ -1596,7 +1614,7 @@
         }).join('');
     }
 
-    // Cloud syncing for notes via Google Apps Script Proxy
+    // Cloud syncing for notes & logging runs via Google Apps Script Proxy
     async function loadSharedNotes() {
         try {
             const response = await fetch(GAS_WEB_APP_URL);
@@ -1617,9 +1635,7 @@
         try {
             const response = await fetch(GAS_WEB_APP_URL, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'text/plain;charset=utf-8'
-                },
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify({ 
                     notes: window.sharedFoodNotes, 
                     hospitalNotes: window.sharedHospitalNotes 
@@ -1643,9 +1659,7 @@
         try {
             const response = await fetch(GAS_WEB_APP_URL, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'text/plain;charset=utf-8'
-                },
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify({ 
                     notes: window.sharedFoodNotes, 
                     hospitalNotes: window.sharedHospitalNotes 
@@ -1664,6 +1678,47 @@
         } catch (err) {
             console.error('Failed to save hospital note', err);
             alert('Network error while saving.');
+        }
+    }
+
+    async function logCanceledRun() {
+        const selectedUnit = document.getElementById('unitSelect').value;
+        const logBtn = document.getElementById('logRunBtn');
+
+        if (!currentSearchedAddress) {
+            alert('No valid address selected to log.');
+            return;
+        }
+
+        logBtn.disabled = true;
+        logBtn.innerText = '⏳ Logging run...';
+
+        const timestamp = new Date().toLocaleString("en-US", { timeZone: "America/Kentucky/Louisville" });
+
+        try {
+            const response = await fetch(GAS_WEB_APP_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({
+                    action: 'log_run',
+                    timestamp: timestamp,
+                    unit: selectedUnit,
+                    address: currentSearchedAddress
+                })
+            });
+
+            if (response.ok) {
+                alert(`Canceled run logged successfully for Unit ${selectedUnit}!`);
+                document.getElementById('logRunContainer').style.display = 'none';
+            } else {
+                alert('Error logging run.');
+            }
+        } catch (err) {
+            console.error('Failed to log canceled run', err);
+            alert('Network error while logging run.');
+        } finally {
+            logBtn.disabled = false;
+            logBtn.innerText = '📋 Log Canceled Run to Cloud Sheet';
         }
     }
 
@@ -1746,6 +1801,7 @@
         statusDiv.className = '';
         statusDiv.style.display = 'none';
         statusDiv.innerHTML = '';
+        document.getElementById('logRunContainer').style.display = 'none';
         if (marker) { marker.setMap(null); marker = null; }
         if (map && boundaryBounds) map.fitBounds(boundaryBounds);
     }
@@ -1860,6 +1916,8 @@
 
     function verifyAddress() {
         const address = inputEl.value.trim();
+        const logContainer = document.getElementById('logRunContainer');
+        if (logContainer) logContainer.style.display = 'none';
 
         if (!address) {
             statusDiv.className = 'outside';
@@ -1883,6 +1941,7 @@
             if (status === 'OK' && results[0]) {
                 const location = results[0].geometry.location;
                 const formattedAddress = results[0].formatted_address;
+                currentSearchedAddress = formattedAddress;
                 const isInside = google.maps.geometry.poly.containsLocation(location, boundaryPolygon);
 
                 const dirBtnHtml = `<br><button class="dir-btn-inline" onclick="openNav(${location.lat()}, ${location.lng()})">🗺️ Get Directions to Address</button>`;
@@ -1897,6 +1956,7 @@
                     statusDiv.style.display = 'block';
                     statusDiv.innerHTML = '❌ OUT OF DISTRICT: Address is OUTSIDE the STMFDKY service area.' + dirBtnHtml;
                     addHistoryEntry(formattedAddress, 'out-district', 'Out of District');
+                    if (logContainer) logContainer.style.display = 'block';
                 }
 
                 if (marker) marker.setMap(null);
