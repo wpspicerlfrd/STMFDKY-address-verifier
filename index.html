@@ -34,7 +34,32 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
             width: 100%; 
             max-width: 750px; 
+            transition: max-width 0.3s ease;
         }
+
+        /* Desktop Screen Responsiveness */
+        @media (min-width: 992px) {
+            .card {
+                max-width: 1200px;
+                width: 92%;
+                padding: 30px 25px;
+            }
+            .verifier-desktop-layout {
+                display: grid;
+                grid-template-columns: 380px 1fr;
+                gap: 20px;
+                align-items: start;
+            }
+            #restaurantGrid {
+                display: grid !important;
+                grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)) !important;
+                gap: 12px !important;
+            }
+            #map {
+                height: 550px !important;
+            }
+        }
+
         .app-header {
             margin-bottom: 15px;
             padding-bottom: 10px;
@@ -317,7 +342,6 @@
         .badge.out-district { background-color: #fed7d7; color: #742a2a; }
         .badge.not-found { background-color: #e2e8f0; color: #4a5568; }
 
-        /* Guideline Wizard Custom Styling */
         .selector-box {
             background-color: #f8fafc;
             border: 1px solid #e2e8f0;
@@ -623,48 +647,68 @@
         <h2>District Boundary Check</h2>
         <p>Enter an address, intersection, or interstate exit to verify if it falls within the STMFDKY service area, or tap directly on the map below to drop a pin.</p>
 
-        <div class="form-group">
-            <div class="input-wrapper">
-                <input type="text" id="addressInput" list="highwaySuggestions" placeholder="Enter address, intersection, or interstate (e.g. I-264 & Shelbyville)" autofocus>
-                <button id="clearBtn" class="clear-btn" onclick="resetForm()" title="Clear address">&times;</button>
+        <div class="verifier-desktop-layout">
+            <div class="verifier-controls">
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <input type="text" id="addressInput" list="highwaySuggestions" placeholder="Enter address, intersection, or interstate (e.g. I-264 & Shelbyville)" autofocus>
+                        <button id="clearBtn" class="clear-btn" onclick="resetForm()" title="Clear address">&times;</button>
+                    </div>
+                    <button id="verifyBtn" class="action-btn" onclick="verifyAddress()">Verify Location</button>
+                </div>
+
+                <datalist id="highwaySuggestions">
+                    <option value="I-264 East & Shelbyville Rd, Louisville, KY">
+                    <option value="I-264 West & Shelbyville Rd, Louisville, KY">
+                    <option value="I-264 East & Westport Rd, Louisville, KY">
+                    <option value="I-264 West & Westport Rd, Louisville, KY">
+                    <option value="I-264 & Breckenridge Ln, Louisville, KY">
+                    <option value="I-264 & Taylorsville Rd, Louisville, KY">
+                    <option value="I-264 & I-64 Split, Louisville, KY">
+                    <option value="I-71 North & Zorn Ave, Louisville, KY">
+                    <option value="I-71 North & US-42 Brownsboro Rd, Louisville, KY">
+                    <option value="I-71 & I-264 Interchange, Louisville, KY">
+                    <option value="I-64 East & Cannons Ln, Louisville, KY">
+                    <option value="Shelbyville Rd & Breckenridge Ln, Louisville, KY">
+                    <option value="Hubbards Ln & Westport Rd, Louisville, KY">
+                    <option value="Chenoweth Ln & Shelbyville Rd, Louisville, KY">
+                </datalist>
+
+                <div id="status"></div>
+
+                <!-- Canceled Run Logging Container -->
+                <div id="logRunContainer" style="display: none; margin-top: 15px; background-color: #fffaf0; border: 1px solid #feebc8; border-left: 4px solid #dd6b20; padding: 15px; border-radius: 6px; text-align: center;">
+                    <div style="font-size: 13px; font-weight: 700; color: #744210; margin-bottom: 8px;">Canceled Run Due to Geofence Boundary?</div>
+                    
+                    <div style="margin-bottom: 12px; text-align: left;">
+                        <label for="unitSelect" style="font-size: 11px; font-weight: 700; color: #4a5568; text-transform: uppercase; display: block; margin-bottom: 4px;">Select Assigned Unit</label>
+                        <select id="unitSelect" style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px; font-weight: 600; background-color: #fff;">
+                            <option value="146">Medic 146 (Station 46)</option>
+                            <option value="147">Medic 147 (Station 47)</option>
+                            <option value="148">Medic 148 (Station 48)</option>
+                            <option value="149">Medic 149 (Station 49)</option>
+                        </select>
+                    </div>
+
+                    <button id="logRunBtn" class="action-btn" style="background-color: #dd6b20; width: 100%;" onclick="logCanceledRun()">📋 Log Canceled Run to Cloud Sheet</button>
+                </div>
+
+                <div id="historyContainer" class="history-container">
+                    <div class="history-header">
+                        <h3>Recent Boundary Searches</h3>
+                        <button class="clear-history-btn" onclick="clearHistory()">Clear History</button>
+                    </div>
+                    <ul id="historyList" class="history-list"></ul>
+                </div>
             </div>
-            <button id="verifyBtn" class="action-btn" onclick="verifyAddress()">Verify Location</button>
-        </div>
 
-        <datalist id="highwaySuggestions">
-            <option value="I-264 East & Shelbyville Rd, Louisville, KY">
-            <option value="I-264 West & Shelbyville Rd, Louisville, KY">
-            <option value="I-264 East & Westport Rd, Louisville, KY">
-            <option value="I-264 West & Westport Rd, Louisville, KY">
-            <option value="I-264 & Breckenridge Ln, Louisville, KY">
-            <option value="I-264 & Taylorsville Rd, Louisville, KY">
-            <option value="I-264 & I-64 Split, Louisville, KY">
-            <option value="I-71 North & Zorn Ave, Louisville, KY">
-            <option value="I-71 North & US-42 Brownsboro Rd, Louisville, KY">
-            <option value="I-71 & I-264 Interchange, Louisville, KY">
-            <option value="I-64 East & Cannons Ln, Louisville, KY">
-            <option value="Shelbyville Rd & Breckenridge Ln, Louisville, KY">
-            <option value="Hubbards Ln & Westport Rd, Louisville, KY">
-            <option value="Chenoweth Ln & Shelbyville Rd, Louisville, KY">
-        </datalist>
-
-        <div id="status"></div>
-
-        <!-- Canceled Run Logging Container (Includes Unit Selector) -->
-        <div id="logRunContainer" style="display: none; margin-top: 15px; background-color: #fffaf0; border: 1px solid #feebc8; border-left: 4px solid #dd6b20; padding: 15px; border-radius: 6px; text-align: center;">
-            <div style="font-size: 13px; font-weight: 700; color: #744210; margin-bottom: 8px;">Canceled Run Due to Geofence Boundary?</div>
-            
-            <div style="margin-bottom: 12px; text-align: left;">
-                <label for="unitSelect" style="font-size: 11px; font-weight: 700; color: #4a5568; text-transform: uppercase; display: block; margin-bottom: 4px;">Select Assigned Unit</label>
-                <select id="unitSelect" style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px; font-weight: 600; background-color: #fff;">
-                    <option value="146">Medic 146 (Station 46)</option>
-                    <option value="147">Medic 147 (Station 47)</option>
-                    <option value="148">Medic 148 (Station 48)</option>
-                    <option value="149">Medic 149 (Station 49)</option>
-                </select>
+            <!-- Map Display -->
+            <div id="mapWrapper">
+                <div style="font-size: 11px; color: #718096; font-weight: 600; text-align: center; margin-bottom: 6px;">
+                    💡 TIP: Tap anywhere on the map or interstates below to drop a pin and check boundary status.
+                </div>
+                <div id="map"></div>
             </div>
-
-            <button id="logRunBtn" class="action-btn" style="background-color: #dd6b20; width: 100%;" onclick="logCanceledRun()">📋 Log Canceled Run to Cloud Sheet</button>
         </div>
     </div>
 
@@ -857,22 +901,6 @@
         </div>
     </div>
 
-    <!-- Map Display (Visible only in District Verifier tab) -->
-    <div id="mapWrapper">
-        <div style="font-size: 11px; color: #718096; font-weight: 600; text-align: center; margin-bottom: 6px;">
-            💡 TIP: Tap anywhere on the map or interstates below to drop a pin and check boundary status.
-        </div>
-        <div id="map"></div>
-    </div>
-
-    <div id="historyContainer" class="history-container">
-        <div class="history-header">
-            <h3>Recent Boundary Searches</h3>
-            <button class="clear-history-btn" onclick="clearHistory()">Clear History</button>
-        </div>
-        <ul id="historyList" class="history-list"></ul>
-    </div>
-
     <!-- Global App Feedback Section -->
     <div class="feedback-section">
         <div class="feedback-title">STMFD SMART EMS Testing Feedback</div>
@@ -939,11 +967,9 @@
         const unitSelect = document.getElementById('unitSelect');
         if (!unitSelect) return;
 
-        // Priority 1: Use actual user device coordinates if available
         let referenceLat = userLocation ? userLocation.lat : null;
         let referenceLng = userLocation ? userLocation.lng : null;
 
-        // Priority 2: Fallback to target address/pin location if device location unavailable
         if (referenceLat === null && fallbackLatLng) {
             referenceLat = typeof fallbackLatLng.lat === 'function' ? fallbackLatLng.lat() : fallbackLatLng.lat;
             referenceLng = typeof fallbackLatLng.lng === 'function' ? fallbackLatLng.lng() : fallbackLatLng.lng;
@@ -1391,7 +1417,7 @@
         });
 
         if (filtered.length === 0) {
-            grid.innerHTML = `<div style="color: #718096; text-align: center; padding: 15px;">No matching places found. Try another search!</div>`;
+            grid.innerHTML = `<div style="color: #718096; text-align: center; padding: 15px; grid-column: 1 / -1;">No matching places found. Try another search!</div>`;
             return;
         }
 
@@ -1524,7 +1550,7 @@
             }
         } catch (err) {
             console.error('Failed to log canceled run', err);
-            alert('Network error while logging run. Verify Web App deployment settings.');
+            alert('Network error while logging run.');
         } finally {
             logBtn.disabled = false;
             logBtn.innerText = '📋 Log Canceled Run to Cloud Sheet';
@@ -1584,15 +1610,9 @@
         
         const tabEl = document.getElementById(tab + 'Tab');
         if (tabEl) tabEl.classList.add('active');
-        
-        mapWrapper.style.display = 'none';
-        historyContainer.style.display = 'none';
-        if (marker) marker.setMap(null);
 
         if (tab === 'verifier') {
             if (!userLocation) getUserGeolocation();
-            mapWrapper.style.display = 'block';
-            historyContainer.style.display = searchHistory.length > 0 ? 'block' : 'none';
             if (map && boundaryBounds) map.fitBounds(boundaryBounds);
         } else if (tab === 'guidelines') {
             if (!userLocation) getUserGeolocation();
@@ -1723,12 +1743,12 @@
         path.forEach(pt => boundaryBounds.extend(pt));
         map.fitBounds(boundaryBounds);
 
-        // MAP CLICK EVENT: Drop pin on tap/click
+        // MAP CLICK EVENT
         map.addListener('click', function(e) {
             handleMapClick(e.latLng);
         });
 
-        // DATA LAYER CLICK EVENT: Enables clicking inside the colored polygon boundary
+        // DATA LAYER CLICK EVENT
         map.data.addListener('click', function(e) {
             handleMapClick(e.latLng);
         });
@@ -1777,7 +1797,6 @@
                 statusDiv.innerHTML = `❌ OUT OF DISTRICT: Dropped pin (${displayAddress}) is OUTSIDE the STMFDKY service area.${dirBtnHtml}`;
                 addHistoryEntry(displayAddress, 'out-district', 'Out of District');
                 
-                // Auto-select station unit based on user's device location (or fallback to dropped pin)
                 setNearestUnitDefault(latLng);
                 if (logContainer) logContainer.style.display = 'block';
             }
@@ -1827,7 +1846,6 @@
                     statusDiv.innerHTML = '❌ OUT OF DISTRICT: Address is OUTSIDE the STMFDKY service area.' + dirBtnHtml;
                     addHistoryEntry(formattedAddress, 'out-district', 'Out of District');
                     
-                    // Auto-select station unit based on user's device location (or fallback to searched address)
                     setNearestUnitDefault(location);
                     if (logContainer) logContainer.style.display = 'block';
                 }
