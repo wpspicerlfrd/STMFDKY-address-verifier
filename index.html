@@ -620,17 +620,6 @@
         <h2>District Boundary Check</h2>
         <p>Enter an address to verify if it falls within the STMFDKY service area.</p>
 
-        <!-- Unit Selector Dropdown -->
-        <div style="margin-bottom: 12px;">
-            <label for="unitSelect" style="font-size: 11px; font-weight: 700; color: #4a5568; text-transform: uppercase; display: block; margin-bottom: 4px;">Assigned Unit</label>
-            <select id="unitSelect" style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px; font-weight: 600;">
-                <option value="146">Unit 146</option>
-                <option value="147">Unit 147</option>
-                <option value="148">Unit 148</option>
-                <option value="149">Unit 149</option>
-            </select>
-        </div>
-
         <div class="form-group">
             <div class="input-wrapper">
                 <input type="text" id="addressInput" placeholder="Enter street address (e.g. 4100 Shelbyville Rd)" autofocus>
@@ -641,10 +630,21 @@
 
         <div id="status"></div>
 
-        <!-- Canceled Run Logging Container -->
+        <!-- Canceled Run Logging Container (Includes Unit Selector) -->
         <div id="logRunContainer" style="display: none; margin-top: 15px; background-color: #fffaf0; border: 1px solid #feebc8; border-left: 4px solid #dd6b20; padding: 15px; border-radius: 6px; text-align: center;">
             <div style="font-size: 13px; font-weight: 700; color: #744210; margin-bottom: 8px;">Canceled Run Due to Geofence Boundary?</div>
-            <button id="logRunBtn" class="action-btn" style="background-color: #dd6b20;" onclick="logCanceledRun()">📋 Log Canceled Run to Cloud Sheet</button>
+            
+            <div style="margin-bottom: 12px; text-align: left;">
+                <label for="unitSelect" style="font-size: 11px; font-weight: 700; color: #4a5568; text-transform: uppercase; display: block; margin-bottom: 4px;">Select Assigned Unit</label>
+                <select id="unitSelect" style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px; font-weight: 600; background-color: #fff;">
+                    <option value="146">Unit 146</option>
+                    <option value="147">Unit 147</option>
+                    <option value="148">Unit 148</option>
+                    <option value="149">Unit 149</option>
+                </select>
+            </div>
+
+            <button id="logRunBtn" class="action-btn" style="background-color: #dd6b20; width: 100%;" onclick="logCanceledRun()">📋 Log Canceled Run to Cloud Sheet</button>
         </div>
     </div>
 
@@ -766,7 +766,7 @@
     <!-- TAB 6: Shift Eats (Restaurant Directory & Chooser) -->
     <div id="eatsTab" class="tab-content">
         <h2>Shift Eats Chooser</h2>
-        <p>Can'decide on food for the crew? Spin the chooser, search options, and toggle notes on demand.</p>
+        <p>Can't decide on food for the crew? Spin the chooser, search options, and toggle notes on demand.</p>
 
         <div class="eats-hero">
             <h3>Random Food</h3>
@@ -1189,7 +1189,7 @@
                 [-85.6552553, 38.2785584],
                 [-85.6552606, 38.278929],
                 [-85.6556683, 38.280028],
-                [-85.6566328, 38.2798936],
+                [-85.656328, 38.2798936],
                 [-85.6580027, 38.2800524],
                 [-85.6589957, 38.281817],
                 [-85.6593839, 38.2818002],
