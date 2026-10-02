@@ -621,15 +621,32 @@
     <!-- TAB 1: District Verifier -->
     <div id="verifierTab" class="tab-content active">
         <h2>District Boundary Check</h2>
-        <p>Enter an address to verify if it falls within the STMFDKY service area.</p>
+        <p>Enter an address, intersection, or interstate exit to verify if it falls within the STMFDKY service area, or tap directly on the map below to drop a pin.</p>
 
         <div class="form-group">
             <div class="input-wrapper">
-                <input type="text" id="addressInput" placeholder="Enter street address (e.g. 4100 Shelbyville Rd)" autofocus>
+                <input type="text" id="addressInput" list="highwaySuggestions" placeholder="Enter address, intersection, or interstate (e.g. I-264 & Shelbyville)" autofocus>
                 <button id="clearBtn" class="clear-btn" onclick="resetForm()" title="Clear address">&times;</button>
             </div>
-            <button id="verifyBtn" class="action-btn" onclick="verifyAddress()">Verify Address</button>
+            <button id="verifyBtn" class="action-btn" onclick="verifyAddress()">Verify Location</button>
         </div>
+
+        <datalist id="highwaySuggestions">
+            <option value="I-264 East & Shelbyville Rd, Louisville, KY">
+            <option value="I-264 West & Shelbyville Rd, Louisville, KY">
+            <option value="I-264 East & Westport Rd, Louisville, KY">
+            <option value="I-264 West & Westport Rd, Louisville, KY">
+            <option value="I-264 & Breckenridge Ln, Louisville, KY">
+            <option value="I-264 & Taylorsville Rd, Louisville, KY">
+            <option value="I-264 & I-64 Split, Louisville, KY">
+            <option value="I-71 North & Zorn Ave, Louisville, KY">
+            <option value="I-71 North & US-42 Brownsboro Rd, Louisville, KY">
+            <option value="I-71 & I-264 Interchange, Louisville, KY">
+            <option value="I-64 East & Cannons Ln, Louisville, KY">
+            <option value="Shelbyville Rd & Breckenridge Ln, Louisville, KY">
+            <option value="Hubbards Ln & Westport Rd, Louisville, KY">
+            <option value="Chenoweth Ln & Shelbyville Rd, Louisville, KY">
+        </datalist>
 
         <div id="status"></div>
 
@@ -733,7 +750,7 @@
                         <span>Station 46</span>
                         <span class="station-subtitle">240 Sears Ave</span>
                     </div>
-                    <button class="nav-link-btn" onclick="openNavAddress('240 Sears Ave, Louisville, KY 40207')">🗺️ Nav</button>
+                    <button class="nav-link-btn" onclick="openNavAddress('240 Sears Ave, Louisville, KY 40207')">MAP Nav</button>
                 </div>
             </div>
             <div class="er-card station-card">
@@ -742,7 +759,7 @@
                         <span>Station 47</span>
                         <span class="station-subtitle">4400 Brownsboro Rd</span>
                     </div>
-                    <button class="nav-link-btn" onclick="openNavAddress('4400 Brownsboro Rd, Louisville, KY 40207')">🗺️ Nav</button>
+                    <button class="nav-link-btn" onclick="openNavAddress('4400 Brownsboro Rd, Louisville, KY 40207')">MAP Nav</button>
                 </div>
             </div>
             <div class="er-card station-card">
@@ -751,7 +768,7 @@
                         <span>Station 48</span>
                         <span class="station-subtitle">8126 New LaGrange Rd</span>
                     </div>
-                    <button class="nav-link-btn" onclick="openNavAddress('8126 New LaGrange Rd, Louisville, KY 40222')">🗺️️ Nav</button>
+                    <button class="nav-link-btn" onclick="openNavAddress('8126 New LaGrange Rd, Louisville, KY 40222')">MAP Nav</button>
                 </div>
             </div>
             <div class="er-card station-card">
@@ -760,7 +777,7 @@
                         <span>Station 49</span>
                         <span class="station-subtitle">8414 Westport Rd</span>
                     </div>
-                    <button class="nav-link-btn" onclick="openNavAddress('8414 Westport Rd, Louisville, KY 40242')">🗺️ Nav</button>
+                    <button class="nav-link-btn" onclick="openNavAddress('8414 Westport Rd, Louisville, KY 40242')">MAP Nav</button>
                 </div>
             </div>
         </div>
@@ -781,7 +798,7 @@
                 <div id="randomName" class="result-name">--</div>
                 <div id="randomNote" class="result-note"></div>
                 <div class="result-actions">
-                    <button id="randomNavBtn" class="nav-link-btn" onclick="">🗺️ Nav</button>
+                    <button id="randomNavBtn" class="nav-link-btn" onclick="">MAP Nav</button>
                     <button id="randomGoogleBtn" class="google-link-btn" onclick="">🔍 Google</button>
                     <button id="randomWebBtn" class="web-link-btn" onclick="">🌐 Order</button>
                 </div>
@@ -842,6 +859,9 @@
 
     <!-- Map Display (Visible only in District Verifier tab) -->
     <div id="mapWrapper">
+        <div style="font-size: 11px; color: #718096; font-weight: 600; text-align: center; margin-bottom: 6px;">
+            💡 TIP: Tap anywhere on the map or interstates below to drop a pin and check boundary status.
+        </div>
         <div id="map"></div>
     </div>
 
@@ -1159,7 +1179,7 @@
                         </div>
                         <div style="display: flex; gap: 6px; flex-shrink: 0;">
                             <button class="note-toggle-btn" onclick="toggleHospitalNotes('hosp-${hosp.id}')">📝 Notes</button>
-                            <button class="nav-link-btn" onclick="openNav(${hosp.lat}, ${hosp.lng})">🗺️ Nav</button>
+                            <button class="nav-link-btn" onclick="openNav(${hosp.lat}, ${hosp.lng})">MAP Nav</button>
                         </div>
                     </div>
                     <div id="hosp-notes-hosp-${hosp.id}" class="notes-section">
@@ -1244,7 +1264,7 @@
                     </div>
                     <div style="display: flex; gap: 6px; flex-shrink: 0;">
                         <button class="note-toggle-btn" onclick="toggleHospitalNotes('triage-${hosp.id}')">📝 Notes</button>
-                        <button class="nav-link-btn" onclick="openNav(${hosp.lat}, ${hosp.lng})">🗺️ Nav</button>
+                        <button class="nav-link-btn" onclick="openNav(${hosp.lat}, ${hosp.lng})">MAP Nav</button>
                     </div>
                 </div>
                 <div id="hosp-notes-triage-${hosp.id}" class="notes-section">
@@ -1350,7 +1370,7 @@
                         <div style="display: flex; gap: 4px; flex-shrink: 0;">
                             <button class="note-toggle-btn" onclick="toggleFoodNotes('${safeName}')">📝 Notes</button>
                             <button class="google-link-btn" onclick="openWebSearch('${name.replace(/'/g, "\\'")}, Louisville KY')">🔍 Google</button>
-                            <button class="nav-link-btn" onclick="openNavAddress('${name.replace(/'/g, "\\'")}, Louisville, KY')">🗺️ Nav</button>
+                            <button class="nav-link-btn" onclick="openNavAddress('${name.replace(/'/g, "\\'")}, Louisville, KY')">MAP Nav</button>
                         </div>
                     </div>
                     <div id="food-notes-${safeName}" class="notes-section">
@@ -1434,7 +1454,7 @@
         const logBtn = document.getElementById('logRunBtn');
 
         if (!currentSearchedAddress) {
-            alert('No valid address selected to log.');
+            alert('No valid location selected to log.');
             return;
         }
 
@@ -1662,7 +1682,64 @@
         boundaryBounds = new google.maps.LatLngBounds();
         path.forEach(pt => boundaryBounds.extend(pt));
         map.fitBounds(boundaryBounds);
+
+        // MAP CLICK EVENT: Drop pin on tap/click
+        map.addListener('click', function(e) {
+            handleMapClick(e.latLng);
+        });
+
+        // DATA LAYER CLICK EVENT: Enables clicking inside the colored polygon boundary
+        map.data.addListener('click', function(e) {
+            handleMapClick(e.latLng);
+        });
     };
+
+    function handleMapClick(latLng) {
+        const logContainer = document.getElementById('logRunContainer');
+        if (logContainer) logContainer.style.display = 'none';
+
+        if (marker) marker.setMap(null);
+        marker = new google.maps.Marker({
+            position: latLng,
+            map: map,
+            animation: google.maps.Animation.DROP,
+            title: "Selected Location"
+        });
+
+        statusDiv.className = 'loading';
+        statusDiv.style.display = 'block';
+        statusDiv.innerHTML = '📍 Reverse-geocoding dropped pin...';
+
+        geocoder.geocode({ location: latLng }, function(results, status) {
+            let displayAddress = '';
+
+            if (status === 'OK' && results[0]) {
+                displayAddress = results[0].formatted_address;
+            } else {
+                displayAddress = `Coordinates: ${latLng.lat().toFixed(5)}, ${latLng.lng().toFixed(5)}`;
+            }
+
+            inputEl.value = displayAddress;
+            clearBtn.style.display = 'block';
+            currentSearchedAddress = displayAddress;
+
+            const isInside = google.maps.geometry.poly.containsLocation(latLng, boundaryPolygon);
+            const dirBtnHtml = `<br><button class="dir-btn-inline" onclick="openNav(${latLng.lat()}, ${latLng.lng()})">MAP Get Directions to Dropped Pin</button>`;
+
+            if (isInside) {
+                statusDiv.className = 'inside';
+                statusDiv.style.display = 'block';
+                statusDiv.innerHTML = `✅ IN DISTRICT: Dropped pin (${displayAddress}) is WITHIN the STMFDKY service area.${dirBtnHtml}`;
+                addHistoryEntry(displayAddress, 'in-district', 'In District');
+            } else {
+                statusDiv.className = 'outside';
+                statusDiv.style.display = 'block';
+                statusDiv.innerHTML = `❌ OUT OF DISTRICT: Dropped pin (${displayAddress}) is OUTSIDE the STMFDKY service area.${dirBtnHtml}`;
+                addHistoryEntry(displayAddress, 'out-district', 'Out of District');
+                if (logContainer) logContainer.style.display = 'block';
+            }
+        });
+    }
 
     function verifyAddress() {
         const address = inputEl.value.trim();
@@ -1694,7 +1771,7 @@
                 currentSearchedAddress = formattedAddress;
                 const isInside = google.maps.geometry.poly.containsLocation(location, boundaryPolygon);
 
-                const dirBtnHtml = `<br><button class="dir-btn-inline" onclick="openNav(${location.lat()}, ${location.lng()})">🗺️ Get Directions to Address</button>`;
+                const dirBtnHtml = `<br><button class="dir-btn-inline" onclick="openNav(${location.lat()}, ${location.lng()})">MAP Get Directions to Address</button>`;
 
                 if (isInside) {
                     statusDiv.className = 'inside';
