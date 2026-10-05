@@ -786,13 +786,16 @@ window.initMap = function() {
 
 async function fetchOutsideAgencyName(lat, lng) {
     try {
-        const res = await fetch(`https://gis.lojic.org/maps/rest/services/LojicSolutions/OpenDataPublicSafety/MapServer/1/query?geometry=${lng},${lat}&geometryType=esriGeometryPoint&spatialRel=esriSpatialRelIntersects&inSR=4326&outFields=NAME,DISTRICT,COMPANY&f=json`);
+        const res = await fetch(`https://gis.lojic.org/maps/rest/services/LojicSolutions/OpenDataPublicSafety/MapServer/1/query?geometry=${lng},${lat}&geometryType=esriGeometryPoint&spatialRel=esriSpatialRelIntersects&inSR=4326&outFields=*&f=json`);
         const data = await res.json();
         if (data.features && data.features.length > 0) {
-            const props = data.features[0].attributes || {};
-            return props.NAME || props.DISTRICT || props.COMPANY || 'Outside District';
+            const attrs = data.features[0].attributes || {};
+            // Check common LOJIC attribute field names for fire/EMS districts
+            return attrs.NAME || attrs.DISTRICT || attrs.FD_NAME || attrs.COMPANY || attrs. AGENCY || 'Outside District';
         }
-    } catch(e) {}
+    } catch(e) {
+        console.error("LOJIC lookup error:", e);
+    }
     return 'Outside District';
 }
 
