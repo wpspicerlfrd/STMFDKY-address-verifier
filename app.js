@@ -165,7 +165,7 @@ function renderRoutingHospitals() {
                     </div>
                     <div style="display: flex; gap: 6px; flex-shrink: 0;">
                         <button class="note-toggle-btn" onclick="toggleHospitalNotes('hosp-${hosp.id}')">📝 Notes</button>
-                        <button class="nav-link-btn" onclick="openNav(${hosp.lat},${hosp.lng})">MAP Nav</button>
+                        <button class="nav-link-btn" onclick="openNav(${hosp.lat}, ${hosp.lng})">MAP Nav</button>
                     </div>
                 </div>
                 <div id="hosp-notes-hosp-${hosp.id}" class="notes-section">
@@ -250,7 +250,7 @@ function evaluateDestination() {
                 </div>
                 <div style="display: flex; gap: 6px; flex-shrink: 0;">
                     <button class="note-toggle-btn" onclick="toggleHospitalNotes('triage-${hosp.id}')">📝 Notes</button>
-                    <button class="nav-link-btn" onclick="openNav(${hosp.lat},${hosp.lng})">MAP Nav</button>
+                    <button class="nav-link-btn" onclick="openNav(${hosp.lat}, ${hosp.lng})">MAP Nav</button>
                 </div>
             </div>
             <div id="hosp-notes-triage-${hosp.id}" class="notes-section">
@@ -326,4 +326,589 @@ function renderDispatchList(data) {
             } else if (!cleanBeat.startsWith('SE') && !cleanBeat.startsWith('BEAT')) {
                 cleanBeat = 'BEAT ' + cleanBeat;
             }
-            beatBadge = `<
+            beatBadge = `<span style="background-color: #003366; color: #ffffff; font-size: 11px; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-left: 6px;">${cleanBeat}</span>`;
+        }
+
+        const units = Array.isArray(call.unit_codes) && call.unit_codes.length > 0 
+            ? call.unit_codes.join(', ') 
+            : (call.unit || call.assigned_units || '');
+
+        const timeStr = call.created_at || call.dispatch_time ? 
+            new Date(call.created_at || call.dispatch_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
+
+        const rawLat = parseFloat(call.latitude || call.lat || (call.location && call.location.lat));
+        const rawLng = parseFloat(call.longitude || call.lng || call.lon || (call.location && call.location.lng));
+        const hasCoords = !isNaN(rawLat) && !isNaN(rawLng);
+
+        const clickHandler = hasCoords 
+            ? `verifyDispatchCoords(${rawLat}, ${rawLng}, '${fullAddress.replace(/'/g, "\\'")}')`
+            : `selectDispatchAddress('${fullAddress.replace(/'/g, "\\'")}')`;
+
+        const locationTag = hasCoords ? `<span style="color:#2b6cb0; font-size:11px; font-weight:600; margin-left:4px;">📍 GPS Pin</span>` : '';
+
+        return `
+            <div class="er-card" style="margin-bottom: 6px; padding: 10px; background-color: #f8fafc; border-left: 4px solid #3182ce;">
+                <div class="er-header-row">
+                    <div class="er-title-area">
+                        <strong style="color: #003366; font-size: 14px;">${callType}</strong>${beatBadge}${locationTag}
+                        <span style="display: block; font-size: 13px; color: #2d3748; margin-top: 3px;">${fullAddress}</span>
+                        <span class="station-subtitle" style="display: block; font-size: 11px; color: #718096; margin-top: 2px;">
+                            ${units ? 'Unit: ' + units + ' | ' : ''}${timeStr}
+                        </span>
+                    </div>
+                    <button class="action-btn" style="padding: 6px 12px; font-size: 12px; flex-shrink: 0;" onclick="${clickHandler}">
+                        Verify
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function verifyDispatchCoords(lat, lng, fallbackLabel) {
+    if (typeof google !== 'undefined' && google.maps && map) {
+        const latLng = new google.maps.LatLng(lat, lng);
+        map.setCenter(latLng);
+        map.setZoom(16);
+        handleMapClick(latLng);
+    } else {
+        selectDispatchAddress(fallbackLabel);
+    }
+}
+
+function selectDispatchAddress(address) {
+    if (inputEl) {
+        inputEl.value = address;
+        clearBtn.style.display = 'block';
+        verifyAddress();
+    }
+}
+
+function startDispatchAutoPolling() {
+    fetchRecentDispatches();
+    if (dispatchIntervalTimer) clearInterval(dispatchIntervalTimer);
+    dispatchIntervalTimer = setInterval(fetchRecentDispatches, 60000);
+}
+
+// Shift Eats Functions
+function pickRandomRestaurant() {
+    const resultCard = document.getElementById('randomResult');
+    const nameEl = document.getElementById('randomName');
+    const noteEl = document.getElementById('randomNote');
+    const navBtn = document.getElementById('randomNavBtn');
+    const googleBtn = document.getElementById('randomGoogleBtn');
+    const webBtn = document.getElementById('randomWebBtn');
+
+    resultCard.style.display = 'block';
+    nameEl.innerText = 'Spinning... 🎲';
+    noteEl.style.display = 'none';
+    noteEl.innerText = '';
+
+    let counter = 0;
+    const interval = setInterval(() => {
+        const tempIdx = Math.floor(Math.random() * restaurantList.length);
+        nameEl.innerText = restaurantList[tempIdx];
+        counter++;
+        if (counter > 12) {
+            clearInterval(interval);
+            const finalIdx = Math.floor(Math.random() * restaurantList.length);
+            const picked = restaurantList[finalIdx];
+            nameEl.innerText = picked;
+            
+            const noteText = window.sharedFoodNotes && window.sharedFoodNotes[picked];
+            if (noteText) {
+                noteEl.style.display = 'block';
+                noteEl.innerText = '📝 Note: ' + noteText;
+            } else {
+                noteEl.style.display = 'none';
+            }
+
+            navBtn.onclick = () => openNavAddress(picked + ', Louisville, KY');
+            googleBtn.onclick = () => openWebSearch(picked + ' Louisville KY');
+            webBtn.onclick = () => openWebSearch(picked + ' Louisville KY order menu');
+        }
+    }, 80);
+}
+
+function setCategoryFilter(cat, btnEl) {
+    currentEatsCategory = cat;
+    document.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+    if (btnEl) btnEl.classList.add('active');
+    filterRestaurants();
+}
+
+function filterRestaurants() {
+    const grid = document.getElementById('restaurantGrid');
+    const searchInputEl = document.getElementById('eatsSearchInput');
+    const totalCountEl = document.getElementById('totalCount');
+    if (totalCountEl) totalCountEl.innerText = restaurantList.length;
+
+    if (!grid || !searchInputEl) return;
+    
+    const query = (searchInputEl.value || '').toLowerCase();
+
+    const categoryKeywords = {
+        'pizza': ['pizza', 'bearnos', 'boombozz', 'diorio', 'jet', 'papa json', 'pizzaville', 'redbrick', 'coals', 'blaze', 'saints', 'impellizzeri', 'craft house'],
+        'mexican': ['mexican', 'taco', 'nopal', 'tarasco', 'condado', 'aztecas', 'cocina', 'tres amigos', 'limón', 'limon', 'bandido', 'chuy', 'felipe', 'las maria', 'salsarita', 'qdoba', 'chipotle', 'mariachi', 'guanajuato'],
+        'bbq': ['barbeque', 'bbq', 'momma', 'city barbeque', 'mission bbq', 'charcoal', 'pickles & bbq', 'kupbop'],
+        'burgers': ['burger', 'smashburger', 'white castle', 'wendy', 'mcdonald', 'five guys', 'red robin', 'cousins', 'drake', 'jack in the box', 'jaggers', 'charleys'],
+        'asian': ['thai', 'asahi', 'china', 'ginza', 'jade palace', 'lemongrass', 'nam nam', 'oriental house', 'p.f. chang', 'panda express', 'pho', 'sakura', 'simply thai', 'tokyo', 'togo sushi', 'wasabi', 'bahn thai', 'jasmin', 'hiko-A-mon', 'choi', 'ruby thai'],
+        'breakfast': ['cafe', 'coffee', 'bagel', 'biscuit belly', 'bruegger', 'con huevos', 'dunkin', 'first watch', 'heine', 'highland morning', 'ihop', 'wild eggs', 'waffle house', 'cinnaholic', 'donut', 'plehn', 'bakery', 'eats', 'paris baguette', 'north lime', 'starving artists', 'bamboo', 'cinnabon', 'nothing bundt', 'sunergos', 'graeter', 'comfy cow', 'deli', 'fruit', 'blossom', 'elderberry', 'half-peach', 'crumbl', 'panaderia', 'tortilleria', 'supermercado', 'carniceria', 'baskin-robbins']
+    };
+
+    const filtered = restaurantList.filter(name => {
+        const lowerName = name.toLowerCase();
+        const matchesQuery = lowerName.includes(query);
+        if (!matchesQuery) return false;
+        if (currentEatsCategory === 'all') return true;
+        const keywords = categoryKeywords[currentEatsCategory] || [];
+        return keywords.some(kw => lowerName.includes(kw));
+    });
+
+    if (filtered.length === 0) {
+        grid.innerHTML = `<div style="color: #718096; text-align: center; padding: 15px; grid-column: 1 / -1;">No matching places found. Try another search!</div>`;
+        return;
+    }
+
+    grid.innerHTML = filtered.map(name => {
+        const safeName = name.replace(/[^a-zA-Z0-9]/g, '_');
+        const existingNote = (window.sharedFoodNotes && window.sharedFoodNotes[name]) || '';
+        const noteIndicator = existingNote ? ' 📝' : '';
+        
+        return `
+            <div class="er-card">
+                <div class="er-header-row">
+                    <div class="er-title-area">
+                        <span>${name}${noteIndicator}</span>
+                    </div>
+                    <div style="display: flex; gap: 4px; flex-shrink: 0;">
+                        <button class="note-toggle-btn" onclick="toggleFoodNotes('${safeName}')">📝 Notes</button>
+                        <button class="google-link-btn" onclick="openWebSearch('${name.replace(/'/g, "\\'")}, Louisville KY')">🔍 Google</button>
+                        <button class="nav-link-btn" onclick="openNavAddress('${name.replace(/'/g, "\\'")}, Louisville, KY')">MAP Nav</button>
+                    </div>
+                </div>
+                <div id="food-notes-${safeName}" class="notes-section">
+                    <input type="text" id="food-note-input-${safeName}" value="${existingNote}" placeholder="Add shared crew note (e.g. fast delivery, parking tip)...">
+                    <button class="web-link-btn" onclick="saveFoodNote('${name.replace(/'/g, "\\'")}', document.getElementById('food-note-input-${safeName}').value)">💾 Save Note to Cloud</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// Cloud Syncing
+async function loadSharedNotes() {
+    try {
+        const response = await fetch(GAS_WEB_APP_URL);
+        const data = await response.json();
+        window.sharedFoodNotes = (data.record && data.record.notes) || data.notes || {};
+        window.sharedHospitalNotes = (data.record && data.record.hospitalNotes) || data.hospitalNotes || {};
+        filterRestaurants();
+        renderRoutingHospitals();
+    } catch (err) {
+        console.error('Failed to load shared notes', err);
+    }
+}
+
+async function saveFoodNote(restaurantName, noteText) {
+    if (!window.sharedFoodNotes) window.sharedFoodNotes = {};
+    window.sharedFoodNotes[restaurantName] = noteText;
+
+    try {
+        const response = await fetch(GAS_WEB_APP_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ 
+                notes: window.sharedFoodNotes, 
+                hospitalNotes: window.sharedHospitalNotes 
+            })
+        });
+        
+        if (response.ok) alert('Food note saved to cloud!');
+    } catch (err) {
+        console.error('Failed to save food note', err);
+    }
+}
+
+async function saveHospitalNote(hospId, noteText) {
+    if (!window.sharedHospitalNotes) window.sharedHospitalNotes = {};
+    window.sharedHospitalNotes[hospId] = noteText;
+
+    try {
+        const response = await fetch(GAS_WEB_APP_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ 
+                notes: window.sharedFoodNotes, 
+                hospitalNotes: window.sharedHospitalNotes 
+            })
+        });
+        
+        if (response.ok) {
+            alert('Hospital note saved and shared with the crew!');
+            renderRoutingHospitals();
+            if (document.getElementById('guidelinesTab').classList.contains('active')) {
+                evaluateDestination();
+            }
+        }
+    } catch (err) {
+        console.error('Failed to save hospital note', err);
+    }
+}
+
+async function logCanceledRun() {
+    const selectedUnit = document.getElementById('unitSelect').value;
+    const logBtn = document.getElementById('logRunBtn');
+
+    if (!currentSearchedAddress) {
+        alert('No valid location selected to log.');
+        return;
+    }
+
+    logBtn.disabled = true;
+    logBtn.innerText = '⏳ Logging run...';
+
+    const timestamp = new Date().toLocaleString("en-US", { timeZone: "America/Kentucky/Louisville" });
+
+    try {
+        const response = await fetch(GAS_WEB_APP_URL, {
+            method: 'POST',
+            redirect: 'follow',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({
+                action: 'log_run',
+                timestamp: timestamp,
+                unit: selectedUnit,
+                address: currentSearchedAddress
+            })
+        });
+
+        const result = await response.json();
+        if (result.status === 'success') {
+            alert(`Canceled run logged successfully for Medic ${selectedUnit}!`);
+            document.getElementById('logRunContainer').style.display = 'none';
+        } else {
+            alert('Error logging run: ' + (result.message || 'Unknown error'));
+        }
+    } catch (err) {
+        console.error('Failed to log canceled run', err);
+    } finally {
+        logBtn.disabled = false;
+        logBtn.innerText = '📋 Log Canceled Run to Cloud Sheet';
+    }
+}
+
+function toggleFoodNotes(id) {
+    const panel = document.getElementById(`food-notes-${id}`);
+    if (panel) panel.classList.toggle('active');
+}
+
+function toggleHospitalNotes(compoundId) {
+    const panel = document.getElementById(`hosp-notes-${compoundId}`);
+    if (panel) panel.classList.toggle('active');
+}
+
+// Service Worker Registration
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW registration failed: ', err));
+    });
+}
+
+function copyAppUrl() {
+    const currentAppUrl = window.location.href.split('?')[0];
+    navigator.clipboard.writeText(currentAppUrl).then(() => {
+        alert('App link copied to clipboard!');
+    });
+}
+
+function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+    const tabIndices = {
+        'verifier': 0,
+        'protocols': 1,
+        'guidelines': 2,
+        'routing': 3,
+        'home': 4,
+        'eats': 5,
+        'share': 6
+    };
+
+    if (tabIndices[tab] !== undefined) {
+        document.querySelectorAll('.tab-btn')[tabIndices[tab]].classList.add('active');
+    }
+    
+    const tabEl = document.getElementById(tab + 'Tab');
+    if (tabEl) tabEl.classList.add('active');
+
+    if (tab === 'verifier') {
+        if (!userLocation) getUserGeolocation();
+        if (map && boundaryBounds) map.fitBounds(boundaryBounds);
+    } else if (tab === 'guidelines') {
+        if (!userLocation) getUserGeolocation();
+        updateEmergencyOptions();
+    } else if (tab === 'routing') {
+        if (!userLocation) getUserGeolocation();
+        renderRoutingHospitals();
+    } else if (tab === 'eats') {
+        loadSharedNotes();
+    }
+}
+
+function resetForm() {
+    if (inputEl) inputEl.value = '';
+    if (clearBtn) clearBtn.style.display = 'none';
+    if (statusDiv) {
+        statusDiv.className = '';
+        statusDiv.style.display = 'none';
+        statusDiv.innerHTML = '';
+    }
+    const logContainer = document.getElementById('logRunContainer');
+    if (logContainer) logContainer.style.display = 'none';
+    if (marker) { marker.setMap(null); marker = null; }
+    if (map && boundaryBounds) map.fitBounds(boundaryBounds);
+}
+
+function addHistoryEntry(address, statusClass, badgeText) {
+    searchHistory = searchHistory.filter(item => item.address.toLowerCase() !== address.toLowerCase());
+    searchHistory.unshift({ address, statusClass, badgeText });
+    if (searchHistory.length > 10) searchHistory.pop();
+    renderHistory();
+}
+
+function renderHistory() {
+    if (!historyContainer || !historyList) return;
+    if (searchHistory.length === 0) {
+        historyContainer.style.display = 'none';
+        historyList.innerHTML = '';
+        return;
+    }
+    if (document.getElementById('verifierTab').classList.contains('active')) {
+        historyContainer.style.display = 'block';
+    }
+    historyList.innerHTML = searchHistory.map(item => `
+        <li class="history-item">
+            <span class="history-address" title="${item.address}">${item.address}</span>
+            <span class="badge ${item.statusClass}">${item.badgeText}</span>
+        </li>
+    `).join('');
+}
+
+function clearHistory() {
+    searchHistory = [];
+    renderHistory();
+}
+
+function openNav(lat, lng) {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    let navUrl = isIOS ? `maps://maps.apple.com/?daddr=${lat},${lng}&dirflg=d` : `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=driving`;
+    window.open(navUrl, '_blank');
+}
+
+function openNavAddress(address) {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const encodedAddress = encodeURIComponent(address);
+    let navUrl = isIOS ? `maps://maps.apple.com/?daddr=${encodedAddress}&dirflg=d` : `https://www.google.com/maps/dir/?api=1&destination=${encodedAddress}&travelmode=driving`;
+    window.open(navUrl, '_blank');
+}
+
+function openWebSearch(query) {
+    window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, '_blank');
+}
+
+function loadGoogleMaps() {
+    const script = document.createElement("script");
+    script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyBCnFOrSS9cHJjJOKQ8Nsp0unHZs_IsYu0&libraries=geometry,places&callback=initMap&loading=async";
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
+}
+
+window.initMap = function() {
+    map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 12,
+        center: { lat: 38.2500, lng: -85.6500 },
+        disableDefaultUI: true,
+        zoomControl: true,
+        gestureHandling: 'greedy'
+    });
+
+    geocoder = new google.maps.Geocoder();
+
+    const louisvilleBounds = new google.maps.LatLngBounds(
+        new google.maps.LatLng(38.0000, -85.9500),
+        new google.maps.LatLng(38.4500, -85.3500)
+    );
+
+    autocomplete = new google.maps.places.Autocomplete(inputEl, {
+        bounds: louisvilleBounds,
+        strictBounds: false,
+        componentRestrictions: { country: 'us' },
+        fields: ['formatted_address', 'geometry']
+    });
+
+    autocomplete.addListener('place_changed', function() {
+        const place = autocomplete.getPlace();
+        if (place && place.formatted_address) {
+            inputEl.value = place.formatted_address;
+            clearBtn.style.display = 'block';
+            verifyAddress();
+        }
+    });
+
+    // Uses your local geofence.js / geojsonData including the west and south buffers
+    map.data.addGeoJson(geojsonData);
+    map.data.setStyle(function(feature) {
+        return {
+            fillColor: feature.getProperty('fill') || '#003366',
+            fillOpacity: feature.getProperty('fill-opacity') || 0.25,
+            strokeColor: feature.getProperty('stroke') || '#003366',
+            strokeWeight: feature.getProperty('stroke-width') || 2,
+            strokeOpacity: feature.getProperty('stroke-opacity') || 1
+        };
+    });
+
+    const ring = geojsonData.features[0].geometry.coordinates[0];
+    const path = ring.map(coord => ({ lat: coord[1], lng: coord[0] }));
+    boundaryPolygon = new google.maps.Polygon({ paths: path });
+
+    boundaryBounds = new google.maps.LatLngBounds();
+    path.forEach(pt => boundaryBounds.extend(pt));
+    map.fitBounds(boundaryBounds);
+
+    map.addListener('click', function(e) { handleMapClick(e.latLng); });
+    map.data.addListener('click', function(e) { handleMapClick(e.latLng); });
+};
+
+async function fetchOutsideAgencyName(lat, lng) {
+    try {
+        const res = await fetch(`https://gis.lojic.org/maps/rest/services/LojicSolutions/OpenDataPublicSafety/MapServer/1/query?geometry=${lng},${lat}&geometryType=esriGeometryPoint&spatialRel=esriSpatialRelIntersects&inSR=4326&outFields=NAME,DISTRICT,COMPANY&f=json`);
+        const data = await res.json();
+        if (data.features && data.features.length > 0) {
+            const props = data.features[0].attributes || {};
+            return props.NAME || props.DISTRICT || props.COMPANY || 'Outside District';
+        }
+    } catch(e) {}
+    return 'Outside District';
+}
+
+function handleMapClick(latLng) {
+    const logContainer = document.getElementById('logRunContainer');
+    if (logContainer) logContainer.style.display = 'none';
+
+    if (marker) marker.setMap(null);
+    marker = new google.maps.Marker({
+        position: latLng,
+        map: map,
+        animation: google.maps.Animation.DROP,
+        title: "Selected Location"
+    });
+
+    statusDiv.className = 'loading';
+    statusDiv.style.display = 'block';
+    statusDiv.innerHTML = '📍 Reverse-geocoding dropped pin...';
+
+    geocoder.geocode({ location: latLng }, function(results, status) {
+        let displayAddress = '';
+
+        if (status === 'OK' && results[0]) {
+            displayAddress = results[0].formatted_address;
+        } else {
+            displayAddress = `Coordinates: ${latLng.lat().toFixed(5)}, ${latLng.lng().toFixed(5)}`;
+        }
+
+        inputEl.value = displayAddress;
+        clearBtn.style.display = 'block';
+        currentSearchedAddress = displayAddress;
+
+        const isInside = google.maps.geometry.poly.containsLocation(latLng, boundaryPolygon);
+        const dirBtnHtml = `<br><button class="dir-btn-inline" onclick="openNav(${latLng.lat()}, ${latLng.lng()})">MAP Get Directions to Dropped Pin</button>`;
+
+        if (isInside) {
+            statusDiv.className = 'inside';
+            statusDiv.style.display = 'block';
+            statusDiv.innerHTML = `✅ IN DISTRICT (Buffer Area): Dropped pin (${displayAddress}) is WITHIN operational coverage.${dirBtnHtml}`;
+            addHistoryEntry(displayAddress, 'in-district', 'In District');
+        } else {
+            statusDiv.className = 'outside';
+            statusDiv.style.display = 'block';
+            statusDiv.innerHTML = `❌ OUT OF DISTRICT: Checking agency...${dirBtnHtml}`;
+
+            fetchOutsideAgencyName(latLng.lat(), latLng.lng()).then(agency => {
+                statusDiv.innerHTML = `❌ OUT OF DISTRICT: Dropped pin is in <b>${agency}</b>.${dirBtnHtml}`;
+            });
+
+            addHistoryEntry(displayAddress, 'out-district', 'Out of District');
+            setNearestUnitDefault(latLng);
+            if (logContainer) logContainer.style.display = 'block';
+        }
+    });
+}
+
+function verifyAddress() {
+    const address = inputEl.value.trim();
+    const logContainer = document.getElementById('logRunContainer');
+    if (logContainer) logContainer.style.display = 'none';
+
+    if (!address) {
+        statusDiv.className = 'outside';
+        statusDiv.style.display = 'block';
+        statusDiv.innerHTML = '⚠️ Please enter an address to verify.';
+        return;
+    }
+
+    verifyBtn.disabled = true;
+    statusDiv.className = 'loading';
+    statusDiv.style.display = 'block';
+    statusDiv.innerHTML = '🔍 Checking address...';
+
+    const searchAddress = address.toLowerCase().includes('ky') || address.toLowerCase().includes('kentucky') 
+        ? address 
+        : `${address}, Louisville, KY`;
+
+    geocoder.geocode({ address: searchAddress }, function(results, status) {
+        verifyBtn.disabled = false;
+
+        if (status === 'OK' && results[0]) {
+            const location = results[0].geometry.location;
+            const formattedAddress = results[0].formatted_address;
+            currentSearchedAddress = formattedAddress;
+            const isInside = google.maps.geometry.poly.containsLocation(location, boundaryPolygon);
+
+            const dirBtnHtml = `<br><button class="dir-btn-inline" onclick="openNav(${location.lat()}, ${location.lng()})">MAP Get Directions to Address</button>`;
+
+            if (isInside) {
+                statusDiv.className = 'inside';
+                statusDiv.style.display = 'block';
+                statusDiv.innerHTML = '✅ IN DISTRICT (Buffer Area): Address is WITHIN operational coverage.' + dirBtnHtml;
+                addHistoryEntry(formattedAddress, 'in-district', 'In District');
+            } else {
+                statusDiv.className = 'outside';
+                statusDiv.style.display = 'block';
+                statusDiv.innerHTML = '❌ OUT OF DISTRICT: Checking agency...' + dirBtnHtml;
+
+                fetchOutsideAgencyName(location.lat(), location.lng()).then(agency => {
+                    statusDiv.innerHTML = `❌ OUT OF DISTRICT: Address is in <b>${agency}</b>.` + dirBtnHtml;
+                });
+
+                addHistoryEntry(formattedAddress, 'out-district', 'Out of District');
+                setNearestUnitDefault(location);
+                if (logContainer) logContainer.style.display = 'block';
+            }
+
+            if (marker) marker.setMap(null);
+            marker = new google.maps.Marker({ position: location, map: map, title: address });
+            map.setCenter(location);
+            map.setZoom(15);
+        } else {
+            statusDiv.className = 'outside';
+            statusDiv.style.display = 'block';
+            statusDiv.innerHTML = '❌ Address not found. Check spelling or street number.';
+            addHistoryEntry(address, 'not-found', 'Not Found');
+        }
+    });
+}
