@@ -1372,7 +1372,7 @@
             const response = await fetch(`${GAS_WEB_APP_URL}?action=get_dispatches`);
             const data = await response.json();
 
-            if (data.error || data.status === 'error') {
+            if (data.status === 'error' || data.error) {
                 console.error('FirstDue Proxy Error:', data.message || data.error);
                 if (statusEl) statusEl.innerText = 'Sync error';
                 return;
@@ -1390,8 +1390,8 @@
         const container = document.getElementById('recentDispatchesList');
         if (!container) return;
 
-        // Extract FirstDue array items
-        const calls = Array.isArray(data) ? data : (data.calls || data.dispatches || []);
+        // Extract FirstDue array items reliably across direct arrays and object wrappers
+        const calls = Array.isArray(data) ? data : (data.calls || data.dispatches || data.data || []);
         const recentTen = calls.slice(0, 10);
 
         if (recentTen.length === 0) {
@@ -1401,16 +1401,16 @@
 
         container.innerHTML = recentTen.map(call => {
             // Map exact FirstDue schema properties
-            const rawAddress = call.address || call.location || 'Unknown Address';
+            const rawAddress = call.address || call.location || call.incident_address || 'Unknown Address';
             const city = call.city ? `, ${call.city}` : '';
             const fullAddress = `${rawAddress}${city}`;
             
-            const callType = call.type || call.incident_type_code || 'EMS Call';
+            const callType = call.type || call.incident_type_code || call.description || 'EMS Call';
             
-            // Extract assigned units
+            // Extract assigned units array
             const units = Array.isArray(call.unit_codes) && call.unit_codes.length > 0 
                 ? call.unit_codes.join(', ') 
-                : '';
+                : (call.unit || '');
 
             // Format dispatch timestamp
             const timeStr = call.created_at ? 
@@ -1560,8 +1560,8 @@
         try {
             const response = await fetch(GAS_WEB_APP_URL);
             const data = await response.json();
-            window.sharedFoodNotes = data.record.notes || {};
-            window.sharedHospitalNotes = data.record.hospitalNotes || {};
+            window.sharedFoodNotes = (data.record && data.record.notes) || data.notes || {};
+            window.sharedHospitalNotes = (data.record && data.record.hospitalNotes) || data.hospitalNotes || {};
             filterRestaurants();
             renderRoutingHospitals();
         } catch (err) {
