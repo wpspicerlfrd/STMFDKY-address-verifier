@@ -311,6 +311,22 @@ function renderDispatchList(data) {
         
         const callType = call.type || call.incident_type_code || call.description || call.nature || 'EMS Call';
         
+        // Extract Sector/Box Area designation from payload fields or address regex
+        let rawSector = call.sector || call.zone || call.box_area || call.district || '';
+        if (!rawSector) {
+            const sectorMatch = (fullAddress + ' ' + callType).match(/\b(SE\d{2,3}|SECTOR\s*\d{2,3}|BOX\s*\d{2,4})\b/i);
+            if (sectorMatch) rawSector = sectorMatch[0];
+        }
+
+        let sectorBadge = '';
+        if (rawSector) {
+            let cleanSec = rawSector.toString().trim().toUpperCase();
+            if (!cleanSec.startsWith('SE')) {
+                cleanSec = 'SE' + cleanSec.replace(/[^0-9]/g, '');
+            }
+            sectorBadge = `<span style="background-color: #003366; color: #ffffff; font-size: 11px; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-left: 6px;">${cleanSec}</span>`;
+        }
+
         const units = Array.isArray(call.unit_codes) && call.unit_codes.length > 0 
             ? call.unit_codes.join(', ') 
             : (call.unit || call.assigned_units || '');
@@ -318,23 +334,47 @@ function renderDispatchList(data) {
         const timeStr = call.created_at || call.dispatch_time ? 
             new Date(call.created_at || call.dispatch_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
 
-        const escapedAddr = fullAddress.replace(/'/g, "\\'");
+        // Safe extraction of Lat/Lng coordinates from raw FirstDue payload
+        const rawLat = parseFloat(call.latitude || call.lat || (call.location && call.location.lat));
+        const rawLng = parseFloat(call.longitude || call.lng || call.lon || (call.location && call.location.lng));
+        const hasCoords = !isNaN(rawLat) && !isNaN(rawLng);
+
+        // Verification button action: Uses exact Lat/Long pin if present, or falls back to address geocoding
+        const clickHandler = hasCoords 
+            ? `verifyDispatchCoords(${rawLat}, ${rawLng}, '${fullAddress.replace(/'/g, "\\'")}')`
+            : `selectDispatchAddress('${fullAddress.replace(/'/g, "\\'")}')`;
+
+        const locationTag = hasCoords ? `<span style="color:#2b6cb0; font-size:11px; font-weight:600; margin-left:4px;">📍 GPS Pin</span>` : '';
 
         return `
-            <div class="er-card" style="margin-bottom: 6px; padding: 10px; background-color: #f8fafc;">
+            <div class="er-card" style="margin-bottom: 6px; padding: 10px; background-color: #f8fafc; border-left: 4px solid #3182ce;">
                 <div class="er-header-row">
                     <div class="er-title-area">
-                        <strong style="color: #003366;">${callType}</strong>
-                        <span style="display: block; font-size: 13px; color: #2d3748; margin-top: 2px;">${fullAddress}</span>
-                        <span class="station-subtitle">${units ? 'Unit: ' + units + ' | ' : ''}${timeStr}</span>
+                        <strong style="color: #003366; font-size: 14px;">${callType}</strong>${sectorBadge}${locationTag}
+                        <span style="display: block; font-size: 13px; color: #2d3748; margin-top: 3px;">${fullAddress}</span>
+                        <span class="station-subtitle" style="display: block; font-size: 11px; color: #718096; margin-top: 2px;">
+                            ${units ? 'Unit: ' + units + ' | ' : ''}${timeStr}
+                        </span>
                     </div>
-                    <button class="action-btn" style="padding: 6px 12px; font-size: 12px; flex-shrink: 0;" onclick="selectDispatchAddress('${escapedAddr}')">
+                    <button class="action-btn" style="padding: 6px 12px; font-size: 12px; flex-shrink: 0;" onclick="${clickHandler}">
                         Verify
                     </button>
                 </div>
             </div>
         `;
     }).join('');
+}
+
+// Maps direct Lat/Lng points straight onto the district map
+function verifyDispatchCoords(lat, lng, fallbackLabel) {
+    if (typeof google !== 'undefined' && google.maps && map) {
+        const latLng = new google.maps.LatLng(lat, lng);
+        map.setCenter(latLng);
+        map.setZoom(16);
+        handleMapClick(latLng);
+    } else {
+        selectDispatchAddress(fallbackLabel);
+    }
 }
 
 function selectDispatchAddress(address) {
@@ -500,355 +540,4 @@ async function saveHospitalNote(hospId, noteText) {
             method: 'POST',
             headers: { 'Content-Type': 'text/plain;charset=utf-8' },
             body: JSON.stringify({ 
-                notes: window.sharedFoodNotes, 
-                hospitalNotes: window.sharedHospitalNotes 
-            })
-        });
-        
-        if (response.ok) {
-            alert('Hospital note saved and shared with the crew!');
-            renderRoutingHospitals();
-            if (document.getElementById('guidelinesTab').classList.contains('active')) {
-                evaluateDestination();
-            }
-        }
-    } catch (err) {
-        console.error('Failed to save hospital note', err);
-    }
-}
-
-async function logCanceledRun() {
-    const selectedUnit = document.getElementById('unitSelect').value;
-    const logBtn = document.getElementById('logRunBtn');
-
-    if (!currentSearchedAddress) {
-        alert('No valid location selected to log.');
-        return;
-    }
-
-    logBtn.disabled = true;
-    logBtn.innerText = '⏳ Logging run...';
-
-    const timestamp = new Date().toLocaleString("en-US", { timeZone: "America/Kentucky/Louisville" });
-
-    try {
-        const response = await fetch(GAS_WEB_APP_URL, {
-            method: 'POST',
-            redirect: 'follow',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify({
-                action: 'log_run',
-                timestamp: timestamp,
-                unit: selectedUnit,
-                address: currentSearchedAddress
-            })
-        });
-
-        const result = await response.json();
-        if (result.status === 'success') {
-            alert(`Canceled run logged successfully for Medic ${selectedUnit}!`);
-            document.getElementById('logRunContainer').style.display = 'none';
-        } else {
-            alert('Error logging run: ' + (result.message || 'Unknown error'));
-        }
-    } catch (err) {
-        console.error('Failed to log canceled run', err);
-    } finally {
-        logBtn.disabled = false;
-        logBtn.innerText = '📋 Log Canceled Run to Cloud Sheet';
-    }
-}
-
-function toggleFoodNotes(id) {
-    const panel = document.getElementById(`food-notes-${id}`);
-    if (panel) panel.classList.toggle('active');
-}
-
-function toggleHospitalNotes(compoundId) {
-    const panel = document.getElementById(`hosp-notes-${compoundId}`);
-    if (panel) panel.classList.toggle('active');
-}
-
-// Service Worker Registration
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW registration failed: ', err));
-    });
-}
-
-function copyAppUrl() {
-    const currentAppUrl = window.location.href.split('?')[0];
-    navigator.clipboard.writeText(currentAppUrl).then(() => {
-        alert('App link copied to clipboard!');
-    });
-}
-
-function switchTab(tab) {
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-
-    const tabIndices = {
-        'verifier': 0,
-        'protocols': 1,
-        'guidelines': 2,
-        'routing': 3,
-        'home': 4,
-        'eats': 5,
-        'share': 6
-    };
-
-    if (tabIndices[tab] !== undefined) {
-        document.querySelectorAll('.tab-btn')[tabIndices[tab]].classList.add('active');
-    }
-    
-    const tabEl = document.getElementById(tab + 'Tab');
-    if (tabEl) tabEl.classList.add('active');
-
-    if (tab === 'verifier') {
-        if (!userLocation) getUserGeolocation();
-        if (map && boundaryBounds) map.fitBounds(boundaryBounds);
-    } else if (tab === 'guidelines') {
-        if (!userLocation) getUserGeolocation();
-        updateEmergencyOptions();
-    } else if (tab === 'routing') {
-        if (!userLocation) getUserGeolocation();
-        renderRoutingHospitals();
-    } else if (tab === 'eats') {
-        loadSharedNotes();
-    }
-}
-
-function resetForm() {
-    if (inputEl) inputEl.value = '';
-    if (clearBtn) clearBtn.style.display = 'none';
-    if (statusDiv) {
-        statusDiv.className = '';
-        statusDiv.style.display = 'none';
-        statusDiv.innerHTML = '';
-    }
-    const logContainer = document.getElementById('logRunContainer');
-    if (logContainer) logContainer.style.display = 'none';
-    if (marker) { marker.setMap(null); marker = null; }
-    if (map && boundaryBounds) map.fitBounds(boundaryBounds);
-}
-
-function addHistoryEntry(address, statusClass, badgeText) {
-    searchHistory = searchHistory.filter(item => item.address.toLowerCase() !== address.toLowerCase());
-    searchHistory.unshift({ address, statusClass, badgeText });
-    if (searchHistory.length > 10) searchHistory.pop();
-    renderHistory();
-}
-
-function renderHistory() {
-    if (!historyContainer || !historyList) return;
-    if (searchHistory.length === 0) {
-        historyContainer.style.display = 'none';
-        historyList.innerHTML = '';
-        return;
-    }
-    if (document.getElementById('verifierTab').classList.contains('active')) {
-        historyContainer.style.display = 'block';
-    }
-    historyList.innerHTML = searchHistory.map(item => `
-        <li class="history-item">
-            <span class="history-address" title="${item.address}">${item.address}</span>
-            <span class="badge ${item.statusClass}">${item.badgeText}</span>
-        </li>
-    `).join('');
-}
-
-function clearHistory() {
-    searchHistory = [];
-    renderHistory();
-}
-
-function openNav(lat, lng) {
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
-                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-    let navUrl = isIOS ? `maps://maps.apple.com/?daddr=${lat},${lng}&dirflg=d` : `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=driving`;
-    window.open(navUrl, '_blank');
-}
-
-function openNavAddress(address) {
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
-                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-    const encodedAddress = encodeURIComponent(address);
-    let navUrl = isIOS ? `maps://maps.apple.com/?daddr=${encodedAddress}&dirflg=d` : `https://www.google.com/maps/dir/?api=1&destination=${encodedAddress}&travelmode=driving`;
-    window.open(navUrl, '_blank');
-}
-
-function openWebSearch(query) {
-    window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, '_blank');
-}
-
-function loadGoogleMaps() {
-    const script = document.createElement("script");
-    script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyBCnFOrSS9cHJjJOKQ8Nsp0unHZs_IsYu0&libraries=geometry,places&callback=initMap&loading=async";
-    script.async = true;
-    script.defer = true;
-    document.head.appendChild(script);
-}
-
-window.initMap = function() {
-    map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 12,
-        center: { lat: 38.2500, lng: -85.6500 },
-        disableDefaultUI: true,
-        zoomControl: true,
-        gestureHandling: 'greedy'
-    });
-
-    geocoder = new google.maps.Geocoder();
-
-    const louisvilleBounds = new google.maps.LatLngBounds(
-        new google.maps.LatLng(38.0000, -85.9500),
-        new google.maps.LatLng(38.4500, -85.3500)
-    );
-
-    autocomplete = new google.maps.places.Autocomplete(inputEl, {
-        bounds: louisvilleBounds,
-        strictBounds: false,
-        componentRestrictions: { country: 'us' },
-        fields: ['formatted_address', 'geometry']
-    });
-
-    autocomplete.addListener('place_changed', function() {
-        const place = autocomplete.getPlace();
-        if (place && place.formatted_address) {
-            inputEl.value = place.formatted_address;
-            clearBtn.style.display = 'block';
-            verifyAddress();
-        }
-    });
-
-    map.data.addGeoJson(geojsonData);
-    map.data.setStyle(function(feature) {
-        return {
-            fillColor: feature.getProperty('fill') || '#0000FF',
-            fillOpacity: feature.getProperty('fill-opacity') || 0.25,
-            strokeColor: feature.getProperty('stroke') || '#0000FF',
-            strokeWeight: feature.getProperty('stroke-width') || 2,
-            strokeOpacity: feature.getProperty('stroke-opacity') || 1
-        };
-    });
-
-    const ring = geojsonData.features[0].geometry.coordinates[0];
-    const path = ring.map(coord => ({ lat: coord[1], lng: coord[0] }));
-    boundaryPolygon = new google.maps.Polygon({ paths: path });
-
-    boundaryBounds = new google.maps.LatLngBounds();
-    path.forEach(pt => boundaryBounds.extend(pt));
-    map.fitBounds(boundaryBounds);
-
-    map.addListener('click', function(e) { handleMapClick(e.latLng); });
-    map.data.addListener('click', function(e) { handleMapClick(e.latLng); });
-};
-
-function handleMapClick(latLng) {
-    const logContainer = document.getElementById('logRunContainer');
-    if (logContainer) logContainer.style.display = 'none';
-
-    if (marker) marker.setMap(null);
-    marker = new google.maps.Marker({
-        position: latLng,
-        map: map,
-        animation: google.maps.Animation.DROP,
-        title: "Selected Location"
-    });
-
-    statusDiv.className = 'loading';
-    statusDiv.style.display = 'block';
-    statusDiv.innerHTML = '📍 Reverse-geocoding dropped pin...';
-
-    geocoder.geocode({ location: latLng }, function(results, status) {
-        let displayAddress = '';
-
-        if (status === 'OK' && results[0]) {
-            displayAddress = results[0].formatted_address;
-        } else {
-            displayAddress = `Coordinates: ${latLng.lat().toFixed(5)}, ${latLng.lng().toFixed(5)}`;
-        }
-
-        inputEl.value = displayAddress;
-        clearBtn.style.display = 'block';
-        currentSearchedAddress = displayAddress;
-
-        const isInside = google.maps.geometry.poly.containsLocation(latLng, boundaryPolygon);
-        const dirBtnHtml = `<br><button class="dir-btn-inline" onclick="openNav(${latLng.lat()}, ${latLng.lng()})">MAP Get Directions to Dropped Pin</button>`;
-
-        if (isInside) {
-            statusDiv.className = 'inside';
-            statusDiv.style.display = 'block';
-            statusDiv.innerHTML = `✅ IN DISTRICT: Dropped pin (${displayAddress}) is WITHIN the STMFDKY service area.${dirBtnHtml}`;
-            addHistoryEntry(displayAddress, 'in-district', 'In District');
-        } else {
-            statusDiv.className = 'outside';
-            statusDiv.style.display = 'block';
-            statusDiv.innerHTML = `❌ OUT OF DISTRICT: Dropped pin (${displayAddress}) is OUTSIDE the STMFDKY service area.${dirBtnHtml}`;
-            addHistoryEntry(displayAddress, 'out-district', 'Out of District');
-            
-            setNearestUnitDefault(latLng);
-            if (logContainer) logContainer.style.display = 'block';
-        }
-    });
-}
-
-function verifyAddress() {
-    const address = inputEl.value.trim();
-    const logContainer = document.getElementById('logRunContainer');
-    if (logContainer) logContainer.style.display = 'none';
-
-    if (!address) {
-        statusDiv.className = 'outside';
-        statusDiv.style.display = 'block';
-        statusDiv.innerHTML = '⚠️ Please enter an address to verify.';
-        return;
-    }
-
-    verifyBtn.disabled = true;
-    statusDiv.className = 'loading';
-    statusDiv.style.display = 'block';
-    statusDiv.innerHTML = '🔍 Checking address...';
-
-    const searchAddress = address.toLowerCase().includes('ky') || address.toLowerCase().includes('kentucky') 
-        ? address 
-        : `${address}, Louisville, KY`;
-
-    geocoder.geocode({ address: searchAddress }, function(results, status) {
-        verifyBtn.disabled = false;
-
-        if (status === 'OK' && results[0]) {
-            const location = results[0].geometry.location;
-            const formattedAddress = results[0].formatted_address;
-            currentSearchedAddress = formattedAddress;
-            const isInside = google.maps.geometry.poly.containsLocation(location, boundaryPolygon);
-
-            const dirBtnHtml = `<br><button class="dir-btn-inline" onclick="openNav(${location.lat()}, ${location.lng()})">MAP Get Directions to Address</button>`;
-
-            if (isInside) {
-                statusDiv.className = 'inside';
-                statusDiv.style.display = 'block';
-                statusDiv.innerHTML = '✅ IN DISTRICT: Address is WITHIN the STMFDKY service area.' + dirBtnHtml;
-                addHistoryEntry(formattedAddress, 'in-district', 'In District');
-            } else {
-                statusDiv.className = 'outside';
-                statusDiv.style.display = 'block';
-                statusDiv.innerHTML = '❌ OUT OF DISTRICT: Address is OUTSIDE the STMFDKY service area.' + dirBtnHtml;
-                addHistoryEntry(formattedAddress, 'out-district', 'Out of District');
-                
-                setNearestUnitDefault(location);
-                if (logContainer) logContainer.style.display = 'block';
-            }
-
-            if (marker) marker.setMap(null);
-            marker = new google.maps.Marker({ position: location, map: map, title: address });
-            map.setCenter(location);
-            map.setZoom(15);
-        } else {
-            statusDiv.className = 'outside';
-            statusDiv.style.display = 'block';
-            statusDiv.innerHTML = '❌ Address not found. Check spelling or street number.';
-            addHistoryEntry(address, 'not-found', 'Not Found');
-        }
-    });
-}
+                notes: window
