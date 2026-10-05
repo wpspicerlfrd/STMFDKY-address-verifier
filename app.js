@@ -887,7 +887,7 @@ function verifyAddress() {
             if (isInside) {
                 statusDiv.className = 'inside';
                 statusDiv.style.display = 'block';
-                statusDiv.innerHTML = '✅ IN DISTRICT (Buffer Area): Address is WITHIN operational coverage.' + dirBtnHtml;
+                statusDiv.innerHTML = '✅ IN DISTRICT: Address is WITHIN STMFD coverage area.' + dirBtnHtml;
                 addHistoryEntry(formattedAddress, 'in-district', 'In District');
             } else {
                 statusDiv.className = 'outside';
