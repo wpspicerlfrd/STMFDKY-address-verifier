@@ -786,7 +786,7 @@ window.initMap = function() {
 
 async function fetchOutsideAgencyName(lat, lng) {
     try {
-        const res = await fetch(`https://gis.lojic.org/maps/rest/services/LojicSolutions/OpenDataPublicSafety/MapServer/1/query?geometry=${lng},${lat}&geometryType=esriGeometryPoint&spatialRel=esriSpatialRelIntersects&inSR=4326&outFields=*&f=json`);
+        const res = await fetch(`https://gis.lojic.org/maps/rest/services/LojicSolutions/OpenDataPublicSafety/MapServer/1/query?outFields=*&where=1%3D1`);
         const data = await res.json();
         if (data.features && data.features.length > 0) {
             const attrs = data.features[0].attributes || {};
