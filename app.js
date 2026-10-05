@@ -1,10 +1,8 @@
-// Google Apps Script Secure Proxy URL
 const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyzgar0fBEo35BdTn1UxGCGVWcYgC5jKbY9iRgnHVjI9usWlzYsqM8XZeMQQntEWN6Ojw/exec';
 
 window.sharedFoodNotes = {};
 window.sharedHospitalNotes = {};
 
-// DOM Elements
 let inputEl, clearBtn, verifyBtn, statusDiv, mapWrapper, historyContainer, historyList;
 
 let map;
@@ -19,7 +17,6 @@ let currentEatsCategory = 'all';
 let currentSearchedAddress = '';
 let dispatchIntervalTimer = null;
 
-// St. Matthews Fire & EMS Station Coordinates
 const stmfdStations = [
     { unit: "146", lat: 38.2520, lng: -85.6441 },
     { unit: "147", lat: 38.2818, lng: -85.6322 },
@@ -42,8 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
         inputEl.addEventListener('keydown', e => { if (e.key === 'Enter') verifyAddress(); });
     }
 
-    // Set up QR Code and Share links dynamically
-    const currentAppUrl = window.location.href.split('?')[0];
+        const currentAppUrl = window.location.href.split('?')[0];
     const appUrlTextEl = document.getElementById('appUrlText');
     const qrCodeImgEl = document.getElementById('qrCodeImg');
     const smsShareBtnEl = document.getElementById('smsShareBtn');
@@ -52,7 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (qrCodeImgEl) qrCodeImgEl.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(currentAppUrl)}`;
     if (smsShareBtnEl) smsShareBtnEl.href = `sms:?body=${encodeURIComponent("Check out the STMFD SMART EMS App: " + currentAppUrl)}`;
 
-    // Startup Execution
+    
     getUserGeolocation();
     renderRoutingHospitals();
     loadGoogleMaps();
@@ -62,7 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
     startDispatchAutoPolling();
 });
 
-// Helper Functions
+
 function calculateDistance(lat1, lon1, lat2, lon2) {
     const R = 3958.8;
     const dLat = (lat2 - lat1) * Math.PI / 180;
