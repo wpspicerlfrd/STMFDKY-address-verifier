@@ -412,15 +412,13 @@ function selectDispatchAddress(address) {
 }
 
 function startDispatchAutoPolling() {
-    // Fetch immediately on startup
     fetchRecentDispatches();
-    
     if (dispatchIntervalTimer) clearInterval(dispatchIntervalTimer);
     
     // Poll every 10 seconds for near real-time sync
     dispatchIntervalTimer = setInterval(fetchRecentDispatches, 10000);
 
-    // Instantly fetch and process new dispatches when the user switches back to the app tab
+    // Instantly fetch and process new dispatches when user switches back to app tab
     document.addEventListener("visibilitychange", () => {
         if (!document.hidden) {
             fetchRecentDispatches();
@@ -882,7 +880,7 @@ function handleMapClick(latLng) {
         if (isInside) {
             statusDiv.className = 'inside';
             statusDiv.style.display = 'block';
-            statusDiv.innerHTML = `✅ IN DISTRICT (Buffer Area): Dropped pin (${displayAddress}) is WITHIN operational coverage.${dirBtnHtml}`;
+            statusDiv.innerHTML = `✅ IN DISTRICT: Dropped pin (${displayAddress}) is WITHIN coverage area.${dirBtnHtml}`;
             addHistoryEntry(displayAddress, 'in-district', 'In District');
         } else {
             statusDiv.className = 'outside';
@@ -935,7 +933,7 @@ function verifyAddress() {
             if (isInside) {
                 statusDiv.className = 'inside';
                 statusDiv.style.display = 'block';
-                statusDiv.innerHTML = '✅ IN DISTRICT (Buffer Area): Address is WITHIN operational coverage.' + dirBtnHtml;
+                statusDiv.innerHTML = '✅ IN DISTRICT: Address is WITHIN coverage area.' + dirBtnHtml;
                 addHistoryEntry(formattedAddress, 'in-district', 'In District');
             } else {
                 statusDiv.className = 'outside';
