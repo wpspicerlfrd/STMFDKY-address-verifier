@@ -57,6 +57,8 @@ document.addEventListener("DOMContentLoaded", () => {
     renderRoutingHospitals();
     loadGoogleMaps();
     loadSharedNotes();
+    
+    initFastDispatchLoad(); // Instantly displays saved dispatches on app open
     startDispatchAutoPolling();
 });
 
@@ -262,10 +264,24 @@ function evaluateDestination() {
     });
 }
 
-// FirstDue Real-Time Dispatch Pulling
+// FirstDue Real-Time Dispatch Pulling with Local Storage Caching
+function initFastDispatchLoad() {
+    const cachedData = localStorage.getItem('cached_firstdue_dispatches');
+    if (cachedData) {
+        try {
+            const parsed = JSON.parse(cachedData);
+            renderDispatchList(parsed);
+            const statusEl = document.getElementById('dispatchRefreshStatus');
+            if (statusEl) statusEl.innerText = 'Loaded from cache (syncing...)';
+        } catch (e) {}
+    }
+}
+
 async function fetchRecentDispatches() {
     const statusEl = document.getElementById('dispatchRefreshStatus');
-    if (statusEl) statusEl.innerText = 'Syncing...';
+    if (statusEl && !localStorage.getItem('cached_firstdue_dispatches')) {
+        statusEl.innerText = 'Syncing...';
+    }
 
     try {
         const response = await fetch(`${GAS_WEB_APP_URL}?action=get_dispatches`, { redirect: 'follow' });
@@ -278,11 +294,22 @@ async function fetchRecentDispatches() {
             return;
         }
 
+        let calls = [];
+        if (Array.isArray(data)) {
+            calls = data;
+        } else if (typeof data === 'object' && data !== null) {
+            calls = data.calls || data.dispatches || data.data || data.incidents || data.events || [];
+        }
+
+        if (calls.length > 0) {
+            localStorage.setItem('cached_firstdue_dispatches', JSON.stringify(calls));
+        }
+
         renderDispatchList(data);
         if (statusEl) statusEl.innerText = `Updated: ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
     } catch (err) {
         console.error('Failed to pull FirstDue dispatches:', err);
-        if (statusEl) statusEl.innerText = 'Sync error';
+        if (statusEl) statusEl.innerText = 'Sync error (using cache)';
     }
 }
 
@@ -760,7 +787,6 @@ window.initMap = function() {
         }
     });
 
-    // Uses your local geofence.js / geojsonData including the west and south buffers
     map.data.addGeoJson(geojsonData);
     map.data.setStyle(function(feature) {
         return {
@@ -845,7 +871,7 @@ function handleMapClick(latLng) {
         if (isInside) {
             statusDiv.className = 'inside';
             statusDiv.style.display = 'block';
-            statusDiv.innerHTML = `✅ IN DISTRICT: Dropped pin (${displayAddress}) is WITHIN STMFD coverage area.${dirBtnHtml}`;
+            statusDiv.innerHTML = `✅ IN DISTRICT (Buffer Area): Dropped pin (${displayAddress}) is WITHIN operational coverage.${dirBtnHtml}`;
             addHistoryEntry(displayAddress, 'in-district', 'In District');
         } else {
             statusDiv.className = 'outside';
@@ -898,7 +924,7 @@ function verifyAddress() {
             if (isInside) {
                 statusDiv.className = 'inside';
                 statusDiv.style.display = 'block';
-                statusDiv.innerHTML = '✅ IN DISTRICT: Address is WITHIN STMFD coverage area.' + dirBtnHtml;
+                statusDiv.innerHTML = '✅ IN DISTRICT (Buffer Area): Address is WITHIN operational coverage.' + dirBtnHtml;
                 addHistoryEntry(formattedAddress, 'in-district', 'In District');
             } else {
                 statusDiv.className = 'outside';
