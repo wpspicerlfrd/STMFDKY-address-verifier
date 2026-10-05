@@ -12,7 +12,7 @@ function renderDispatchList(data) {
     const recentTen = calls.slice(0, 10);
 
     if (recentTen.length === 0) {
-        container.innerHTML = '<div style="font-size:12px; color:#718096; padding:10px; text-align:center;">No recent EMS dispatch calls retrieved.</div>';
+        container.innerHTML = '<div style="font-size:12px; color:#718096; padding:10px; text-align:center;">No recent dispatch calls retrieved.</div>';
         return;
     }
 
@@ -21,18 +21,16 @@ function renderDispatchList(data) {
         const city = call.city ? `, ${call.city}` : '';
         const fullAddress = `${rawAddress}${city}`;
         
-        const callType = call.type || call.incident_type_code || call.description || call.nature || 'EMS Call';
+        const callType = call.type || call.incident_type_code || call.description || call.nature || 'Dispatch Call';
         
-        // Extract Sector / Zone / Box designation (e.g., SE45, SE30, Sector 45)
-        let rawSector = call.sector || call.zone || call.box_area || call.district || call.sub_station || '';
+        // Extract Sector: checks backend coordinates assignment first, then CAD fields, then regex string search
+        let rawSector = call.backend_sector || call.sector || call.zone || call.box_area || call.district || '';
         
-        // Regex fallback: Search address or call string if sector isn't in its own field
         if (!rawSector) {
             const sectorMatch = (fullAddress + ' ' + callType).match(/\b(SE\d{2,3}|SECTOR\s*\d{2,3}|BOX\s*\d{2,4})\b/i);
             if (sectorMatch) rawSector = sectorMatch[0];
         }
 
-        // Format sector badge string (e.g., "45" -> "SE45")
         let sectorBadge = '';
         if (rawSector) {
             let cleanSec = rawSector.toString().trim().toUpperCase();
@@ -49,23 +47,41 @@ function renderDispatchList(data) {
         const timeStr = call.created_at || call.dispatch_time ? 
             new Date(call.created_at || call.dispatch_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
 
-        const escapedAddr = fullAddress.replace(/'/g, "\\'");
+        // Lat/Lng Coordinate handling
+        const hasCoords = call.has_coords && call.lat && call.lng;
+        const clickHandler = hasCoords 
+            ? `verifyDispatchCoords(${call.lat}, ${call.lng}, '${fullAddress.replace(/'/g, "\\'")}')`
+            : `selectDispatchAddress('${fullAddress.replace(/'/g, "\\'")}')`;
+
+        const locationBadge = hasCoords ? `<span style="color:#2b6cb0; font-size:10px; margin-left:4px;">📍 GPS Pin</span>` : '';
 
         return `
             <div class="er-card" style="margin-bottom: 6px; padding: 10px; background-color: #f8fafc; border-left: 4px solid #3182ce;">
                 <div class="er-header-row">
                     <div class="er-title-area">
-                        <strong style="color: #003366; font-size: 14px;">${callType}</strong>${sectorBadge}
+                        <strong style="color: #003366; font-size: 14px;">${callType}</strong>${sectorBadge}${locationBadge}
                         <span style="display: block; font-size: 13px; color: #2d3748; margin-top: 3px;">${fullAddress}</span>
                         <span class="station-subtitle" style="display: block; font-size: 11px; color: #718096; margin-top: 2px;">
                             ${units ? 'Unit: ' + units + ' | ' : ''}${timeStr}
                         </span>
                     </div>
-                    <button class="action-btn" style="padding: 6px 12px; font-size: 12px; flex-shrink: 0;" onclick="selectDispatchAddress('${escapedAddr}')">
+                    <button class="action-btn" style="padding: 6px 12px; font-size: 12px; flex-shrink: 0;" onclick="${clickHandler}">
                         Verify
                     </button>
                 </div>
             </div>
         `;
     }).join('');
+}
+
+// Handler for direct Lat/Lng map verification (interstate/GPS drops)
+function verifyDispatchCoords(lat, lng, label) {
+    if (typeof google !== 'undefined' && google.maps && map) {
+        const latLng = new google.maps.LatLng(lat, lng);
+        map.setCenter(latLng);
+        map.setZoom(16);
+        handleMapClick(latLng);
+    } else {
+        selectDispatchAddress(label);
+    }
 }
