@@ -412,9 +412,20 @@ function selectDispatchAddress(address) {
 }
 
 function startDispatchAutoPolling() {
+    // Fetch immediately on startup
     fetchRecentDispatches();
+    
     if (dispatchIntervalTimer) clearInterval(dispatchIntervalTimer);
-    dispatchIntervalTimer = setInterval(fetchRecentDispatches, 60000);
+    
+    // Poll every 10 seconds for near real-time sync
+    dispatchIntervalTimer = setInterval(fetchRecentDispatches, 10000);
+
+    // Instantly fetch and process new dispatches when the user switches back to the app tab
+    document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) {
+            fetchRecentDispatches();
+        }
+    });
 }
 
 // Shift Eats Functions
