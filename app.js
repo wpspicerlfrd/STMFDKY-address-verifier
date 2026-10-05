@@ -800,14 +800,9 @@ async function fetchOutsideAgencyName(lat, lng) {
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         
         const data = await res.json();
-        console.log("LOJIC raw response:", data); // Check browser console to view returned structure
-
         if (data.features && data.features.length > 0) {
             const attrs = data.features[0].attributes || {};
-            console.log("LOJIC feature attributes:", attrs); // Check browser console to view all keys/values
-
-            // Fallback through common attribute keys or grab the first string property found
-            return attrs.NAME || attrs.DISTRICT || attrs.FD_NAME || attrs.COMPANY || attrs.AGENCY || attrs.LABEL || Object.values(attrs).find(v => typeof v === 'string' && v.length > 2) || 'Outside District';
+            return attrs.JCFD_DIST || attrs.NAME || attrs.DISTRICT || attrs.FD_NAME || attrs.COMPANY || attrs.AGENCY || attrs.LABEL || 'Outside District';
         }
     } catch(e) {
         console.error("LOJIC lookup error:", e);
