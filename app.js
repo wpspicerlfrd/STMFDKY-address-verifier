@@ -1,4 +1,4 @@
-// Google Apps Script Secure Proxy URL
+// Updated Google Apps Script Proxy URL from your video deployment
 const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyzgar0fBEo35BdTn1UxGCGVWcYgC5jKbY9iRgnHVjI9usWlzYsqM8XZeMQQntEWN6Ojw/exec';
 
 window.sharedFoodNotes = {};
