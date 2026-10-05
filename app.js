@@ -834,7 +834,7 @@ function handleMapClick(latLng) {
         if (isInside) {
             statusDiv.className = 'inside';
             statusDiv.style.display = 'block';
-            statusDiv.innerHTML = `✅ IN DISTRICT (Buffer Area): Dropped pin (${displayAddress}) is WITHIN operational coverage.${dirBtnHtml}`;
+            statusDiv.innerHTML = `✅ IN DISTRICT: Dropped pin (${displayAddress}) is WITHIN STMFD coverage area.${dirBtnHtml}`;
             addHistoryEntry(displayAddress, 'in-district', 'In District');
         } else {
             statusDiv.className = 'outside';
