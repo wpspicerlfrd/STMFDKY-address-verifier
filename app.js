@@ -273,7 +273,7 @@ async function fetchRecentDispatches() {
         const data = await response.json();
 
         if (data.status === 'error' || data.error) {
-            console.error('FirstDue Proxy Error Details:', data.message || data.error);
+            console.error('FirstDue Proxy Error:', data.message || data.error);
             if (statusEl) statusEl.innerText = 'Sync error';
             return;
         }
