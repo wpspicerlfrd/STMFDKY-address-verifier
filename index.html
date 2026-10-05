@@ -46,7 +46,7 @@
             }
             .verifier-desktop-layout {
                 display: grid;
-                grid-template-columns: 380px 1fr;
+                grid-template-columns: 420px 1fr;
                 gap: 20px;
                 align-items: start;
             }
@@ -56,7 +56,7 @@
                 gap: 12px !important;
             }
             #map {
-                height: 550px !important;
+                height: 600px !important;
             }
         }
 
@@ -136,6 +136,9 @@
             margin: 18px 0 10px 0;
             padding-bottom: 4px;
             border-bottom: 2px solid #edf2f7;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         .er-grid {
             display: flex;
@@ -304,8 +307,8 @@
             border: 1px solid #e2e8f0; 
         }
         .history-container {
-            margin-top: 25px;
-            padding-top: 20px;
+            margin-top: 20px;
+            padding-top: 15px;
             border-top: 1px solid #e2e8f0;
             display: none;
         }
@@ -315,32 +318,43 @@
             align-items: center;
             margin-bottom: 12px;
         }
-        .history-header h3 { margin: 0; font-size: 15px; color: #2d3748; }
+        .history-header h3 { margin: 0; font-size: 14px; color: #2d3748; }
         .clear-history-btn { background: none; border: none; color: #e53e3e; font-size: 12px; font-weight: 600; cursor: pointer; }
         .clear-history-btn:hover { text-decoration: underline; }
         .history-list { 
             list-style: none; 
             padding: 0; 
             margin: 0; 
-            max-height: 280px; 
+            max-height: 200px; 
             overflow-y: auto; 
         }
         .history-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 12px;
+            padding: 8px 10px;
             border-radius: 6px;
             background-color: #f8fafc;
             border: 1px solid #edf2f7;
-            margin-bottom: 8px;
-            font-size: 13px;
+            margin-bottom: 6px;
+            font-size: 12px;
         }
         .history-address { color: #2d3748; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 240px; }
         .badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
         .badge.in-district { background-color: #c6f6d5; color: #22543d; }
         .badge.out-district { background-color: #fed7d7; color: #742a2a; }
         .badge.not-found { background-color: #e2e8f0; color: #4a5568; }
+
+        /* FirstDue Feed Styling */
+        .dispatch-feed-container {
+            margin-top: 15px;
+            max-height: 320px;
+            overflow-y: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 8px;
+            background: #ffffff;
+        }
 
         .selector-box {
             background-color: #f8fafc;
@@ -441,7 +455,6 @@
         }
         .result-actions { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
         
-        /* Standardized Action Buttons */
         .nav-link-btn, .note-toggle-btn, .google-link-btn {
             display: inline-flex;
             align-items: center;
@@ -693,6 +706,15 @@
                     <button id="logRunBtn" class="action-btn" style="background-color: #dd6b20; width: 100%;" onclick="logCanceledRun()">📋 Log Canceled Run to Cloud Sheet</button>
                 </div>
 
+                <!-- Live FirstDue Dispatches Section -->
+                <div class="section-header">
+                    <span>🚨 Live FirstDue Dispatches</span>
+                    <span id="dispatchRefreshStatus" style="font-size: 11px; font-weight: normal; color: #718096;">Auto-sync: 60s</span>
+                </div>
+                <div id="recentDispatchesList" class="dispatch-feed-container">
+                    <div style="font-size: 12px; color: #718096; padding: 10px; text-align: center;">Loading live dispatches...</div>
+                </div>
+
                 <div id="historyContainer" class="history-container">
                     <div class="history-header">
                         <h3>Recent Boundary Searches</h3>
@@ -941,6 +963,7 @@
     let userLocation = null;
     let currentEatsCategory = 'all';
     let currentSearchedAddress = '';
+    let dispatchIntervalTimer = null;
 
     // St. Matthews Fire & EMS Station Coordinates
     const stmfdStations = [
@@ -962,7 +985,6 @@
         return R * c;
     }
 
-    // Populates closest station based on USER'S CURRENT DEVICE LOCATION (or fallback search target)
     function setNearestUnitDefault(fallbackLatLng) {
         const unitSelect = document.getElementById('unitSelect');
         if (!unitSelect) return;
@@ -1339,6 +1361,81 @@
             `;
             hospContainer.appendChild(card);
         });
+    }
+
+    // FirstDue Real-Time Dispatch Pulling Functions
+    async function fetchRecentDispatches() {
+        const statusEl = document.getElementById('dispatchRefreshStatus');
+        if (statusEl) statusEl.innerText = 'Syncing...';
+
+        try {
+            const response = await fetch(`${GAS_WEB_APP_URL}?action=get_dispatches`);
+            const data = await response.json();
+
+            if (data.error || data.status === 'error') {
+                console.error('FirstDue Proxy Error:', data.message || data.error);
+                if (statusEl) statusEl.innerText = 'Sync error';
+                return;
+            }
+
+            renderDispatchList(data);
+            if (statusEl) statusEl.innerText = `Updated: ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+        } catch (err) {
+            console.error('Failed to pull FirstDue dispatches:', err);
+            if (statusEl) statusEl.innerText = 'Sync error';
+        }
+    }
+
+    function renderDispatchList(data) {
+        const container = document.getElementById('recentDispatchesList');
+        if (!container) return;
+
+        const calls = Array.isArray(data) ? data : (data.calls || data.dispatches || []);
+        const recentTen = calls.slice(0, 10);
+
+        if (recentTen.length === 0) {
+            container.innerHTML = '<div style="font-size:12px; color:#718096; padding:10px; text-align:center;">No recent dispatch calls retrieved.</div>';
+            return;
+        }
+
+        container.innerHTML = recentTen.map(call => {
+            const address = call.address || call.location || call.incident_address || 'Unknown Address';
+            const callType = call.incident_type || call.call_type || call.nature || 'EMS Call';
+            const unit = call.unit || call.assigned_unit || '';
+            const timeStr = (call.dispatched_at || call.created_at) ? 
+                new Date(call.dispatched_at || call.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
+
+            const escapedAddr = address.replace(/'/g, "\\'");
+
+            return `
+                <div class="er-card" style="margin-bottom: 6px; padding: 10px; background-color: #f8fafc;">
+                    <div class="er-header-row">
+                        <div class="er-title-area">
+                            <strong style="color: #003366;">${callType}</strong>
+                            <span style="display: block; font-size: 13px; color: #2d3748;">${address}</span>
+                            <span class="station-subtitle">${unit ? 'Unit: ' + unit + ' | ' : ''}${timeStr}</span>
+                        </div>
+                        <button class="action-btn" style="padding: 6px 12px; font-size: 12px; flex-shrink: 0;" onclick="selectDispatchAddress('${escapedAddr}')">
+                            Verify
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function selectDispatchAddress(address) {
+        if (inputEl) {
+            inputEl.value = address;
+            clearBtn.style.display = 'block';
+            verifyAddress();
+        }
+    }
+
+    function startDispatchAutoPolling() {
+        fetchRecentDispatches();
+        if (dispatchIntervalTimer) clearInterval(dispatchIntervalTimer);
+        dispatchIntervalTimer = setInterval(fetchRecentDispatches, 60000);
     }
 
     // Shift Eats Functions
@@ -1863,10 +1960,12 @@
         });
     }
 
+    // App Startup Initialization
     getUserGeolocation();
     renderRoutingHospitals();
     loadGoogleMaps();
     loadSharedNotes();
+    startDispatchAutoPolling();
 </script>
 
 </body>
