@@ -274,7 +274,7 @@ async function fetchRecentDispatches() {
 
         if (data.status === 'error' || data.error) {
             console.error('FirstDue Proxy Error Details:', data.message || data.error);
-            if (statusEl) statusEl.innerText = data.httpCode ? `HTTP ${data.httpCode}` : 'Sync error';
+            if (statusEl) statusEl.innerText = 'Sync error';
             return;
         }
 
