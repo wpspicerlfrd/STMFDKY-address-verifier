@@ -46,7 +46,7 @@
             }
             .verifier-desktop-layout {
                 display: grid;
-                grid-template-columns: 420px 1fr;
+                grid-template-columns: 380px 1fr;
                 gap: 20px;
                 align-items: start;
             }
@@ -56,7 +56,7 @@
                 gap: 12px !important;
             }
             #map {
-                height: 600px !important;
+                height: 550px !important;
             }
         }
 
@@ -136,9 +136,6 @@
             margin: 18px 0 10px 0;
             padding-bottom: 4px;
             border-bottom: 2px solid #edf2f7;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
         .er-grid {
             display: flex;
@@ -307,8 +304,8 @@
             border: 1px solid #e2e8f0; 
         }
         .history-container {
-            margin-top: 20px;
-            padding-top: 15px;
+            margin-top: 25px;
+            padding-top: 20px;
             border-top: 1px solid #e2e8f0;
             display: none;
         }
@@ -318,43 +315,32 @@
             align-items: center;
             margin-bottom: 12px;
         }
-        .history-header h3 { margin: 0; font-size: 14px; color: #2d3748; }
+        .history-header h3 { margin: 0; font-size: 15px; color: #2d3748; }
         .clear-history-btn { background: none; border: none; color: #e53e3e; font-size: 12px; font-weight: 600; cursor: pointer; }
         .clear-history-btn:hover { text-decoration: underline; }
         .history-list { 
             list-style: none; 
             padding: 0; 
             margin: 0; 
-            max-height: 200px; 
+            max-height: 280px; 
             overflow-y: auto; 
         }
         .history-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 10px;
+            padding: 10px 12px;
             border-radius: 6px;
             background-color: #f8fafc;
             border: 1px solid #edf2f7;
-            margin-bottom: 6px;
-            font-size: 12px;
+            margin-bottom: 8px;
+            font-size: 13px;
         }
         .history-address { color: #2d3748; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 240px; }
         .badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
         .badge.in-district { background-color: #c6f6d5; color: #22543d; }
         .badge.out-district { background-color: #fed7d7; color: #742a2a; }
         .badge.not-found { background-color: #e2e8f0; color: #4a5568; }
-
-        /* FirstDue Feed Container */
-        .dispatch-feed-container {
-            margin-top: 10px;
-            max-height: 320px;
-            overflow-y: auto;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            padding: 8px;
-            background: #ffffff;
-        }
 
         .selector-box {
             background-color: #f8fafc;
@@ -455,6 +441,7 @@
         }
         .result-actions { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
         
+        /* Standardized Action Buttons */
         .nav-link-btn, .note-toggle-btn, .google-link-btn {
             display: inline-flex;
             align-items: center;
@@ -706,15 +693,6 @@
                     <button id="logRunBtn" class="action-btn" style="background-color: #dd6b20; width: 100%;" onclick="logCanceledRun()">📋 Log Canceled Run to Cloud Sheet</button>
                 </div>
 
-                <!-- Live FirstDue Dispatches Section -->
-                <div class="section-header">
-                    <span>🚨 Live FirstDue Dispatches</span>
-                    <span id="dispatchRefreshStatus" style="font-size: 11px; font-weight: normal; color: #718096;">Auto-sync: 60s</span>
-                </div>
-                <div id="recentDispatchesList" class="dispatch-feed-container">
-                    <div style="font-size: 12px; color: #718096; padding: 10px; text-align: center;">Loading live dispatches...</div>
-                </div>
-
                 <div id="historyContainer" class="history-container">
                     <div class="history-header">
                         <h3>Recent Boundary Searches</h3>
@@ -822,4 +800,1074 @@
             <div class="er-card station-card">
                 <div class="er-header-row">
                     <div class="er-title-area">
-                        <span>Station
+                        <span>Station 47</span>
+                        <span class="station-subtitle">4400 Brownsboro Rd</span>
+                    </div>
+                    <button class="nav-link-btn" onclick="openNavAddress('4400 Brownsboro Rd, Louisville, KY 40207')">MAP Nav</button>
+                </div>
+            </div>
+            <div class="er-card station-card">
+                <div class="er-header-row">
+                    <div class="er-title-area">
+                        <span>Station 48</span>
+                        <span class="station-subtitle">8126 New LaGrange Rd</span>
+                    </div>
+                    <button class="nav-link-btn" onclick="openNavAddress('8126 New LaGrange Rd, Louisville, KY 40222')">MAP Nav</button>
+                </div>
+            </div>
+            <div class="er-card station-card">
+                <div class="er-header-row">
+                    <div class="er-title-area">
+                        <span>Station 49</span>
+                        <span class="station-subtitle">8414 Westport Rd</span>
+                    </div>
+                    <button class="nav-link-btn" onclick="openNavAddress('8414 Westport Rd, Louisville, KY 40242')">MAP Nav</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 6: Shift Eats (Restaurant Directory & Chooser) -->
+    <div id="eatsTab" class="tab-content">
+        <h2>Shift Eats Chooser</h2>
+        <p>Can't decide on food for the crew? Spin the chooser, search options, and toggle notes on demand.</p>
+
+        <div class="eats-hero">
+            <h3>Random Food</h3>
+            <p>Let the app choose today's shift food spot!</p>
+            <button class="spin-btn" onclick="pickRandomRestaurant()">🎲 Pick Somewhere to Eat!</button>
+
+            <div id="randomResult" class="result-card">
+                <div style="font-size: 11px; font-weight: 700; color: #718096; text-transform: uppercase;">Selected Spot</div>
+                <div id="randomName" class="result-name">--</div>
+                <div id="randomNote" class="result-note"></div>
+                <div class="result-actions">
+                    <button id="randomNavBtn" class="nav-link-btn" onclick="">MAP Nav</button>
+                    <button id="randomGoogleBtn" class="google-link-btn" onclick="">🔍 Google</button>
+                    <button id="randomWebBtn" class="web-link-btn" onclick="">🌐 Order</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-header">Search &amp; Filter Directory</div>
+
+        <div class="form-group">
+            <div class="input-wrapper">
+                <input type="text" id="eatsSearchInput" placeholder="Search by name or cuisine (e.g. Pizza, Tacos, BBQ)..." oninput="filterRestaurants()">
+            </div>
+        </div>
+
+        <div class="category-pills">
+            <button class="pill-btn active" onclick="setCategoryFilter('all', this)">All (<span id="totalCount">0</span>)</button>
+            <button class="pill-btn" onclick="setCategoryFilter('pizza', this)">🍕 Pizza</button>
+            <button class="pill-btn" onclick="setCategoryFilter('mexican', this)">🌮 Mexican</button>
+            <button class="pill-btn" onclick="setCategoryFilter('bbq', this)">🍖 BBQ</button>
+            <button class="pill-btn" onclick="setCategoryFilter('burgers', this)">🍔 Burgers</button>
+            <button class="pill-btn" onclick="setCategoryFilter('asian', this)">🥢 Asian / Sushi</button>
+            <button class="pill-btn" onclick="setCategoryFilter('breakfast', this)">☕ Breakfast &amp; Bakery</button>
+        </div>
+
+        <div id="restaurantGrid" style="display: flex; flex-direction: column; gap: 8px;"></div>
+
+        <a href="sms:15022241865?body=STMFD%20SMART%20EMS%20Food%20Suggestion:%20" class="suggest-food-btn">
+            ✏️ Suggest Food Add / Change
+        </a>
+    </div>
+
+    <!-- TAB 7: Share App & QR Code -->
+    <div id="shareTab" class="tab-content">
+        <h2>Share App With Crew Members</h2>
+        <p>Have another EMT, Paramedic, or firefighter scan this QR code with their phone camera to instantly install the app on their device.</p>
+
+        <div class="share-card">
+            <div style="font-size: 12px; font-weight: 700; color: #003366; text-transform: uppercase; margin-bottom: 5px;">Scan to Open &amp; Install</div>
+            <img id="qrCodeImg" class="qr-image" alt="App QR Code" src="">
+            
+            <div class="share-url-box" id="appUrlText">https://wpspicerlfrd.github.io/STMFDKY-address-verifier/</div>
+            
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button class="action-btn" onclick="copyAppUrl()">📋 Copy Link</button>
+                <a id="smsShareBtn" href="" class="action-btn" style="background-color: #3182ce; text-decoration: none; display: inline-flex; align-items: center;">Text Link</a>
+            </div>
+
+            <div class="share-steps">
+                <strong>How crew members install it:</strong>
+                <ol>
+                    <li>Scan the QR code with their smartphone camera.</li>
+                    <li>Tap the notification banner that pops up.</li>
+                    <li>Tap the browser menu (⋮) and select <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong>.</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <!-- Global App Feedback Section -->
+    <div class="feedback-section">
+        <div class="feedback-title">STMFD SMART EMS Testing Feedback</div>
+        <div class="feedback-links">
+            <a href="mailto:wspicer@stmfdky.gov?subject=STMFD%20SMART%20EMS%20Feedback&body=Please%20enter%20your%20suggestion%20or%20comment%20here:" class="feedback-btn">
+                ✉️ Email Feedback
+            </a>
+            <a href="sms:15022241865?body=STMFD%20SMART%20EMS%20Feedback:%20" class="feedback-btn">
+                💬 Text Feedback
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Google Apps Script Secure Proxy URL
+    const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyzgar0fBEo35BdTn1UxGCGVWcYgC5jKbY9iRgnHVjI9usWlzYsqM8XZeMQQntEWN6Ojw/exec';
+    
+    window.sharedFoodNotes = {};
+    window.sharedHospitalNotes = {};
+
+    // DOM Elements Definition
+    const inputEl = document.getElementById('addressInput');
+    const clearBtn = document.getElementById('clearBtn');
+    const verifyBtn = document.getElementById('verifyBtn');
+    const statusDiv = document.getElementById('status');
+    const mapWrapper = document.getElementById('mapWrapper');
+    const historyContainer = document.getElementById('historyContainer');
+    const historyList = document.getElementById('historyList');
+
+    let map;
+    let marker;
+    let boundaryPolygon;
+    let boundaryBounds;
+    let geocoder;
+    let autocomplete;
+    let searchHistory = [];
+    let userLocation = null;
+    let currentEatsCategory = 'all';
+    let currentSearchedAddress = '';
+
+    // St. Matthews Fire & EMS Station Coordinates
+    const stmfdStations = [
+        { unit: "146", lat: 38.2520, lng: -85.6441 }, // Station 46 (Sears Ave)
+        { unit: "147", lat: 38.2818, lng: -85.6322 }, // Station 47 (Brownsboro Rd)
+        { unit: "148", lat: 38.2611, lng: -85.5898 }, // Station 48 (New LaGrange Rd)
+        { unit: "149", lat: 38.2785, lng: -85.5841 }  // Station 49 (Westport Rd)
+    ];
+
+    // Helper functions
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+        const R = 3958.8;
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                  Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    }
+
+    // Populates closest station based on USER'S CURRENT DEVICE LOCATION (or fallback search target)
+    function setNearestUnitDefault(fallbackLatLng) {
+        const unitSelect = document.getElementById('unitSelect');
+        if (!unitSelect) return;
+
+        let referenceLat = userLocation ? userLocation.lat : null;
+        let referenceLng = userLocation ? userLocation.lng : null;
+
+        if (referenceLat === null && fallbackLatLng) {
+            referenceLat = typeof fallbackLatLng.lat === 'function' ? fallbackLatLng.lat() : fallbackLatLng.lat;
+            referenceLng = typeof fallbackLatLng.lng === 'function' ? fallbackLatLng.lng() : fallbackLatLng.lng;
+        }
+
+        if (referenceLat === null || referenceLng === null) return;
+
+        let nearestUnit = "146";
+        let shortestDistance = Infinity;
+
+        stmfdStations.forEach(st => {
+            const dist = calculateDistance(referenceLat, referenceLng, st.lat, st.lng);
+            if (dist < shortestDistance) {
+                shortestDistance = dist;
+                nearestUnit = st.unit;
+            }
+        });
+
+        unitSelect.value = nearestUnit;
+    }
+
+    // Master List of Destination Facilities
+    const masterHospitals = [
+        { id: "baptist_louisville", name: "Baptist Health Louisville", lat: 38.23885368709200, lng: -85.63917771315160, type: "adult", region: "jefferson" },
+        { id: "norton_women_children", name: "Norton Women's & Children's (Suburban)", lat: 38.23558071531270, lng: -85.63158611445510, type: "split", region: "jefferson" },
+        { id: "uofl_mc_east", name: "UofL Health - MC East ER (Jewish East)", lat: 38.23114041993000, lng: -85.63694179169460, type: "adult", region: "jefferson" },
+        { id: "norton_brownsboro", name: "Norton Brownsboro", lat: 38.31634156358550, lng: -85.57558139921120, type: "adult", region: "jefferson" },
+        { id: "norton_children_brownsboro", name: "Norton Children's MC (Brownsboro)", lat: 38.31569198353950, lng: -85.56956072719920, type: "peds", region: "jefferson" },
+        { id: "baptist_blankenbaker", name: "Baptist Health ER (Blankenbaker)", lat: 38.21744177540010, lng: -85.53839801419970, type: "adult", region: "jefferson" },
+        { id: "norton_audubon", name: "Norton Audubon", lat: 38.21520796968180, lng: -85.72403667459940, type: "adult", region: "jefferson" },
+        { id: "norton_downtown", name: "Norton Hospital (Downtown)", lat: 38.24750719216270, lng: -85.75149999973130, type: "adult", region: "jefferson" },
+        { id: "norton_children_downtown", name: "Norton Children's (Downtown)", lat: 38.24818271556100, lng: -85.75017118854950, type: "peds", region: "jefferson" },
+        { id: "jewish_downtown", name: "Jewish Hospital (Downtown)", lat: 38.24839488506370, lng: -85.75157457164980, type: "adult", region: "jefferson" },
+        { id: "uofl_hospital", name: "UofL Health - UofL Hospital", lat: 38.24786926143180, lng: -85.74318088452280, type: "adult", region: "jefferson" },
+        { id: "norton_west_louisville", name: "Norton West Louisville ER", lat: 38.24720893353440, lng: -85.79873887144740, type: "adult", region: "jefferson" },
+        { id: "uofl_mary_elizabeth", name: "UofL Health - Mary & Elizabeth", lat: 38.17880867023050, lng: -85.79382665040330, type: "adult", region: "jefferson" },
+        { id: "baptist_glenmary", name: "Baptist Health Glenmary", lat: 38.136018474849024, lng: -85.58069320336894, type: "adult", region: "jefferson" },
+        { id: "uofl_mc_southwest", name: "UofL Health - MC Southwest ER", lat: 38.11322941906840, lng: -85.84092345934400, type: "adult", region: "jefferson" },
+        { id: "louisville_va", name: "Louisville VA Hospital", lat: 38.27017803622843, lng: -85.69673200715734, type: "adult", region: "jefferson" },
+        { id: "baptist_lagrange", name: "Baptist Health LaGrange", lat: 38.39436543175370, lng: -85.37700258407050, type: "adult", region: "outside" },
+        { id: "norton_clark", name: "Norton Clark Hospital (IN)", lat: 38.28185133304160, lng: -85.74788493093270, type: "adult", region: "outside" },
+        { id: "baptist_floyd", name: "Baptist Health Floyd (IN)", lat: 38.30038280115690, lng: -85.83484296507200, type: "adult", region: "outside" },
+        { id: "uofl_mc_south", name: "UofL Health - MC South (Brooks)", lat: 38.06108454853360, lng: -85.69721919213730, type: "adult", region: "outside" }
+    ];
+
+    // Adult Emergency Conditions Data
+    const adultConditions = [
+        {
+            id: "med1",
+            title: "Medical",
+            def: "Capable of accepting medical patients who do not fit the Acute Medical requiring admission category.",
+            hospitalIds: ["baptist_louisville", "baptist_lagrange", "uofl_mc_east", "uofl_mc_south", "uofl_mc_southwest", "uofl_mary_elizabeth", "norton_audubon", "norton_women_children", "norton_downtown", "norton_brownsboro", "uofl_hospital", "norton_clark", "baptist_floyd", "louisville_va"]
+        },
+        {
+            id: "med2",
+            title: "Acute Medical (Requiring Admission)",
+            def: "Capable of accepting patients in the ED whose medical condition would most likely require admission including: acute stroke with deficits, elderly with SOA and underlying medical conditions/abnormal vital signs, dialysis emergency, or acute coronary syndrome.",
+            hospitalIds: ["baptist_louisville", "baptist_lagrange", "uofl_mary_elizabeth", "norton_audubon", "norton_women_children", "norton_downtown", "norton_brownsboro", "uofl_hospital", "norton_clark", "baptist_floyd", "louisville_va"]
+        },
+        {
+            id: "stemi",
+            title: "STEMI",
+            def: "Capable of performing Percutaneous Coronary Intervention (PCI).",
+            hospitalIds: ["baptist_louisville", "baptist_lagrange", "uofl_mary_elizabeth", "norton_audubon", "norton_downtown", "norton_brownsboro", "uofl_hospital", "baptist_floyd", "norton_women_children"]
+        },
+        {
+            id: "stroke",
+            title: "Stroke",
+            def: "Any patient meeting stroke criteria who is NOT positive on a severity scale for ELVO (aka LVO), shall be transported to an accredited stroke center.",
+            hospitalIds: ["baptist_louisville", "baptist_lagrange", "uofl_mc_east", "uofl_mary_elizabeth", "norton_audubon", "norton_women_children", "norton_downtown", "norton_brownsboro", "uofl_hospital", "norton_clark", "baptist_floyd"]
+        },
+        {
+            id: "elvo",
+            title: "ELVO (aka LVO) Stroke",
+            def: "All patients who screen positive on a stroke severity scale should be transported to an accredited ELVO capable facility.",
+            hospitalIds: ["baptist_louisville", "norton_downtown", "norton_brownsboro", "uofl_hospital"]
+        },
+        {
+            id: "burn_center",
+            title: "Burn Center",
+            def: "Patients with major burns as defined by current protocol.",
+            note: "Protocol Triaging: Patients < 18 yo go to Kosair/Norton Children's Hospital (KCH). All adult burn patients not triaged to KCH go to UofL Hospital.",
+            hospitalIds: ["norton_children_downtown", "uofl_hospital"]
+        },
+        {
+            id: "burns",
+            title: "Burns (Non-Burn Center)",
+            def: "Capable of managing burns not triaged to a designated Burn Center.",
+            hospitalIds: ["baptist_louisville", "baptist_lagrange", "uofl_mc_east", "uofl_mc_south", "uofl_mc_southwest", "uofl_mary_elizabeth", "norton_audubon", "norton_women_children", "norton_downtown", "norton_brownsboro", "uofl_hospital", "norton_clark", "baptist_floyd"]
+        },
+        {
+            id: "hazmat_daily",
+            title: "HazMat Decon Non-Mass Casualty",
+            def: "Capable of technical decontamination for chemical, radiological or biological substance exposure with daily capability.",
+            hospitalIds: ["uofl_hospital"]
+        },
+        {
+            id: "hazmat_mass",
+            title: "HazMat Decon Mass Casualty",
+            def: "Capable of technical decontamination in a mass casualty situation (facilities with decon trailers/tents).",
+            hospitalIds: ["baptist_louisville", "baptist_lagrange", "uofl_mc_east", "uofl_mc_south", "uofl_mc_southwest", "uofl_mary_elizabeth", "norton_audubon", "norton_women_children", "norton_downtown", "norton_brownsboro", "uofl_hospital", "norton_clark", "baptist_floyd", "louisville_va"]
+        },
+        {
+            id: "poison",
+            title: "Poison & Drug Overdose",
+            def: "Facilities capable of managing acute toxicological and overdose presentations.",
+            hospitalIds: ["baptist_louisville", "baptist_lagrange", "uofl_mc_east", "uofl_mc_south", "uofl_mc_southwest", "uofl_mary_elizabeth", "norton_audubon", "norton_women_children", "norton_downtown", "norton_brownsboro", "uofl_hospital", "norton_clark", "baptist_floyd", "louisville_va"]
+        },
+        {
+            id: "psychiatric",
+            title: "Psychiatric",
+            def: "Facilities designated to accept and evaluate patients presenting with primary psychiatric emergencies or acute mental health crises.",
+            hospitalIds: ["baptist_louisville", "baptist_lagrange", "uofl_mary_elizabeth", "norton_audubon", "norton_women_children", "norton_downtown", "norton_brownsboro", "uofl_hospital", "norton_clark", "baptist_floyd", "louisville_va"]
+        },
+        {
+            id: "level1_trauma",
+            title: "Level 1 Trauma",
+            def: "Major acute trauma requiring Level 1 capability as defined by current protocol.",
+            note: "Triage Criteria: Patients ≥ 13 years of age with penetrating trauma AND ≥ 15 years of age with blunt trauma will be triaged to UofL Hospital. All Level 1 trauma patients not triaged to UofL will be taken to KCH/Norton Children's.",
+            hospitalIds: ["uofl_hospital", "norton_children_downtown"]
+        },
+        {
+            id: "gyn",
+            title: "Gynecological",
+            def: "Capable of treating patients whose gynecological condition may require rapid/emergent surgical intervention or admission (including severe vaginal bleeding in patients of childbearing age).",
+            hospitalIds: ["baptist_louisville", "baptist_lagrange", "norton_audubon", "norton_women_children", "norton_downtown", "norton_brownsboro", "uofl_hospital", "baptist_floyd"]
+        },
+        {
+            id: "ob",
+            title: "Obstetrical",
+            def: "Capable of providing complete care for mother and fetus, including emergent C-section.",
+            hospitalIds: ["baptist_louisville", "norton_women_children", "norton_downtown", "uofl_hospital", "norton_clark", "baptist_floyd"]
+        },
+        {
+            id: "newborn",
+            title: "Newborn",
+            def: "Capable of caring for infants less than 30 days old.",
+            hospitalIds: ["baptist_louisville", "norton_women_children", "norton_downtown", "uofl_hospital", "norton_clark", "baptist_floyd"]
+        }
+    ];
+
+    // Pediatric Emergency Conditions Data
+    const pedConditions = [
+        {
+            id: "ped_newborn",
+            title: "Newborn",
+            def: "Capable of caring for infants less than 30 days old.",
+            hospitalIds: ["norton_children_downtown", "norton_women_children", "uofl_hospital", "norton_clark", "baptist_floyd"]
+        },
+        {
+            id: "ped_icu",
+            title: "Pediatric ICU",
+            def: "Capable of providing comprehensive critical care services to patients < 18 years of age.",
+            hospitalIds: ["norton_children_downtown"]
+        },
+        {
+            id: "ped_adm",
+            title: "Pediatric Admission",
+            def: "Capable of treating all pediatric patients which may require emergent surgical intervention and/or admission to the hospital but are not triaged to Pediatric ICU.",
+            hospitalIds: ["norton_children_downtown", "norton_women_children", "norton_clark", "baptist_floyd"]
+        },
+        {
+            id: "ped_18",
+            title: "Pediatric < 18 yo",
+            def: "Capable of complete care in the Emergency Department for all patients less than 18 years of age.",
+            hospitalIds: ["norton_children_downtown", "norton_children_brownsboro", "baptist_louisville", "baptist_lagrange", "uofl_mc_east", "uofl_mc_south", "uofl_mc_southwest", "uofl_mary_elizabeth", "norton_audubon", "norton_women_children", "uofl_hospital", "norton_clark", "baptist_floyd"]
+        },
+        {
+            id: "ped_trauma",
+            title: "Pediatric Trauma",
+            def: "Level 1 Pediatric Trauma criteria.",
+            note: "Triage Criteria: Pediatric patients < 13 years of age with penetrating trauma AND < 15 years of age with blunt trauma will be triaged to NCH (Norton Children's Hospital). All Level 1 trauma patients not triaged to UofL will be taken to UofL Hospital.",
+            hospitalIds: ["norton_children_downtown", "uofl_hospital"]
+        }
+    ];
+
+    // Complete Expanded Restaurant Directory
+    const restaurantList = [
+        "211 Clover Lane", "Abol Cafe (Coffee + Kitchen)", "AJ Subs LLC", "Ala Eh Eats Filipino Food and Sushi", "ALDI", "All Thai’d Up", "Anar Food Mart", "Arby's", "Asahi Japanese Restaurant", "Bahn Thai & M", 
+        "Bamboo Coffee & Donuts", "Bandido Taqueria Mexicana", "Barry Bagels", "Basilico Cafe", "Baskin-Robbins", "Bearnos Pizza", "Better Blend - Louisville", "Biscuit Belly: Louisville - St. Matthews", "BJ's Restaurant & Brewhouse", "Blaze Pizza", "BOMBAY GRILL - INDIAN RESTAURANT", 
+        "Bonefish Grill", "BoomBozz Pizza & Watch Bar", "Bourbon & Burger", "Brasserie Provence", "Brick House Tavern + Tap", "Bristol Bar & Grille | East", "Bruegger's Bagels", "Buffalo Wild Wings", "Burger Girl", "California Pizza Kitchen at Oxmoor", 
+        "Carniceria Butcher Shop", "Carrabba's Italian Grill", "CASK Southern Kitchen & Bar", "Charleys Cheesesteaks", "Cheddar Box Too", "Cheddar's Scratch Kitchen", "Chef's Cut Pizzeria", "Chicken Salad Chick", "Chick-fil-A", "Chili's Grill & Bar", 
+        "China 1", "China 1 - Lyndon", "China Star", "Choi's Asian Food Market", "Chipotle", "Chuy's", "Cinnaholic", "Cinnabon", "Circle K", "City Barbeque", 
+        "Coals Artisan Pizza", "Cold Stone Creamery", "Con Huevos! - Breakfast & Brunch", "Condado Tacos", "Connors Steak & Seafood", "Craft House Pizza - Westport", "Crumbl Cookies", "Currito Louisville", "Dave & Buster's Louisville", "Dave's Hot Chicken", 
+        "Del Frisco's", "DiOrio's Pizza & Pub", "District 6", "Domino's Pizza", "Drake's - St. Matthews", "Drake's Hurstbourne", "Dunkin Donuts", "Eat A Pita", "Ehrler's Ice Cream", 
+        "Elderberry Provisions", "El Mariachi Mexican Restaurant", "El Nopal - Mall St. Matthews", "El Nopal Mexican Food | Westport Rd", "El Tarasco", "Fazoli's", "Felipe's Mexican Kitchen", "Fire House subs", "First Watch", "Fishery", 
+        "Five Guys", "Food Court @ Mall St. Matthews", "Ginza Asian Bistro", "Graeter's Ice Cream", "Grassa Gramma", "Green District Salads - St. Matthews", "Gus's World Famous Fried Chicken", "Gustavo's Mexican Grill", "Half-Peach Bakery & Cafe", "Heine Brothers' Coffee - Chenoweth Lane", 
+        "Heitzman Traditional Bakery and Deli", "Highland Morning St. Matthews", "hiko-A-mon", "Hillcrest Tavern", "Hooters", "Hurstbourne", "IHOP", "Impellizzeri's Pizza", "J. Alexander's Restaurant", "Jack in the Box", 
+        "Jade Palace", "Jaggers", "Jasmine Asian Bistro", "Jason's Deli", "Jeff's Donuts", "Jersey Mike's Subs", "Jet's Pizza", "Jimmy John's Gourmet Sandwiches", "Joe’s Older Than Dirt", "Joella's Hot Chicken - St. Matthews", 
+        "JOJO GYROS 2", "KFC", "King Donuts Lyndon", "King Gyros - St. Matthew’s Mall", "Kingfish", "Kroger", "Kupbop Korean Bbq", "La Cocina de Mama", "La Rosita Sol", "Las Maria", 
+        "Lee's Famous Recipe Chicken", "Lemongrass Cafe and Market", "Limón y Sal Mexican Kitchen", "Little Greek Fresh Grill", "Los Aztecas Mexican Restaurant", "Lotsa Pasta", "Lou Lou Food & Drink", "Maira Mediterranean Grill", "McAlister's Deli", "McDonald's", 
+        "Mesh Louisville", "MISSION BBQ", "Mojito in Havana", "Mojito Tapas Restaurant", "Momma's BBQ", "Nam Nam Café", "Noodles and Company", "Noosh Nosh", "North Lime Coffee & Donuts", "Nothing Bundt Cakes", 
+        "Olive Garden", "Oriental House", "Osteria Del Mar", "Osteria Italian Seafood", "P.F. Chang's", "Panda Express", "Panaderia Bakery", "Panera Bread", "Papa Johns", "Paris Baguette", 
+        "Paul's Fruit Market", "Penn Station", "Pho Phi Louisville", "Pizza Hut", "Pizza Jones", "Pizzaville", "Playa Bowls", "Plehn's Bakery", "QDOBA Mexican Eats", 
+        "R Place Pub", "Rafferty's Restaurant & Bar", "Raising Cane's", "Rainbow Blossom St Matthews", "Ramsi's Cafe On The World", "Raymi Peruvian and Mexican Cuisine", "Red Lobster", "RedBrick Pizza", "Red Robin Gourmet Burgers and Brews", "River House Restaurant and Raw Bar", 
+        "Ruby Thai Kitchen - St. Matthews Mall", "Saints Pizza Pub & SkyBar", "Sakura Blue", "Salsarita's Fresh Mexican Grill", "Selena's at Willow Lake Tavern", "Shady Lane Cafe", "Shawarma Shack", "Shiraz Mediterranean Grill", "Silvio's Italian Restaurant", "Simply Thai", 
+        "Skyline Chili", "Smashburger", "Speedway", "Squeeze The Day", "Starving Artists Cafe & Deli", "Subway", "Sunergos Coffee", "Supermercado Guanajuato #1", "Taco Bell", "Taco Choza", 
+        "Taco Luchador", "Taco N Madres", "Taco Stand", "Taziki's Mediterranean Cafe - St. Matthews", "Ten Pin Strike & Spare", "Texas Roadhouse", "The Charcoal Restaurant", "The Cheesecake Factory", "The Comfy Cow", "The Deli - Willis Ave", 
+        "The Eagle Oxmoor", "The Fresh Market", "The Goose Eatery & Hangout", "The Honey Baked Ham Company", "The Lyndon Station Bar and Grill", "The Pie Kitchen", "Thorntons", "TIKKA HOUSE INDIAN RESTAURANT", "Tin Roof", "ToGo Sushi", 
+        "Tokyo Japanese Restaurant", "Topgolf Louisville", "Tortilleria GuanaJuato", "Trader Joe's", "Tres Amigos Of Louisville", "Twin Peaks", "W W Cousins Restaurant", "Waffle House", "Walmart Neighborhood Market", "Wasabi Louisville", 
+        "Wendy's", "Which Wich Superior Sandwiches @ Hurstbourne Parkway", "White Castle", "Whole Foods Market", "Wild Eggs", "Wingstop"
+    ];
+
+    // Event Listeners setup
+    inputEl.addEventListener('focus', function() { if (this.value) resetForm(); });
+    inputEl.addEventListener('input', function() { clearBtn.style.display = this.value ? 'block' : 'none'; });
+    inputEl.addEventListener('keydown', e => { if (e.key === 'Enter') verifyAddress(); });
+
+    // Core Application Functions
+    function getUserGeolocation() {
+        const locStatus = document.getElementById('locationStatus');
+        const routingLocStatus = document.getElementById('routingLocationStatus');
+        
+        const updateStatusText = (html) => {
+            if (locStatus) locStatus.innerHTML = html;
+            if (routingLocStatus) routingLocStatus.innerHTML = html;
+        };
+
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    userLocation = { lat: position.coords.latitude, lng: position.coords.longitude };
+                    updateStatusText(`<span>📍 Distance sorted from current GPS position</span>`);
+                    evaluateDestination();
+                    renderRoutingHospitals();
+                },
+                (error) => {
+                    userLocation = { lat: 38.2520, lng: -85.6441 };
+                    updateStatusText(`<span>📍 GPS unavailable. Distance sorted from St. Matthews St. 46</span>`);
+                    evaluateDestination();
+                    renderRoutingHospitals();
+                },
+                { enableHighAccuracy: true, timeout: 5000, maximumAge: 60000 }
+            );
+        } else {
+            userLocation = { lat: 38.2520, lng: -85.6441 };
+            updateStatusText(`<span>📍 Distance sorted from St. Matthews St. 46</span>`);
+            evaluateDestination();
+            renderRoutingHospitals();
+        }
+    }
+
+    function renderRoutingHospitals() {
+        const jeffersonGrid = document.getElementById('jeffersonErGrid');
+        const outsideGrid = document.getElementById('outsideErGrid');
+        if (!jeffersonGrid || !outsideGrid) return;
+
+        let sortedHospitals = masterHospitals.map(hosp => {
+            let dist = userLocation ? calculateDistance(userLocation.lat, userLocation.lng, hosp.lat, hosp.lng) : null;
+            return { ...hosp, distance: dist };
+        });
+
+        if (userLocation) sortedHospitals.sort((a, b) => a.distance - b.distance);
+
+        const jeffersonList = sortedHospitals.filter(h => h.region === 'jefferson');
+        const outsideList = sortedHospitals.filter(h => h.region === 'outside');
+
+        const createCardHtml = (hosp) => {
+            let cardClass = "er-card";
+            if (hosp.type === "peds") cardClass += " peds";
+            if (hosp.type === "split") cardClass += " split-peds";
+            
+            const distText = hosp.distance !== null ? `<span class="dist-tag">(${hosp.distance.toFixed(1)} mi)</span>` : '';
+            const existingNote = (window.sharedHospitalNotes && window.sharedHospitalNotes[hosp.id]) || '';
+            const noteIndicator = existingNote ? ' 📝' : '';
+
+            return `
+                <div class="${cardClass}">
+                    <div class="er-header-row">
+                        <div class="er-title-area">
+                            <span>${hosp.name}${distText}${noteIndicator}</span>
+                        </div>
+                        <div style="display: flex; gap: 6px; flex-shrink: 0;">
+                            <button class="note-toggle-btn" onclick="toggleHospitalNotes('hosp-${hosp.id}')">📝 Notes</button>
+                            <button class="nav-link-btn" onclick="openNav(${hosp.lat}, ${hosp.lng})">MAP Nav</button>
+                        </div>
+                    </div>
+                    <div id="hosp-notes-hosp-${hosp.id}" class="notes-section">
+                        <input type="text" id="hosp-note-input-hosp-${hosp.id}" value="${existingNote}" placeholder="Add shared crew note (e.g. ambulance entrance tips)...">
+                        <button class="web-link-btn" onclick="saveHospitalNote('${hosp.id}', document.getElementById('hosp-note-input-hosp-${hosp.id}').value)">💾 Save Note to Cloud</button>
+                    </div>
+                </div>
+            `;
+        };
+
+        jeffersonGrid.innerHTML = jeffersonList.map(createCardHtml).join('');
+        outsideGrid.innerHTML = outsideList.map(createCardHtml).join('');
+    }
+
+    function updateEmergencyOptions() {
+        const cat = document.getElementById('patientCategory').value;
+        const select = document.getElementById('conditionSelect');
+        select.innerHTML = '';
+
+        const list = cat === 'adult' ? adultConditions : pedConditions;
+        list.forEach(item => {
+            const opt = document.createElement('option');
+            opt.value = item.id;
+            opt.innerText = item.title;
+            select.appendChild(opt);
+        });
+
+        evaluateDestination();
+    }
+
+    function evaluateDestination() {
+        const cat = document.getElementById('patientCategory').value;
+        const condId = document.getElementById('conditionSelect').value;
+        const list = cat === 'adult' ? adultConditions : pedConditions;
+        const selected = list.find(x => x.id === condId);
+
+        const resultPanel = document.getElementById('guidelineResult');
+        if (!selected) {
+            resultPanel.classList.remove('active');
+            return;
+        }
+
+        resultPanel.classList.add('active');
+        document.getElementById('resultCategory').innerText = cat === 'adult' ? 'Adult Emergency Category' : 'Pediatric Emergency Category';
+        document.getElementById('resultTitle').innerText = selected.title;
+        document.getElementById('resultDef').innerText = selected.def;
+
+        const noteEl = document.getElementById('protocolNote');
+        if (selected.note) {
+            noteEl.style.display = 'block';
+            noteEl.innerText = selected.note;
+        } else {
+            noteEl.style.display = 'none';
+        }
+
+        let capableList = selected.hospitalIds.map(id => {
+            const hosp = masterHospitals.find(h => h.id === id);
+            let dist = (hosp && userLocation) ? calculateDistance(userLocation.lat, userLocation.lng, hosp.lat, hosp.lng) : null;
+            return { ...hosp, distance: dist };
+        }).filter(h => h.name);
+
+        if (userLocation) capableList.sort((a, b) => a.distance - b.distance);
+
+        const hospContainer = document.getElementById('capableHospitals');
+        hospContainer.innerHTML = '';
+        
+        capableList.forEach(hosp => {
+            let cardClass = "er-card";
+            if (hosp.type === "peds") cardClass += " peds";
+            if (hosp.type === "split") cardClass += " split-peds";
+            
+            const distText = hosp.distance !== null ? `<span class="dist-tag">(${hosp.distance.toFixed(1)} mi)</span>` : '';
+            const existingNote = (window.sharedHospitalNotes && window.sharedHospitalNotes[hosp.id]) || '';
+            const noteIndicator = existingNote ? ' 📝' : '';
+
+            const card = document.createElement('div');
+            card.className = cardClass;
+            card.innerHTML = `
+                <div class="er-header-row">
+                    <div class="er-title-area">
+                        <span>${hosp.name}${distText}${noteIndicator}</span>
+                    </div>
+                    <div style="display: flex; gap: 6px; flex-shrink: 0;">
+                        <button class="note-toggle-btn" onclick="toggleHospitalNotes('triage-${hosp.id}')">📝 Notes</button>
+                        <button class="nav-link-btn" onclick="openNav(${hosp.lat}, ${hosp.lng})">MAP Nav</button>
+                    </div>
+                </div>
+                <div id="hosp-notes-triage-${hosp.id}" class="notes-section">
+                    <input type="text" id="hosp-note-input-triage-${hosp.id}" value="${existingNote}" placeholder="Add shared crew note (e.g. ambulance entrance tips)...">
+                    <button class="web-link-btn" onclick="saveHospitalNote('${hosp.id}', document.getElementById('hosp-note-input-triage-${hosp.id}').value)">💾 Save Note to Cloud</button>
+                </div>
+            `;
+            hospContainer.appendChild(card);
+        });
+    }
+
+    // Shift Eats Functions
+    function pickRandomRestaurant() {
+        const resultCard = document.getElementById('randomResult');
+        const nameEl = document.getElementById('randomName');
+        const noteEl = document.getElementById('randomNote');
+        const navBtn = document.getElementById('randomNavBtn');
+        const googleBtn = document.getElementById('randomGoogleBtn');
+        const webBtn = document.getElementById('randomWebBtn');
+
+        resultCard.style.display = 'block';
+        nameEl.innerText = 'Spinning... 🎲';
+        noteEl.style.display = 'none';
+        noteEl.innerText = '';
+
+        let counter = 0;
+        const interval = setInterval(() => {
+            const tempIdx = Math.floor(Math.random() * restaurantList.length);
+            nameEl.innerText = restaurantList[tempIdx];
+            counter++;
+            if (counter > 12) {
+                clearInterval(interval);
+                const finalIdx = Math.floor(Math.random() * restaurantList.length);
+                const picked = restaurantList[finalIdx];
+                nameEl.innerText = picked;
+                
+                const noteText = window.sharedFoodNotes && window.sharedFoodNotes[picked];
+                if (noteText) {
+                    noteEl.style.display = 'block';
+                    noteEl.innerText = '📝 Note: ' + noteText;
+                } else {
+                    noteEl.style.display = 'none';
+                }
+
+                navBtn.onclick = () => openNavAddress(picked + ', Louisville, KY');
+                googleBtn.onclick = () => openWebSearch(picked + ' Louisville KY');
+                webBtn.onclick = () => openWebSearch(picked + ' Louisville KY order menu');
+            }
+        }, 80);
+    }
+
+    function setCategoryFilter(cat, btnEl) {
+        currentEatsCategory = cat;
+        document.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+        if (btnEl) btnEl.classList.add('active');
+        filterRestaurants();
+    }
+
+    function filterRestaurants() {
+        const grid = document.getElementById('restaurantGrid');
+        const searchInputEl = document.getElementById('eatsSearchInput');
+        const totalCountEl = document.getElementById('totalCount');
+        if (totalCountEl) totalCountEl.innerText = restaurantList.length;
+
+        if (!grid || !searchInputEl) return;
+        
+        const query = (searchInputEl.value || '').toLowerCase();
+
+        const categoryKeywords = {
+            'pizza': ['pizza', 'bearnos', 'boombozz', 'diorio', 'jet', 'papa json', 'pizzaville', 'redbrick', 'coals', 'blaze', 'saints', 'impellizzeri', 'craft house'],
+            'mexican': ['mexican', 'taco', 'nopal', 'tarasco', 'condado', 'aztecas', 'cocina', 'tres amigos', 'limón', 'limon', 'bandido', 'chuy', 'felipe', 'las maria', 'salsarita', 'qdoba', 'chipotle', 'mariachi', 'guanajuato'],
+            'bbq': ['barbeque', 'bbq', 'momma', 'city barbeque', 'mission bbq', 'charcoal', 'pickles & bbq', 'kupbop'],
+            'burgers': ['burger', 'smashburger', 'white castle', 'wendy', 'mcdonald', 'five guys', 'red robin', 'cousins', 'drake', 'jack in the box', 'jaggers', 'charleys'],
+            'asian': ['thai', 'asahi', 'china', 'ginza', 'jade palace', 'lemongrass', 'nam nam', 'oriental house', 'p.f. chang', 'panda express', 'pho', 'sakura', 'simply thai', 'tokyo', 'togo sushi', 'wasabi', 'bahn thai', 'jasmin', 'hiko-A-mon', 'choi', 'ruby thai'],
+            'breakfast': ['cafe', 'coffee', 'bagel', 'biscuit belly', 'bruegger', 'con huevos', 'dunkin', 'first watch', 'heine', 'highland morning', 'ihop', 'wild eggs', 'waffle house', 'cinnaholic', 'donut', 'plehn', 'bakery', 'eats', 'paris baguette', 'north lime', 'starving artists', 'bamboo', 'cinnabon', 'nothing bundt', 'sunergos', 'graeter', 'comfy cow', 'deli', 'fruit', 'blossom', 'elderberry', 'half-peach', 'crumbl', 'panaderia', 'tortilleria', 'supermercado', 'carniceria', 'baskin-robbins']
+        };
+
+        const filtered = restaurantList.filter(name => {
+            const lowerName = name.toLowerCase();
+            const matchesQuery = lowerName.includes(query);
+            if (!matchesQuery) return false;
+            if (currentEatsCategory === 'all') return true;
+            const keywords = categoryKeywords[currentEatsCategory] || [];
+            return keywords.some(kw => lowerName.includes(kw));
+        });
+
+        if (filtered.length === 0) {
+            grid.innerHTML = `<div style="color: #718096; text-align: center; padding: 15px; grid-column: 1 / -1;">No matching places found. Try another search!</div>`;
+            return;
+        }
+
+        grid.innerHTML = filtered.map(name => {
+            const safeName = name.replace(/[^a-zA-Z0-9]/g, '_');
+            const existingNote = (window.sharedFoodNotes && window.sharedFoodNotes[name]) || '';
+            const noteIndicator = existingNote ? ' 📝' : '';
+            
+            return `
+                <div class="er-card">
+                    <div class="er-header-row">
+                        <div class="er-title-area">
+                            <span>${name}${noteIndicator}</span>
+                        </div>
+                        <div style="display: flex; gap: 4px; flex-shrink: 0;">
+                            <button class="note-toggle-btn" onclick="toggleFoodNotes('${safeName}')">📝 Notes</button>
+                            <button class="google-link-btn" onclick="openWebSearch('${name.replace(/'/g, "\\'")}, Louisville KY')">🔍 Google</button>
+                            <button class="nav-link-btn" onclick="openNavAddress('${name.replace(/'/g, "\\'")}, Louisville, KY')">MAP Nav</button>
+                        </div>
+                    </div>
+                    <div id="food-notes-${safeName}" class="notes-section">
+                        <input type="text" id="food-note-input-${safeName}" value="${existingNote}" placeholder="Add shared crew note (e.g. fast delivery, parking tip)...">
+                        <button class="web-link-btn" onclick="saveFoodNote('${name.replace(/'/g, "\\'")}', document.getElementById('food-note-input-${safeName}').value)">💾 Save Note to Cloud</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // Cloud syncing for notes & logging runs via Google Apps Script Proxy
+    async function loadSharedNotes() {
+        try {
+            const response = await fetch(GAS_WEB_APP_URL);
+            const data = await response.json();
+            window.sharedFoodNotes = data.record.notes || {};
+            window.sharedHospitalNotes = data.record.hospitalNotes || {};
+            filterRestaurants();
+            renderRoutingHospitals();
+        } catch (err) {
+            console.error('Failed to load shared notes', err);
+        }
+    }
+
+    async function saveFoodNote(restaurantName, noteText) {
+        if (!window.sharedFoodNotes) window.sharedFoodNotes = {};
+        window.sharedFoodNotes[restaurantName] = noteText;
+
+        try {
+            const response = await fetch(GAS_WEB_APP_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ 
+                    notes: window.sharedFoodNotes, 
+                    hospitalNotes: window.sharedHospitalNotes 
+                })
+            });
+            
+            if (response.ok) {
+                alert('Food note saved to cloud!');
+            } else {
+                alert('Error saving note.');
+            }
+        } catch (err) {
+            console.error('Failed to save food note', err);
+        }
+    }
+
+    async function saveHospitalNote(hospId, noteText) {
+        if (!window.sharedHospitalNotes) window.sharedHospitalNotes = {};
+        window.sharedHospitalNotes[hospId] = noteText;
+
+        try {
+            const response = await fetch(GAS_WEB_APP_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ 
+                    notes: window.sharedFoodNotes, 
+                    hospitalNotes: window.sharedHospitalNotes 
+                })
+            });
+            
+            if (response.ok) {
+                alert('Hospital note saved and shared with the crew!');
+                renderRoutingHospitals();
+                if (document.getElementById('guidelinesTab').classList.contains('active')) {
+                    evaluateDestination();
+                }
+            } else {
+                alert('Error saving hospital note to cloud.');
+            }
+        } catch (err) {
+            console.error('Failed to save hospital note', err);
+            alert('Network error while saving.');
+        }
+    }
+
+    async function logCanceledRun() {
+        const selectedUnit = document.getElementById('unitSelect').value;
+        const logBtn = document.getElementById('logRunBtn');
+
+        if (!currentSearchedAddress) {
+            alert('No valid location selected to log.');
+            return;
+        }
+
+        logBtn.disabled = true;
+        logBtn.innerText = '⏳ Logging run...';
+
+        const timestamp = new Date().toLocaleString("en-US", { timeZone: "America/Kentucky/Louisville" });
+
+        try {
+            const response = await fetch(GAS_WEB_APP_URL, {
+                method: 'POST',
+                redirect: 'follow',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({
+                    action: 'log_run',
+                    timestamp: timestamp,
+                    unit: selectedUnit,
+                    address: currentSearchedAddress
+                })
+            });
+
+            const result = await response.json();
+            if (result.status === 'success') {
+                alert(`Canceled run logged successfully for Medic ${selectedUnit}!`);
+                document.getElementById('logRunContainer').style.display = 'none';
+            } else {
+                alert('Error logging run: ' + (result.message || 'Unknown error'));
+            }
+        } catch (err) {
+            console.error('Failed to log canceled run', err);
+            alert('Network error while logging run.');
+        } finally {
+            logBtn.disabled = false;
+            logBtn.innerText = '📋 Log Canceled Run to Cloud Sheet';
+        }
+    }
+
+    function toggleFoodNotes(id) {
+        const panel = document.getElementById(`food-notes-${id}`);
+        if (panel) panel.classList.toggle('active');
+    }
+
+    function toggleHospitalNotes(compoundId) {
+        const panel = document.getElementById(`hosp-notes-${compoundId}`);
+        if (panel) panel.classList.toggle('active');
+    }
+
+    // Register Service Worker for PWA installation
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW registration failed: ', err));
+        });
+    }
+
+    // Set up QR Code and Share link dynamically
+    const currentAppUrl = window.location.href.split('?')[0];
+    const appUrlTextEl = document.getElementById('appUrlText');
+    const qrCodeImgEl = document.getElementById('qrCodeImg');
+    const smsShareBtnEl = document.getElementById('smsShareBtn');
+
+    if (appUrlTextEl) appUrlTextEl.innerText = currentAppUrl;
+    if (qrCodeImgEl) qrCodeImgEl.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(currentAppUrl)}`;
+    if (smsShareBtnEl) smsShareBtnEl.href = `sms:?body=${encodeURIComponent("Check out the STMFD SMART EMS App: " + currentAppUrl)}`;
+
+    function copyAppUrl() {
+        navigator.clipboard.writeText(currentAppUrl).then(() => {
+            alert('App link copied to clipboard!');
+        });
+    }
+
+    function switchTab(tab) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+        const tabIndices = {
+            'verifier': 0,
+            'protocols': 1,
+            'guidelines': 2,
+            'routing': 3,
+            'home': 4,
+            'eats': 5,
+            'share': 6
+        };
+
+        if (tabIndices[tab] !== undefined) {
+            document.querySelectorAll('.tab-btn')[tabIndices[tab]].classList.add('active');
+        }
+        
+        const tabEl = document.getElementById(tab + 'Tab');
+        if (tabEl) tabEl.classList.add('active');
+
+        if (tab === 'verifier') {
+            if (!userLocation) getUserGeolocation();
+            if (map && boundaryBounds) map.fitBounds(boundaryBounds);
+        } else if (tab === 'guidelines') {
+            if (!userLocation) getUserGeolocation();
+            updateEmergencyOptions();
+        } else if (tab === 'routing') {
+            if (!userLocation) getUserGeolocation();
+            renderRoutingHospitals();
+        } else if (tab === 'eats') {
+            loadSharedNotes();
+        }
+    }
+
+    function resetForm() {
+        inputEl.value = '';
+        clearBtn.style.display = 'none';
+        statusDiv.className = '';
+        statusDiv.style.display = 'none';
+        statusDiv.innerHTML = '';
+        document.getElementById('logRunContainer').style.display = 'none';
+        if (marker) { marker.setMap(null); marker = null; }
+        if (map && boundaryBounds) map.fitBounds(boundaryBounds);
+    }
+
+    function addHistoryEntry(address, statusClass, badgeText) {
+        searchHistory = searchHistory.filter(item => item.address.toLowerCase() !== address.toLowerCase());
+        searchHistory.unshift({ address, statusClass, badgeText });
+        if (searchHistory.length > 10) searchHistory.pop();
+        renderHistory();
+    }
+
+    function renderHistory() {
+        if (searchHistory.length === 0) {
+            historyContainer.style.display = 'none';
+            historyList.innerHTML = '';
+            return;
+        }
+        if (document.getElementById('verifierTab').classList.contains('active')) {
+            historyContainer.style.display = 'block';
+        }
+        historyList.innerHTML = searchHistory.map(item => `
+            <li class="history-item">
+                <span class="history-address" title="${item.address}">${item.address}</span>
+                <span class="badge ${item.statusClass}">${item.badgeText}</span>
+            </li>
+        `).join('');
+    }
+
+    function clearHistory() {
+        searchHistory = [];
+        renderHistory();
+    }
+
+    function openNav(lat, lng) {
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        let navUrl = isIOS ? `maps://maps.apple.com/?daddr=${lat},${lng}&dirflg=d` : `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=driving`;
+        window.open(navUrl, '_blank');
+    }
+
+    function openNavAddress(address) {
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        const encodedAddress = encodeURIComponent(address);
+        let navUrl = isIOS ? `maps://maps.apple.com/?daddr=${encodedAddress}&dirflg=d` : `https://www.google.com/maps/dir/?api=1&destination=${encodedAddress}&travelmode=driving`;
+        window.open(navUrl, '_blank');
+    }
+
+    function openWebSearch(query) {
+        window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, '_blank');
+    }
+
+    function loadGoogleMaps() {
+        const script = document.createElement("script");
+        script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyBCnFOrSS9cHJjJOKQ8Nsp0unHZs_IsYu0&libraries=geometry,places&callback=initMap&loading=async";
+        script.async = true;
+        script.defer = true;
+        document.head.appendChild(script);
+    }
+
+    window.initMap = function() {
+        map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 12,
+            center: { lat: 38.2500, lng: -85.6500 },
+            disableDefaultUI: true,
+            zoomControl: true,
+            gestureHandling: 'greedy'
+        });
+
+        geocoder = new google.maps.Geocoder();
+
+        const louisvilleBounds = new google.maps.LatLngBounds(
+            new google.maps.LatLng(38.0000, -85.9500),
+            new google.maps.LatLng(38.4500, -85.3500)
+        );
+
+        autocomplete = new google.maps.places.Autocomplete(inputEl, {
+            bounds: louisvilleBounds,
+            strictBounds: false,
+            componentRestrictions: { country: 'us' },
+            fields: ['formatted_address', 'geometry']
+        });
+
+        autocomplete.addListener('place_changed', function() {
+            const place = autocomplete.getPlace();
+            if (place && place.formatted_address) {
+                inputEl.value = place.formatted_address;
+                clearBtn.style.display = 'block';
+                verifyAddress();
+            }
+        });
+
+        map.data.addGeoJson(geojsonData);
+        map.data.setStyle(function(feature) {
+            return {
+                fillColor: feature.getProperty('fill') || '#0000FF',
+                fillOpacity: feature.getProperty('fill-opacity') || 0.25,
+                strokeColor: feature.getProperty('stroke') || '#0000FF',
+                strokeWeight: feature.getProperty('stroke-width') || 2,
+                strokeOpacity: feature.getProperty('stroke-opacity') || 1
+            };
+        });
+
+        const ring = geojsonData.features[0].geometry.coordinates[0];
+        const path = ring.map(coord => ({ lat: coord[1], lng: coord[0] }));
+        boundaryPolygon = new google.maps.Polygon({ paths: path });
+
+        boundaryBounds = new google.maps.LatLngBounds();
+        path.forEach(pt => boundaryBounds.extend(pt));
+        map.fitBounds(boundaryBounds);
+
+        // MAP CLICK EVENT
+        map.addListener('click', function(e) {
+            handleMapClick(e.latLng);
+        });
+
+        // DATA LAYER CLICK EVENT
+        map.data.addListener('click', function(e) {
+            handleMapClick(e.latLng);
+        });
+    };
+
+    function handleMapClick(latLng) {
+        const logContainer = document.getElementById('logRunContainer');
+        if (logContainer) logContainer.style.display = 'none';
+
+        if (marker) marker.setMap(null);
+        marker = new google.maps.Marker({
+            position: latLng,
+            map: map,
+            animation: google.maps.Animation.DROP,
+            title: "Selected Location"
+        });
+
+        statusDiv.className = 'loading';
+        statusDiv.style.display = 'block';
+        statusDiv.innerHTML = '📍 Reverse-geocoding dropped pin...';
+
+        geocoder.geocode({ location: latLng }, function(results, status) {
+            let displayAddress = '';
+
+            if (status === 'OK' && results[0]) {
+                displayAddress = results[0].formatted_address;
+            } else {
+                displayAddress = `Coordinates: ${latLng.lat().toFixed(5)}, ${latLng.lng().toFixed(5)}`;
+            }
+
+            inputEl.value = displayAddress;
+            clearBtn.style.display = 'block';
+            currentSearchedAddress = displayAddress;
+
+            const isInside = google.maps.geometry.poly.containsLocation(latLng, boundaryPolygon);
+            const dirBtnHtml = `<br><button class="dir-btn-inline" onclick="openNav(${latLng.lat()}, ${latLng.lng()})">MAP Get Directions to Dropped Pin</button>`;
+
+            if (isInside) {
+                statusDiv.className = 'inside';
+                statusDiv.style.display = 'block';
+                statusDiv.innerHTML = `✅ IN DISTRICT: Dropped pin (${displayAddress}) is WITHIN the STMFDKY service area.${dirBtnHtml}`;
+                addHistoryEntry(displayAddress, 'in-district', 'In District');
+            } else {
+                statusDiv.className = 'outside';
+                statusDiv.style.display = 'block';
+                statusDiv.innerHTML = `❌ OUT OF DISTRICT: Dropped pin (${displayAddress}) is OUTSIDE the STMFDKY service area.${dirBtnHtml}`;
+                addHistoryEntry(displayAddress, 'out-district', 'Out of District');
+                
+                setNearestUnitDefault(latLng);
+                if (logContainer) logContainer.style.display = 'block';
+            }
+        });
+    }
+
+    function verifyAddress() {
+        const address = inputEl.value.trim();
+        const logContainer = document.getElementById('logRunContainer');
+        if (logContainer) logContainer.style.display = 'none';
+
+        if (!address) {
+            statusDiv.className = 'outside';
+            statusDiv.style.display = 'block';
+            statusDiv.innerHTML = '⚠️ Please enter an address to verify.';
+            return;
+        }
+
+        verifyBtn.disabled = true;
+        statusDiv.className = 'loading';
+        statusDiv.style.display = 'block';
+        statusDiv.innerHTML = '🔍 Checking address...';
+
+        const searchAddress = address.toLowerCase().includes('ky') || address.toLowerCase().includes('kentucky') 
+            ? address 
+            : `${address}, Louisville, KY`;
+
+        geocoder.geocode({ address: searchAddress }, function(results, status) {
+            verifyBtn.disabled = false;
+
+            if (status === 'OK' && results[0]) {
+                const location = results[0].geometry.location;
+                const formattedAddress = results[0].formatted_address;
+                currentSearchedAddress = formattedAddress;
+                const isInside = google.maps.geometry.poly.containsLocation(location, boundaryPolygon);
+
+                const dirBtnHtml = `<br><button class="dir-btn-inline" onclick="openNav(${location.lat()}, ${location.lng()})">MAP Get Directions to Address</button>`;
+
+                if (isInside) {
+                    statusDiv.className = 'inside';
+                    statusDiv.style.display = 'block';
+                    statusDiv.innerHTML = '✅ IN DISTRICT: Address is WITHIN the STMFDKY service area.' + dirBtnHtml;
+                    addHistoryEntry(formattedAddress, 'in-district', 'In District');
+                } else {
+                    statusDiv.className = 'outside';
+                    statusDiv.style.display = 'block';
+                    statusDiv.innerHTML = '❌ OUT OF DISTRICT: Address is OUTSIDE the STMFDKY service area.' + dirBtnHtml;
+                    addHistoryEntry(formattedAddress, 'out-district', 'Out of District');
+                    
+                    setNearestUnitDefault(location);
+                    if (logContainer) logContainer.style.display = 'block';
+                }
+
+                if (marker) marker.setMap(null);
+                marker = new google.maps.Marker({ position: location, map: map, title: address });
+                map.setCenter(location);
+                map.setZoom(15);
+            } else {
+                statusDiv.className = 'outside';
+                statusDiv.style.display = 'block';
+                statusDiv.innerHTML = '❌ Address not found. Check spelling or street number.';
+                addHistoryEntry(address, 'not-found', 'Not Found');
+            }
+        });
+    }
+
+    getUserGeolocation();
+    renderRoutingHospitals();
+    loadGoogleMaps();
+    loadSharedNotes();
+</script>
+
+</body>
+</html>
