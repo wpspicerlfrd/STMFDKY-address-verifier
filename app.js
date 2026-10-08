@@ -320,16 +320,24 @@ function renderDispatchList(data) {
         calls = data.calls || data.dispatches || data.data || data.incidents || data.events || [];
     }
 
-    // Allowed units filter list
+   // Allowed units filter list
     const allowedUnits = ['M146', 'M147', 'M148', 'M149', 'MB46', 'FB46'];
 
     // Filter calls to only include those assigned to one of the allowed units
     const filteredCalls = calls.filter(call => {
-        const units = Array.isArray(call.unit_codes) && call.unit_codes.length > 0 
-            ? call.unit_codes.join(', ') 
-            : (call.unit || call.assigned_units || call.dispatch_units || '');
+        // Gather all possible unit representations from the FirstDue payload
+        let unitString = '';
         
-        return allowedUnits.some(unit => units.toUpperCase().includes(unit));
+        if (Array.isArray(call.dispatch_unit_codes)) {
+            unitString = call.dispatch_unit_codes.join(', ');
+        } else if (Array.isArray(call.unit_codes)) {
+            unitString = call.unit_codes.join(', ');
+        } else {
+            unitString = call.unit || call.assigned_units || call.dispatch_units || '';
+        }
+        
+        const upperUnits = unitString.toUpperCase();
+        return allowedUnits.some(unit => upperUnits.includes(unit));
     });
 
     const recentTen = filteredCalls.slice(0, 10);
