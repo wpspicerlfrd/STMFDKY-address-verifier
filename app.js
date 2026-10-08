@@ -320,10 +320,22 @@ function renderDispatchList(data) {
         calls = data.calls || data.dispatches || data.data || data.incidents || data.events || [];
     }
 
-    const recentTen = calls.slice(0, 10);
+    // Allowed units filter list
+    const allowedUnits = ['M146', 'M147', 'M148', 'M149', 'MB46', 'FB46'];
+
+    // Filter calls to only include those assigned to one of the allowed units
+    const filteredCalls = calls.filter(call => {
+        const units = Array.isArray(call.unit_codes) && call.unit_codes.length > 0 
+            ? call.unit_codes.join(', ') 
+            : (call.unit || call.assigned_units || call.dispatch_units || '');
+        
+        return allowedUnits.some(unit => units.toUpperCase().includes(unit));
+    });
+
+    const recentTen = filteredCalls.slice(0, 10);
 
     if (recentTen.length === 0) {
-        container.innerHTML = '<div style="font-size:12px; color:#718096; padding:10px; text-align:center;">No recent dispatch calls retrieved.</div>';
+        container.innerHTML = '<div style="font-size:12px; color:#718096; padding:10px; text-align:center;">No recent calls for M146, M147, M148, M149, MB46, or FB46.</div>';
         return;
     }
 
@@ -358,7 +370,6 @@ function renderDispatchList(data) {
             beatBadge = `<span style="background-color: #003366; color: #ffffff; font-size: 11px; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-left: 6px;">${cleanBeat}</span>`;
         }
 
-        // Business/Location Badge to highlight dangerous or known premises
         let businessBadge = '';
         if (businessName) {
             businessBadge = `<span style="display: block; font-size: 13px; font-weight: bold; color: #9b2c2c; margin-top: 2px;">🏢 ${businessName}</span>`;
@@ -366,7 +377,7 @@ function renderDispatchList(data) {
 
         const units = Array.isArray(call.unit_codes) && call.unit_codes.length > 0 
             ? call.unit_codes.join(', ') 
-            : (call.unit || call.assigned_units || '');
+            : (call.unit || call.assigned_units || call.dispatch_units || '');
 
         const timeStr = call.created_at || call.dispatch_time ? 
             new Date(call.created_at || call.dispatch_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
