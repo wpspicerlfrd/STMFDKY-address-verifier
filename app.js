@@ -325,19 +325,20 @@ function renderDispatchList(data) {
 
     // Filter calls to only include those assigned to one of the allowed units
     const filteredCalls = calls.filter(call => {
-        // Gather all possible unit representations from the FirstDue payload
-        let unitString = '';
-        
+        // Collect units from dispatch_unit_codes array, unit_codes, or fallback fields
+        let unitsArray = [];
         if (Array.isArray(call.dispatch_unit_codes)) {
-            unitString = call.dispatch_unit_codes.join(', ');
+            unitsArray = call.dispatch_unit_codes;
         } else if (Array.isArray(call.unit_codes)) {
-            unitString = call.unit_codes.join(', ');
-        } else {
-            unitString = call.unit || call.assigned_units || call.dispatch_units || '';
+            unitsArray = call.unit_codes;
+        } else if (typeof call.unit === 'string') {
+            unitsArray = [call.unit];
+        } else if (typeof call.assigned_units === 'string') {
+            unitsArray = call.assigned_units.split(',');
         }
-        
-        const upperUnits = unitString.toUpperCase();
-        return allowedUnits.some(unit => upperUnits.includes(unit));
+
+        // Check if any assigned unit matches our allowed list
+        return unitsArray.some(u => allowedUnits.includes(u.trim().toUpperCase()));
     });
 
     const recentTen = filteredCalls.slice(0, 10);
