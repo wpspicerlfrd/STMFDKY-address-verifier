@@ -332,6 +332,12 @@ function renderDispatchList(data) {
         const city = call.city ? `, ${call.city}` : '';
         const fullAddress = `${rawAddress}${city}`;
         
+        // Extract Business or Location Name from FirstDue payload
+        let businessName = call.business_name || call.location_name || call.premise_name || call.place_name || call.location_title || '';
+        if (!businessName && call.location && typeof call.location === 'object') {
+            businessName = call.location.name || call.location.business_name || '';
+        }
+
         const callType = call.type || call.incident_type_code || call.description || call.nature || 'Dispatch Call';
         
         let rawBeat = call.cad_beat || call.beat || call.beat_district || call.reporting_beat || call.grid || call.box_area || call.sector || '';
@@ -350,6 +356,12 @@ function renderDispatchList(data) {
                 cleanBeat = 'BEAT ' + cleanBeat;
             }
             beatBadge = `<span style="background-color: #003366; color: #ffffff; font-size: 11px; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-left: 6px;">${cleanBeat}</span>`;
+        }
+
+        // Business/Location Badge to highlight dangerous or known premises
+        let businessBadge = '';
+        if (businessName) {
+            businessBadge = `<span style="display: block; font-size: 13px; font-weight: bold; color: #9b2c2c; margin-top: 2px;">🏢 ${businessName}</span>`;
         }
 
         const units = Array.isArray(call.unit_codes) && call.unit_codes.length > 0 
@@ -374,6 +386,7 @@ function renderDispatchList(data) {
                 <div class="er-header-row">
                     <div class="er-title-area">
                         <strong style="color: #003366; font-size: 14px;">${callType}</strong>${beatBadge}${locationTag}
+                        ${businessBadge}
                         <span style="display: block; font-size: 13px; color: #2d3748; margin-top: 3px;">${fullAddress}</span>
                         <span class="station-subtitle" style="display: block; font-size: 11px; color: #718096; margin-top: 2px;">
                             ${units ? 'Unit: ' + units + ' | ' : ''}${timeStr}
