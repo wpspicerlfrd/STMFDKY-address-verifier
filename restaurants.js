@@ -1,4 +1,3 @@
-// Complete Expanded Restaurant Directory
 const restaurantList = [
     "211 Clover Lane",
     "Abol Cafe (Coffee + Kitchen)",
