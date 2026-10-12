@@ -68,34 +68,6 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
     return R * c;
 }
 
-function setNearestUnitDefault(fallbackLatLng) {
-    const unitSelect = document.getElementById('unitSelect');
-    if (!unitSelect) return;
-
-    let referenceLat = userLocation ? userLocation.lat : null;
-    let referenceLng = userLocation ? userLocation.lng : null;
-
-    if (referenceLat === null && fallbackLatLng) {
-        referenceLat = typeof fallbackLatLng.lat === 'function' ? fallbackLatLng.lat() : fallbackLatLng.lat;
-        referenceLng = typeof fallbackLatLng.lng === 'function' ? fallbackLatLng.lng() : fallbackLatLng.lng;
-    }
-
-    if (referenceLat === null || referenceLng === null) return;
-
-    let nearestUnit = "146";
-    let shortestDistance = Infinity;
-
-    stmfdStations.forEach(st => {
-        const dist = calculateDistance(referenceLat, referenceLng, st.lat, st.lng);
-        if (dist < shortestDistance) {
-            shortestDistance = dist;
-            nearestUnit = st.unit;
-        }
-    });
-
-    unitSelect.value = nearestUnit;
-}
-
 function getUserGeolocation() {
     const locStatus = document.getElementById('locationStatus');
     const routingLocStatus = document.getElementById('routingLocationStatus');
@@ -609,48 +581,6 @@ async function saveHospitalNote(hospId, noteText) {
     }
 }
 
-async function logCanceledRun() {
-    const selectedUnit = document.getElementById('unitSelect').value;
-    const logBtn = document.getElementById('logRunBtn');
-
-    if (!currentSearchedAddress) {
-        alert('No valid location selected to log.');
-        return;
-    }
-
-    logBtn.disabled = true;
-    logBtn.innerText = '⏳ Logging run...';
-
-    const timestamp = new Date().toLocaleString("en-US", { timeZone: "America/Kentucky/Louisville" });
-
-    try {
-        const response = await fetch(GAS_WEB_APP_URL, {
-            method: 'POST',
-            redirect: 'follow',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify({
-                action: 'log_run',
-                timestamp: timestamp,
-                unit: selectedUnit,
-                address: currentSearchedAddress
-            })
-        });
-
-        const result = await response.json();
-        if (result.status === 'success') {
-            alert(`Canceled run logged successfully for Medic ${selectedUnit}!`);
-            document.getElementById('logRunContainer').style.display = 'none';
-        } else {
-            alert('Error logging run: ' + (result.message || 'Unknown error'));
-        }
-    } catch (err) {
-        console.error('Failed to log canceled run', err);
-    } finally {
-        logBtn.disabled = false;
-        logBtn.innerText = '📋 Log Canceled Run to Cloud Sheet';
-    }
-}
-
 function toggleFoodNotes(id) {
     const panel = document.getElementById(`food-notes-${id}`);
     if (panel) panel.classList.toggle('active');
@@ -717,8 +647,6 @@ function resetForm() {
         statusDiv.style.display = 'none';
         statusDiv.innerHTML = '';
     }
-    const logContainer = document.getElementById('logRunContainer');
-    if (logContainer) logContainer.style.display = 'none';
     if (marker) { marker.setMap(null); marker = null; }
     if (map && boundaryBounds) map.fitBounds(boundaryBounds);
 }
@@ -862,9 +790,6 @@ async function fetchOutsideAgencyName(lat, lng) {
 }
 
 function handleMapClick(latLng) {
-    const logContainer = document.getElementById('logRunContainer');
-    if (logContainer) logContainer.style.display = 'none';
-
     if (marker) marker.setMap(null);
     marker = new google.maps.Marker({
         position: latLng,
@@ -908,8 +833,6 @@ function handleMapClick(latLng) {
             });
 
             addHistoryEntry(displayAddress, 'out-district', 'Out of District');
-            setNearestUnitDefault(latLng);
-            if (logContainer) logContainer.style.display = 'block';
         }
     });
 }
@@ -934,8 +857,6 @@ function parseInterstateMileMarker(inputStr) {
 
 function verifyAddress() {
     const rawInput = inputEl.value.trim();
-    const logContainer = document.getElementById('logRunContainer');
-    if (logContainer) logContainer.style.display = 'none';
 
     if (!rawInput) {
         statusDiv.className = 'outside';
@@ -982,8 +903,6 @@ function verifyAddress() {
                 });
 
                 addHistoryEntry(formattedAddress, 'out-district', 'Out of District');
-                setNearestUnitDefault(location);
-                if (logContainer) logContainer.style.display = 'block';
             }
 
             if (marker) marker.setMap(null);
