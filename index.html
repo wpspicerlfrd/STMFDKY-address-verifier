@@ -48,47 +48,13 @@
             <div class="verifier-controls">
                 <div class="form-group">
                     <div class="input-wrapper">
-                        <input type="text" id="addressInput" list="highwaySuggestions" placeholder="Enter address, intersection, or interstate (e.g. I-264 & Shelbyville)" autofocus>
+                        <input type="text" id="addressInput" autocomplete="off" placeholder="Enter address, intersection, or interstate (e.g. I-264 & Shelbyville)" autofocus>
                         <button id="clearBtn" class="clear-btn" onclick="resetForm()" title="Clear address">&times;</button>
                     </div>
                     <button id="verifyBtn" class="action-btn" onclick="verifyAddress()">Verify Location</button>
                 </div>
 
-                <datalist id="highwaySuggestions">
-                    <option value="I-264 East & Shelbyville Rd, Louisville, KY">
-                    <option value="I-264 West & Shelbyville Rd, Louisville, KY">
-                    <option value="I-264 East & Westport Rd, Louisville, KY">
-                    <option value="I-264 West & Westport Rd, Louisville, KY">
-                    <option value="I-264 & Breckenridge Ln, Louisville, KY">
-                    <option value="I-264 & Taylorsville Rd, Louisville, KY">
-                    <option value="I-264 & I-64 Split, Louisville, KY">
-                    <option value="I-71 North & Zorn Ave, Louisville, KY">
-                    <option value="I-71 North & US-42 Brownsboro Rd, Louisville, KY">
-                    <option value="I-71 & I-264 Interchange, Louisville, KY">
-                    <option value="I-64 East & Cannons Ln, Louisville, KY">
-                    <option value="Shelbyville Rd & Breckenridge Ln, Louisville, KY">
-                    <option value="Hubbards Ln & Westport Rd, Louisville, KY">
-                    <option value="Chenoweth Ln & Shelbyville Rd, Louisville, KY">
-                </datalist>
-
                 <div id="status"></div>
-
-                <!-- Canceled Run Logging Container -->
-                <div id="logRunContainer" style="display: none; margin-top: 15px; background-color: #fffaf0; border: 1px solid #feebc8; border-left: 4px solid #dd6b20; padding: 15px; border-radius: 6px; text-align: center;">
-                    <div style="font-size: 13px; font-weight: 700; color: #744210; margin-bottom: 8px;">Canceled Run Due to Geofence Boundary?</div>
-                    
-                    <div style="margin-bottom: 12px; text-align: left;">
-                        <label for="unitSelect" style="font-size: 11px; font-weight: 700; color: #4a5568; text-transform: uppercase; display: block; margin-bottom: 4px;">Select Assigned Unit</label>
-                        <select id="unitSelect" style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px; font-weight: 600; background-color: #fff;">
-                            <option value="146">Medic 146 (Station 46)</option>
-                            <option value="147">Medic 147 (Station 47)</option>
-                            <option value="148">Medic 148 (Station 48)</option>
-                            <option value="149">Medic 149 (Station 49)</option>
-                        </select>
-                    </div>
-
-                    <button id="logRunBtn" class="action-btn" style="background-color: #dd6b20; width: 100%;" onclick="logCanceledRun()">📋 Log Canceled Run to Cloud Sheet</button>
-                </div>
 
                 <!-- Live FirstDue Dispatches Section -->
                 <div class="section-header">
