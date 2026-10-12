@@ -799,6 +799,13 @@ async function fetchOutsideAgencyName(lat, lng) {
     return 'Outside District';
 }
 
+function getHighwayLabelForCoords(lat, lng) {
+    if (lat >= 38.230 && lat <= 38.290 && lng >= -85.670 && lng <= -85.570) {
+        return "Henry Watterson Expy (I-264)";
+    }
+    return null;
+}
+
 function handleMapClick(latLng) {
     if (marker) marker.setMap(null);
     marker = new google.maps.Marker({
@@ -812,13 +819,19 @@ function handleMapClick(latLng) {
     statusDiv.style.display = 'block';
     statusDiv.innerHTML = '📍 Reverse-geocoding dropped pin...';
 
+    const lat = latLng.lat();
+    const lng = latLng.lng();
+    const highwayOverride = getHighwayLabelForCoords(lat, lng);
+
     geocoder.geocode({ location: latLng }, function(results, status) {
         let displayAddress = '';
 
-        if (status === 'OK' && results[0]) {
+        if (highwayOverride) {
+            displayAddress = `${highwayOverride}, Louisville, KY`;
+        } else if (status === 'OK' && results[0]) {
             displayAddress = results[0].formatted_address;
         } else {
-            displayAddress = `Coordinates: ${latLng.lat().toFixed(5)}, ${latLng.lng().toFixed(5)}`;
+            displayAddress = `Coordinates: ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
         }
 
         inputEl.value = displayAddress;
@@ -826,7 +839,7 @@ function handleMapClick(latLng) {
         currentSearchedAddress = displayAddress;
 
         const isInside = google.maps.geometry.poly.containsLocation(latLng, boundaryPolygon);
-        const dirBtnHtml = `<br><button class="dir-btn-inline" onclick="openNav(${latLng.lat()}, ${latLng.lng()})">MAP Get Directions to Dropped Pin</button>`;
+        const dirBtnHtml = `<br><button class="dir-btn-inline" onclick="openNav(${lat}, ${lng})">MAP Get Directions to Dropped Pin</button>`;
 
         if (isInside) {
             statusDiv.className = 'inside';
@@ -838,7 +851,7 @@ function handleMapClick(latLng) {
             statusDiv.style.display = 'block';
             statusDiv.innerHTML = `❌ OUT OF DISTRICT: Checking agency...${dirBtnHtml}`;
 
-            fetchOutsideAgencyName(latLng.lat(), latLng.lng()).then(agency => {
+            fetchOutsideAgencyName(lat, lng).then(agency => {
                 statusDiv.innerHTML = `❌ OUT OF DISTRICT: Dropped pin is in <b>${agency}</b>.${dirBtnHtml}`;
             });
 
