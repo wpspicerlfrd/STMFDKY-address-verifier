@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
         inputEl.addEventListener('keydown', e => { if (e.key === 'Enter') verifyAddress(); });
     }
 
-        const currentAppUrl = window.location.href.split('?')[0];
+    const currentAppUrl = window.location.href.split('?')[0];
     const appUrlTextEl = document.getElementById('appUrlText');
     const qrCodeImgEl = document.getElementById('qrCodeImg');
     const smsShareBtnEl = document.getElementById('smsShareBtn');
@@ -48,16 +48,14 @@ document.addEventListener("DOMContentLoaded", () => {
     if (qrCodeImgEl) qrCodeImgEl.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(currentAppUrl)}`;
     if (smsShareBtnEl) smsShareBtnEl.href = `sms:?body=${encodeURIComponent("Check out the STMFD SMART EMS App: " + currentAppUrl)}`;
 
-    
     getUserGeolocation();
     renderRoutingHospitals();
     loadGoogleMaps();
     loadSharedNotes();
     
-    initFastDispatchLoad(); // Instantly displays saved dispatches on app open
+    initFastDispatchLoad();
     startDispatchAutoPolling();
 });
-
 
 function calculateDistance(lat1, lon1, lat2, lon2) {
     const R = 3958.8;
@@ -260,7 +258,6 @@ function evaluateDestination() {
     });
 }
 
-// FirstDue Real-Time Dispatch Pulling with Local Storage Caching
 function initFastDispatchLoad() {
     const cachedData = localStorage.getItem('cached_firstdue_dispatches');
     if (cachedData) {
@@ -320,12 +317,9 @@ function renderDispatchList(data) {
         calls = data.calls || data.dispatches || data.data || data.incidents || data.events || [];
     }
 
-   // Allowed units filter list
     const allowedUnits = ['M146', 'M147', 'M148', 'M149', 'MB46', 'FB46'];
 
-    // Filter calls to only include those assigned to one of the allowed units
     const filteredCalls = calls.filter(call => {
-        // Collect units from dispatch_unit_codes array, unit_codes, or fallback fields
         let unitsArray = [];
         if (Array.isArray(call.dispatch_unit_codes)) {
             unitsArray = call.dispatch_unit_codes;
@@ -337,7 +331,6 @@ function renderDispatchList(data) {
             unitsArray = call.assigned_units.split(',');
         }
 
-        // Check if any assigned unit matches our allowed list
         return unitsArray.some(u => allowedUnits.includes(u.trim().toUpperCase()));
     });
 
@@ -353,7 +346,6 @@ function renderDispatchList(data) {
         const city = call.city ? `, ${call.city}` : '';
         const fullAddress = `${rawAddress}${city}`;
         
-        // Extract Business or Location Name from FirstDue payload
         let businessName = call.business_name || call.location_name || call.premise_name || call.place_name || call.location_title || '';
         if (!businessName && call.location && typeof call.location === 'object') {
             businessName = call.location.name || call.location.business_name || '';
@@ -444,10 +436,8 @@ function startDispatchAutoPolling() {
     fetchRecentDispatches();
     if (dispatchIntervalTimer) clearInterval(dispatchIntervalTimer);
     
-    // Poll every 10 seconds for near real-time sync
     dispatchIntervalTimer = setInterval(fetchRecentDispatches, 10000);
 
-    // Instantly fetch and process new dispatches when user switches back to app tab
     document.addEventListener("visibilitychange", () => {
         if (!document.hidden) {
             fetchRecentDispatches();
@@ -455,7 +445,6 @@ function startDispatchAutoPolling() {
     });
 }
 
-// Shift Eats Functions
 function pickRandomRestaurant() {
     const resultCard = document.getElementById('randomResult');
     const nameEl = document.getElementById('randomName');
@@ -561,7 +550,6 @@ function filterRestaurants() {
     }).join('');
 }
 
-// Cloud Syncing
 async function loadSharedNotes() {
     try {
         const response = await fetch(GAS_WEB_APP_URL);
@@ -673,7 +661,6 @@ function toggleHospitalNotes(compoundId) {
     if (panel) panel.classList.toggle('active');
 }
 
-// Service Worker Registration
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW registration failed: ', err));
@@ -927,17 +914,38 @@ function handleMapClick(latLng) {
     });
 }
 
+function parseInterstateMileMarker(inputStr) {
+    const text = inputStr.toUpperCase();
+    if (text.includes('I-264') || text.includes('WATTERSON') || text.includes('I-64')) {
+        const mmMatch = text.match(/MM\s*(\d+)/) || text.match(/MILE\s*MARKER\s*(\d+)/) || text.match(/(\d+)\s*MM/);
+        if (mmMatch) {
+            const mm = parseInt(mmMatch[1]);
+            const highway = text.includes('I-64') ? 'I-64' : 'I-264';
+            return {
+                isInterstate: true,
+                highway: highway,
+                mileMarker: mm,
+                formatted: `${highway} at Mile Marker ${mm}, Louisville, KY`
+            };
+        }
+    }
+    return { isInterstate: false };
+}
+
 function verifyAddress() {
-    const address = inputEl.value.trim();
+    const rawInput = inputEl.value.trim();
     const logContainer = document.getElementById('logRunContainer');
     if (logContainer) logContainer.style.display = 'none';
 
-    if (!address) {
+    if (!rawInput) {
         statusDiv.className = 'outside';
         statusDiv.style.display = 'block';
         statusDiv.innerHTML = '⚠️ Please enter an address to verify.';
         return;
     }
+
+    const interstateCheck = parseInterstateMileMarker(rawInput);
+    const address = interstateCheck.isInterstate ? interstateCheck.formatted : rawInput;
 
     verifyBtn.disabled = true;
     statusDiv.className = 'loading';
