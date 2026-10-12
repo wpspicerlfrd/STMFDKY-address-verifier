@@ -10,7 +10,6 @@ let marker;
 let boundaryPolygon;
 let boundaryBounds;
 let geocoder;
-let autocomplete;
 let searchHistory = [];
 let userLocation = null;
 let currentEatsCategory = 'all';
@@ -390,7 +389,39 @@ function verifyDispatchCoords(lat, lng, fallbackLabel) {
         const latLng = new google.maps.LatLng(lat, lng);
         map.setCenter(latLng);
         map.setZoom(16);
-        handleMapClick(latLng);
+
+        if (marker) marker.setMap(null);
+        marker = new google.maps.Marker({
+            position: latLng,
+            map: map,
+            animation: google.maps.Animation.DROP,
+            title: fallbackLabel
+        });
+
+        statusDiv.className = 'loading';
+        statusDiv.style.display = 'block';
+        statusDiv.innerHTML = '📍 Evaluating exact coordinates against boundary...';
+        currentSearchedAddress = fallbackLabel;
+
+        const isInside = google.maps.geometry.poly.containsLocation(latLng, boundaryPolygon);
+        const dirBtnHtml = `<br><button class="dir-btn-inline" onclick="openNav(${lat}, ${lng})">MAP Get Directions to Pin</button>`;
+
+        if (isInside) {
+            statusDiv.className = 'inside';
+            statusDiv.style.display = 'block';
+            statusDiv.innerHTML = `✅ IN DISTRICT: Location (${fallbackLabel}) is WITHIN coverage area.${dirBtnHtml}`;
+            addHistoryEntry(fallbackLabel, 'in-district', 'In District');
+        } else {
+            statusDiv.className = 'outside';
+            statusDiv.style.display = 'block';
+            statusDiv.innerHTML = `❌ OUT OF DISTRICT: Checking agency...${dirBtnHtml}`;
+
+            fetchOutsideAgencyName(lat, lng).then(agency => {
+                statusDiv.innerHTML = `❌ OUT OF DISTRICT: Location is in <b>${agency}</b>.${dirBtnHtml}`;
+            });
+
+            addHistoryEntry(fallbackLabel, 'out-district', 'Out of District');
+        }
     } else {
         selectDispatchAddress(fallbackLabel);
     }
@@ -718,27 +749,6 @@ window.initMap = function() {
     });
 
     geocoder = new google.maps.Geocoder();
-
-    const louisvilleBounds = new google.maps.LatLngBounds(
-        new google.maps.LatLng(38.0000, -85.9500),
-        new google.maps.LatLng(38.4500, -85.3500)
-    );
-
-    autocomplete = new google.maps.places.Autocomplete(inputEl, {
-        bounds: louisvilleBounds,
-        strictBounds: false,
-        componentRestrictions: { country: 'us' },
-        fields: ['formatted_address', 'geometry']
-    });
-
-    autocomplete.addListener('place_changed', function() {
-        const place = autocomplete.getPlace();
-        if (place && place.formatted_address) {
-            inputEl.value = place.formatted_address;
-            clearBtn.style.display = 'block';
-            verifyAddress();
-        }
-    });
 
     map.data.addGeoJson(geojsonData);
     map.data.setStyle(function(feature) {
