@@ -750,6 +750,27 @@ window.initMap = function() {
 
     geocoder = new google.maps.Geocoder();
 
+    const louisvilleBounds = new google.maps.LatLngBounds(
+        new google.maps.LatLng(38.0000, -85.9500),
+        new google.maps.LatLng(38.4500, -85.3500)
+    );
+
+    autocomplete = new google.maps.places.Autocomplete(inputEl, {
+        bounds: louisvilleBounds,
+        strictBounds: false,
+        componentRestrictions: { country: 'us' },
+        fields: ['formatted_address', 'geometry']
+    });
+
+    autocomplete.addListener('place_changed', function() {
+        const place = autocomplete.getPlace();
+        if (place && place.formatted_address) {
+            inputEl.value = place.formatted_address;
+            clearBtn.style.display = 'block';
+            verifyAddress();
+        }
+    });
+
     map.data.addGeoJson(geojsonData);
     map.data.setStyle(function(feature) {
         return {
