@@ -44,11 +44,14 @@
         <h2>District Boundary Check</h2>
         <p>Enter an address, intersection, or interstate exit to verify if it falls within the STMFDKY service area, or tap directly on the map below to drop a pin.</p>
 
+        <!-- Uniform Determination Badge -->
+        <div id="uniformBadge" class="uniform-badge" style="display: none;"></div>
+
         <div class="verifier-desktop-layout">
             <div class="verifier-controls">
                 <div class="form-group">
                     <div class="input-wrapper">
-                        <input type="text" id="addressInput" placeholder="Enter address" autofocus>
+                        <input type="text" id="addressInput" placeholder="Enter address, intersection, or interstate (e.g. I-264 & Shelbyville)" autofocus>
                         <button id="clearBtn" class="clear-btn" onclick="resetForm()" title="Clear address">&times;</button>
                     </div>
                     <button id="verifyBtn" class="action-btn" onclick="verifyAddress()">Verify Location</button>
@@ -84,7 +87,7 @@
         </div>
     </div>
 
-    <!-- TAB 2: Protocols (Under Construction) -->
+    <!-- TAB 2: Protocols -->
     <div id="protocolsTab" class="tab-content">
         <h2>St. Matthews Protocols</h2>
         <div style="background-color: #fffaf0; border: 1px solid #feebc8; border-left: 4px solid #dd6b20; padding: 20px; border-radius: 6px; text-align: center; margin-top: 20px;">
@@ -144,16 +147,14 @@
             <span>📍 Requesting current location for distance sorting...</span>
         </div>
 
-        <!-- Jefferson County ER -->
         <div class="section-header">Jefferson County, KY ER</div>
         <div id="jeffersonErGrid" class="er-grid"></div>
 
-        <!-- Outside Jefferson County ER -->
         <div class="section-header">Outside Jefferson County ER</div>
         <div id="outsideErGrid" class="er-grid"></div>
     </div>
 
-    <!-- TAB 5: Take Me Home (St. Matthews Fire & EMS Stations) -->
+    <!-- TAB 5: Take Me Home -->
     <div id="homeTab" class="tab-content">
         <h2>St. Matthews Fire & EMS Stations</h2>
         <p>Tap a station to launch direct navigation back to quarters.</p>
@@ -199,7 +200,7 @@
         </div>
     </div>
 
-    <!-- TAB 6: Shift Eats (Restaurant Directory & Chooser) -->
+    <!-- TAB 6: Shift Eats -->
     <div id="eatsTab" class="tab-content">
         <h2>Shift Eats Chooser</h2>
         <p>Can't decide on food for the crew? Spin the chooser, search options, and toggle notes on demand.</p>
@@ -246,7 +247,7 @@
         </a>
     </div>
 
-    <!-- TAB 7: Share App & QR Code -->
+    <!-- TAB 7: Share App -->
     <div id="shareTab" class="tab-content">
         <h2>Share App With Crew Members</h2>
         <p>Have another EMT, Paramedic, or firefighter scan this QR code with their phone camera to instantly install the app on their device.</p>
