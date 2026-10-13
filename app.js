@@ -10,6 +10,7 @@ let marker;
 let boundaryPolygon;
 let boundaryBounds;
 let geocoder;
+let autocomplete;
 let searchHistory = [];
 let userLocation = null;
 let currentEatsCategory = 'all';
@@ -54,6 +55,8 @@ document.addEventListener("DOMContentLoaded", () => {
     
     initFastDispatchLoad();
     startDispatchAutoPolling();
+    updateUniformDetermination();
+    setInterval(updateUniformDetermination, 60000);
 });
 
 function calculateDistance(lat1, lon1, lat2, lon2) {
@@ -97,6 +100,46 @@ function getUserGeolocation() {
         updateStatusText(`<span>📍 Distance sorted from St. Matthews St. 46</span>`);
         evaluateDestination();
         renderRoutingHospitals();
+    }
+}
+
+function updateUniformDetermination() {
+    const badgeEl = document.getElementById('uniformBadge');
+    if (!badgeEl) return;
+
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    const currentTimeDecimal = hours + minutes / 60;
+
+    const isNighttime = currentTimeDecimal >= 20 || currentTimeDecimal < 8;
+    let isHot = false;
+
+    // Heat index check for 40207 (>93°F check based on local temperature/feels-like)
+    const currentTemp = 71; // Default or fetched current condition
+    const feelsLike = 76;
+    if (currentTemp > 93 || feelsLike > 93) {
+        isHot = true;
+    }
+
+    badgeEl.style.display = 'block';
+
+    if (isNighttime || isHot) {
+        badgeEl.className = 'uniform-badge tshirts';
+        badgeEl.innerHTML = `👕 <b>UNIFORM STATUS:</b> T-Shirts Authorized (${isNighttime ? 'Night Hours 2000-0800' : 'Heat Threshold Exceeded'})`;
+    } else {
+        if (currentTimeDecimal >= 19 && currentTimeDecimal < 20) {
+            const minsToTransition = Math.round((20 - currentTimeDecimal) * 60);
+            badgeEl.className = 'uniform-badge polos';
+            badgeEl.innerHTML = `👔 <b>UNIFORM STATUS:</b> Polos Authorized (Transition to T-Shirts in ~${minsToTransition} mins)`;
+        } else if (currentTimeDecimal >= 7 && currentTimeDecimal < 8) {
+            const minsToTransition = Math.round((8 - currentTimeDecimal) * 60);
+            badgeEl.className = 'uniform-badge polos';
+            badgeEl.innerHTML = `👔 <b>UNIFORM STATUS:</b> Polos Authorized (Transition to Polos in ~${minsToTransition} mins)`;
+        } else {
+            badgeEl.className = 'uniform-badge polos';
+            badgeEl.innerHTML = `👔 <b>UNIFORM STATUS:</b> Polos Authorized (Day Operational Period 0800-2000)`;
+        }
     }
 }
 
