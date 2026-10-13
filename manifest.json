@@ -1,7 +1,7 @@
 {
   "id": "/STM SMART/",
   "name": "STMFD SMART EMS",
-  "short_name": "STMFD EMS",
+  "short_name": "STM SMART",
   "description": "STMFD Station Matrix, Allocation & Routing Tool",
   "start_url": "./index.html?app=stmfd",
   "scope": "./",
