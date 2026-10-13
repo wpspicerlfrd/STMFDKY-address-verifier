@@ -328,6 +328,11 @@ input[type="text"], select {
     font-size: 13px;
     font-weight: 700;
     color: #1a202c;
+    flex: 1;
+    min-width: 0;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    margin-right: 8px;
 }
 
 .dist-tag {
