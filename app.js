@@ -113,33 +113,42 @@ function updateUniformDetermination() {
     const currentTimeDecimal = hours + minutes / 60;
 
     const isNighttime = currentTimeDecimal >= 20 || currentTimeDecimal < 8;
-    let isHot = false;
-
-    // Heat index check for 40207 (>93°F check based on local temperature/feels-like)
-    const currentTemp = 71; // Default or fetched current condition
-    const feelsLike = 76;
-    if (currentTemp > 93 || feelsLike > 93) {
-        isHot = true;
+    
+    let heatExceededTime = null;
+    const hourlyData = window.weatherHourlyData || [];
+    
+    for (let i = 0; i < hourlyData.length; i++) {
+        const h = hourlyData[i];
+        const fDate = new Date(h.forecast_time || h.time);
+        const fHours = fDate.getHours();
+        
+        if (fHours >= 8 && fHours < 20) {
+            const temp = parseFloat(h.temperature || h.temp) || 0;
+            const feelsLike = parseFloat(h.feels_like_temperature || h.heat_index || temp) || temp;
+            if (temp > 93 || feelsLike > 93) {
+                heatExceededTime = fDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+                break;
+            }
+        }
     }
 
-    badgeEl.style.display = 'block';
+    let tshirtsAllowed = false;
+    let reason = '';
 
-    if (isNighttime || isHot) {
+    if (isNighttime) {
+        tshirtsAllowed = true;
+        reason = 'Night Hours (2000–0800)';
+    } else if (heatExceededTime) {
+        tshirtsAllowed = true;
+        reason = `Forecast >93°F Reached at ${heatExceededTime}`;
+    }
+
+    if (tshirtsAllowed) {
+        badgeEl.style.display = 'block';
         badgeEl.className = 'uniform-badge tshirts';
-        badgeEl.innerHTML = `👕 <b>UNIFORM STATUS:</b> T-Shirts Authorized (${isNighttime ? 'Night Hours 2000-0800' : 'Heat Threshold Exceeded'})`;
+        badgeEl.innerHTML = `👕 <b>UNIFORM STATUS:</b> T-Shirts Authorized (${reason})`;
     } else {
-        if (currentTimeDecimal >= 19 && currentTimeDecimal < 20) {
-            const minsToTransition = Math.round((20 - currentTimeDecimal) * 60);
-            badgeEl.className = 'uniform-badge polos';
-            badgeEl.innerHTML = `👔 <b>UNIFORM STATUS:</b> Polos Authorized (Transition to T-Shirts in ~${minsToTransition} mins)`;
-        } else if (currentTimeDecimal >= 7 && currentTimeDecimal < 8) {
-            const minsToTransition = Math.round((8 - currentTimeDecimal) * 60);
-            badgeEl.className = 'uniform-badge polos';
-            badgeEl.innerHTML = `👔 <b>UNIFORM STATUS:</b> Polos Authorized (Transition to Polos in ~${minsToTransition} mins)`;
-        } else {
-            badgeEl.className = 'uniform-badge polos';
-            badgeEl.innerHTML = `👔 <b>UNIFORM STATUS:</b> Polos Authorized (Day Operational Period 0800-2000)`;
-        }
+        badgeEl.style.display = 'none';
     }
 }
 
