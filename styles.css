@@ -322,16 +322,22 @@ input[type="text"], select {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 10px;
 }
 
 .er-title-area {
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex-wrap: wrap;
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a202c;
     flex: 1;
     min-width: 0;
+}
+
+.er-card .action-btn {
+    flex-shrink: 0;
+    width: auto;
+    padding: 6px 14px;
+    font-size: 12px;
 }
 
 .dist-tag {
