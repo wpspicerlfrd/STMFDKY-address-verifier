@@ -340,7 +340,7 @@ function renderDispatchList(data) {
         calls = data.calls || data.dispatches || data.data || data.incidents || data.events || [];
     }
 
-    const allowedUnits = ['M146', 'M147', 'M148', 'M149', 'MB46', 'FB46'];
+    const allowedUnits = ['M146', 'M147', 'M148', 'M149', 'M146G', 'M147G', 'M148G', 'MB46', 'FB46'];
 
     const filteredCalls = calls.filter(call => {
         let unitsArray = [];
