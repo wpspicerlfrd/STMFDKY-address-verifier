@@ -26,7 +26,7 @@
 <div class="card">
     <div class="app-header">
         <h1 class="app-title">STMFD SMART EMS</h1>
-        <div class="app-subtitle">Station Matrix, Allocation &amp; Routing Tool</div>
+        <div class="app-subtitle">Station Matrix, Allocation & Routing Tool</div>
     </div>
 
     <div class="tab-nav">
@@ -37,6 +37,13 @@
         <button class="tab-btn" onclick="switchTab('home')">Stations</button>
         <button class="tab-btn" onclick="switchTab('eats')">Food</button>
         <button class="tab-btn" onclick="switchTab('share')">Share App</button>
+        <!-- Driver's Training external link button -->
+        <a href="https://www.jotform.com/app/230194361424147/250094666836163?item=250094666836163" 
+           target="_blank" 
+           class="tab-btn" 
+           style="background-color: #0056b3; color: #ffffff; text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">
+           Driver's Training
+        </a>
     </div>
 
     <!-- TAB 1: District Verifier -->
@@ -52,7 +59,7 @@
                 <div class="form-group">
                     <div class="input-wrapper">
                         <input type="text" id="addressInput" placeholder="Enter address, intersection, or interstate (e.g. I-264 & Shelbyville)" autofocus>
-                        <button id="clearBtn" class="clear-btn" onclick="resetForm()" title="Clear address">&times;</button>
+                        <button id="clearBtn" class="clear-btn" onclick="resetForm()" title="Clear address">×</button>
                     </div>
                     <button id="verifyBtn" class="action-btn" onclick="verifyAddress()">Verify Location</button>
                 </div>
@@ -116,7 +123,7 @@
                 <label>1. Patient Category</label>
                 <select id="patientCategory" onchange="updateEmergencyOptions()">
                     <option value="adult">Adult Patient</option>
-                    <option value="pediatric">Pediatric Patient (&lt; 18 years)</option>
+                    <option value="pediatric">Pediatric Patient (< 18 years)</option>
                 </select>
             </div>
 
@@ -133,7 +140,7 @@
             
             <div id="protocolNote" class="protocol-note" style="display:none;"></div>
 
-            <div class="section-header" style="margin-top: 15px;">Capable Facilities (Tap to Navigate &amp; View Notes)</div>
+            <div class="section-header" style="margin-top: 15px;">Capable Facilities (Tap to Navigate & View Notes)</div>
             <div id="capableHospitals" class="hosp-list"></div>
         </div>
     </div>
@@ -222,7 +229,7 @@
             </div>
         </div>
 
-        <div class="section-header">Search &amp; Filter Directory</div>
+        <div class="section-header">Search & Filter Directory</div>
 
         <div class="form-group">
             <div class="input-wrapper">
@@ -237,7 +244,7 @@
             <button class="pill-btn" onclick="setCategoryFilter('bbq', this)">🍖 BBQ</button>
             <button class="pill-btn" onclick="setCategoryFilter('burgers', this)">🍔 Burgers</button>
             <button class="pill-btn" onclick="setCategoryFilter('asian', this)">🥢 Asian / Sushi</button>
-            <button class="pill-btn" onclick="setCategoryFilter('breakfast', this)">☕ Breakfast &amp; Bakery</button>
+            <button class="pill-btn" onclick="setCategoryFilter('breakfast', this)">☕ Breakfast & Bakery</button>
         </div>
 
         <div id="restaurantGrid" style="display: flex; flex-direction: column; gap: 8px;"></div>
@@ -253,7 +260,7 @@
         <p>Have another EMT, Paramedic, or firefighter scan this QR code with their phone camera to instantly install the app on their device.</p>
 
         <div class="share-card">
-            <div style="font-size: 12px; font-weight: 700; color: #003366; text-transform: uppercase; margin-bottom: 5px;">Scan to Open &amp; Install</div>
+            <div style="font-size: 12px; font-weight: 700; color: #003366; text-transform: uppercase; margin-bottom: 5px;">Scan to Open & Install</div>
             <img id="qrCodeImg" class="qr-image" alt="App QR Code" src="">
             
             <div class="share-url-box" id="appUrlText">https://wpspicerlfrd.github.io/STMFDKY-address-verifier/</div>
