@@ -65,6 +65,19 @@ body {
     color: #ffffff;
 }
 
+.tab-btn.driver-training {
+    background-color: #0056b3;
+    color: #ffffff;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tab-btn.driver-training:hover {
+    background-color: #004085;
+}
+
 .tab-content {
     display: none;
 }
